@@ -14,6 +14,7 @@ import type {
   ArtistDetails,
   HomePageData,
 } from '../../features/home/home.types';
+import './HomePage.scss';
 
 type HomePageStatus =
   | { state: 'loading' }
@@ -77,10 +78,7 @@ export function HomePage() {
     return (
       <main className="home-page">
         <Header />
-        <section
-          className="home-page__container home-page__status"
-          aria-live="polite"
-        >
+        <section className="app-container home-page__status" aria-live="polite">
           Loading home content...
         </section>
       </main>
@@ -91,10 +89,7 @@ export function HomePage() {
     return (
       <main className="home-page">
         <Header />
-        <section
-          className="home-page__container home-page__status"
-          role="alert"
-        >
+        <section className="app-container home-page__status" role="alert">
           {status.message}
         </section>
       </main>

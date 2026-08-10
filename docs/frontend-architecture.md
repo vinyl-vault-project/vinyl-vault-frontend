@@ -12,11 +12,13 @@ The `/` route renders `HomePage`, which composes `Header`, `HeroBanner`, `AlbumC
 
 ## Folders
 
-`src/app` holds shared route builders. `src/components/layout` holds page layout components. `src/components/ui` holds reusable UI pieces. `src/features/home` holds Home models, mock data, service adapter, and feature sections. `src/pages` holds route-level page components. `src/styles` holds global design tokens. `src/assets/vinyl-vault` holds normalized local asset names imported by Vite.
+`src/app` holds shared route builders. `src/components/layout` holds page layout components with their own SCSS. `src/components/ui` holds reusable UI pieces with their own SCSS. `src/features/home` holds Home models, mock data, service adapter, and feature sections. `src/pages` holds route-level page components and page-owned SCSS. `src/styles` holds global design tokens. `src/assets/vinyl-vault` holds normalized local asset names imported by Vite.
 
 ## CSS and Tokens
 
-CSS uses BEM-style class names in global styles. Shared values such as colors, container width, gutters, typography, radii, and transitions live in `src/styles/tokens.css`.
+SCSS uses BEM-style class names with nested `&` blocks where it improves readability. Shared values such as colors, container width, gutters, typography, radii, and transitions live in `src/styles/tokens.scss`.
+
+Page-specific styles live with their page, for example `src/pages/HomePage/HomePage.scss`. Reusable component styles live next to their component, for example `src/components/ui/AlbumCard/AlbumCard.scss`. `App.scss` is reserved for app shell rules, and `index.scss` is reserved for global base styles.
 
 The font stack intentionally prefers SF Compact-like platform fonts and falls back to Segoe UI, Roboto, Arial, and generic sans-serif because no dedicated font file is currently included.
 
@@ -44,7 +46,7 @@ Featured Artist cards open `ArtistDetailsModal` with the matching artist content
 
 ## Artist Modal
 
-`ArtistDetailsModal` lives in `src/features/home/components/ArtistDetailsModal`. It renders through a portal, closes with the back button, Escape, or overlay click, traps keyboard focus while open, restores focus to the trigger after close, and locks body scroll without a layout jump.
+`ArtistDetailsModal` lives in `src/features/home/components/ArtistDetailsModal`. Its current styles are owned by `HomePage.scss` because the modal is only used by the Home page. It renders through a portal, closes with the back button, Escape, or overlay click, traps keyboard focus while open, restores focus to the trigger after close, and locks body scroll without a layout jump.
 
 ## Assets
 

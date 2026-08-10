@@ -3,6 +3,7 @@ import { Link } from 'react-router';
 
 import { routes } from '../../../app/routes';
 import type { AlbumSummary } from '../../../features/home/home.types';
+import './AlbumCard.scss';
 
 interface AlbumCardProps {
   album: AlbumSummary;

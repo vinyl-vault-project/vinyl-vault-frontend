@@ -6,6 +6,7 @@ import accountIcon from '../../../assets/vinyl-vault/account.svg';
 import basketIcon from '../../../assets/vinyl-vault/basket.svg';
 import homeIcon from '../../../assets/vinyl-vault/home.svg';
 import logo from '../../../assets/vinyl-vault/logo.svg';
+import './Header.scss';
 
 function SearchIcon() {
   return (
@@ -46,7 +47,7 @@ export function Header() {
 
   return (
     <header className="site-header">
-      <div className="home-page__container site-header__inner">
+      <div className="app-container site-header__inner">
         <Link
           className="site-header__logo-link"
           to={routes.home}

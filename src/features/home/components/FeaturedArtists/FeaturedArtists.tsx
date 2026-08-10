@@ -20,7 +20,7 @@ export function FeaturedArtists({
       className="featured-artists"
       aria-labelledby="featured-artists-title"
     >
-      <div className="home-page__container">
+      <div className="app-container">
         <h2 className="section-title" id="featured-artists-title">
           Featured Artists
         </h2>

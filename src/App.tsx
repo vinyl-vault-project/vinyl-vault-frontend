@@ -5,8 +5,8 @@ import './App.scss';
 
 function NotFoundPage() {
   return (
-    <main className="home-page home-page--not-found">
-      <section className="home-page__container home-page__status">
+    <main className="app-not-found">
+      <section className="app-container app-not-found__status">
         <h1>Page not found</h1>
       </section>
     </main>

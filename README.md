@@ -2,6 +2,32 @@
 
 See [docs/frontend-architecture.md](docs/frontend-architecture.md) for the Vinyl Vault frontend structure, Home-page data flow, route conventions, and commands.
 
+## Frontend structure
+
+```text
+src/
+  api/
+  app/
+  assets/
+  components/
+    layout/
+    ui/
+  features/
+  pages/
+    PageName/
+      PageName.tsx
+      PageName.scss
+      components/
+  styles/
+    tokens.scss
+  App.tsx
+  App.scss
+  main.tsx
+  index.scss
+```
+
+Page styles live with pages, reusable component styles live with components, global base styles stay in `index.scss`, and design tokens stay in `src/styles/tokens.scss`. See `AGENTS.md` for the project styling rules.
+
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
 Currently, two official plugins are available:

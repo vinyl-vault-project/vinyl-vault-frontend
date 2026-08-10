@@ -27,7 +27,7 @@ export function HeroBanner({ promotions }: HeroBannerProps) {
         className="hero-banner hero-banner--empty"
         aria-labelledby="home-title"
       >
-        <div className="home-page__container">
+        <div className="app-container">
           <h1 id="home-title">Vinyl Vault</h1>
           <p className="empty-state">
             No featured release is available right now.
@@ -47,7 +47,7 @@ export function HeroBanner({ promotions }: HeroBannerProps) {
         alt=""
         aria-hidden="true"
       />
-      <div className="home-page__container hero-banner__inner">
+      <div className="app-container hero-banner__inner">
         <div className="hero-banner__copy">
           <div className="hero-banner__marks" aria-label="Aphex Twin and Warp">
             {activePromotion.eyebrowMarks.map((mark) => (

@@ -22,7 +22,7 @@ export function AlbumCollection({
       className="album-collection"
       aria-labelledby={`${title.toLowerCase().replaceAll(' ', '-')}-title`}
     >
-      <div className="home-page__container">
+      <div className="app-container">
         <h2
           className="section-title"
           id={`${title.toLowerCase().replaceAll(' ', '-')}-title`}
