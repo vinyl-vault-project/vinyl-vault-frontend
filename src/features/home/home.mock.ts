@@ -3,6 +3,7 @@ import boardsArtistModal from '../../assets/vinyl-vault/boards-of-canada-modal-a
 import boardsArtist from '../../assets/vinyl-vault/boards-of-canada-artist.png';
 import comeToDaddyCover from '../../assets/vinyl-vault/come-to-daddy-cover.png';
 import djShadowArtist from '../../assets/vinyl-vault/dj-shadow-artist.png';
+import drukqsOfficialWarpCdBooklet from '../../assets/vinyl-vault/drukqs-official-warp-cd-booklet.png';
 import drukqsAnniversaryVinylDisplay from '../../assets/vinyl-vault/drukqs-anniversary-vinyl-display.png';
 import drukqsCover from '../../assets/vinyl-vault/drukqs-cover.png';
 import geogaddiCover from '../../assets/vinyl-vault/geogaddi-cover.png';
@@ -12,13 +13,26 @@ import placeholderCover from '../../assets/vinyl-vault/album-placeholder.svg';
 import selectedAmbientCover from '../../assets/vinyl-vault/selected-ambient-cover.png';
 import tomorrowsHarvestCover from '../../assets/vinyl-vault/tomorrows-harvest-cover.png';
 import aphexArtist from '../../assets/vinyl-vault/aphex-twin-artist.png';
+import aphexTwinLogo from '../../assets/vinyl-vault/aphex-twin-logo-white.png';
+import warpRecordsLogo from '../../assets/vinyl-vault/warp-records-logo-white.png';
 import type { ArtistDetails, HomePageData } from './home.types';
 
 export const homePageMockData: HomePageData = {
   heroPromotions: [
     {
       id: 'drukqs-anniversary',
-      eyebrowMarks: ['aphex', 'warp'],
+      brandLogos: [
+        {
+          id: 'aphex-twin',
+          src: aphexTwinLogo,
+          alt: 'Aphex Twin',
+        },
+        {
+          id: 'warp-records',
+          src: warpRecordsLogo,
+          alt: 'Warp Records',
+        },
+      ],
       title: 'Drukqs - 25th Anniversary Reissue',
       releaseLine: 'Out 30 October 2026',
       description:
@@ -26,8 +40,18 @@ export const homePageMockData: HomePageData = {
       ctaLabel: 'Go to album',
       albumSlug: 'drukqs',
       backgroundSrc: heroBackground,
-      artworkSrc: drukqsAnniversaryVinylDisplay,
-      artworkAlt: 'Drukqs anniversary edition cover art with vinyl record',
+      slides: [
+        {
+          id: 'anniversary-vinyl-display',
+          imageSrc: drukqsAnniversaryVinylDisplay,
+          imageAlt: 'Drukqs anniversary edition cover art with vinyl record',
+        },
+        {
+          id: 'official-warp-cd-booklet',
+          imageSrc: drukqsOfficialWarpCdBooklet,
+          imageAlt: 'Official Warp CD booklet and discs for Drukqs',
+        },
+      ],
     },
   ],
   albumsOfTheWeek: [

@@ -21,15 +21,26 @@ export interface FeaturedArtist {
 
 export interface HeroPromotion {
   id: string;
-  eyebrowMarks: Array<'aphex' | 'warp'>;
+  brandLogos: HeroBrandLogo[];
   title: string;
   releaseLine: string;
   description: string;
   ctaLabel: string;
   albumSlug: string;
   backgroundSrc: string;
-  artworkSrc: string;
-  artworkAlt: string;
+  slides: HeroSlide[];
+}
+
+export interface HeroBrandLogo {
+  id: string;
+  src: string;
+  alt: string;
+}
+
+export interface HeroSlide {
+  id: string;
+  imageSrc: string;
+  imageAlt: string;
 }
 
 export interface HomePageData {
