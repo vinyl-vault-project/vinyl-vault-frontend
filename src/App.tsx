@@ -1,7 +1,7 @@
 import { Route, Routes } from 'react-router';
 
 import { HomePage } from './pages/HomePage/HomePage';
-import './App.css';
+import './App.scss';
 
 function NotFoundPage() {
   return (

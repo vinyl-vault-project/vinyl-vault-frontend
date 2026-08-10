@@ -1,4 +1,4 @@
-@import './styles/tokens.css';
+@use './styles/tokens';
 
 * {
   box-sizing: border-box;
@@ -22,13 +22,16 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-button,
-input {
+button {
   font: inherit;
+
+  &:enabled {
+    cursor: pointer;
+  }
 }
 
-button {
-  cursor: pointer;
+input {
+  font: inherit;
 }
 
 a {
