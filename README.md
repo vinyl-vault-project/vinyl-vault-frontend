@@ -1,5 +1,7 @@
 # React + TypeScript + Vite
 
+See [docs/frontend-architecture.md](docs/frontend-architecture.md) for the Vinyl Vault frontend structure, Home-page data flow, route conventions, and commands.
+
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
 Currently, two official plugins are available:

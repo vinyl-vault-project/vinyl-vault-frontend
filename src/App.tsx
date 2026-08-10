@@ -1,32 +1,24 @@
-import { Link, Route, Routes } from 'react-router';
+import { Route, Routes } from 'react-router';
 
-function HomePage() {
-  return <h1>Hello world!</h1>;
-}
-
-function CatalogPage() {
-  return <h1>Catalog</h1>;
-}
+import { HomePage } from './pages/HomePage/HomePage';
+import './App.css';
 
 function NotFoundPage() {
-  return <h1>Page not found</h1>;
+  return (
+    <main className="home-page home-page--not-found">
+      <section className="home-page__container home-page__status">
+        <h1>Page not found</h1>
+      </section>
+    </main>
+  );
 }
 
 function App() {
   return (
-    <>
-      <nav>
-        <Link to="/">Home</Link>
-        {' | '}
-        <Link to="/catalog">Catalog</Link>
-      </nav>
-
-      <Routes>
-        <Route path="/" element={<HomePage />} />
-        <Route path="/catalog" element={<CatalogPage />} />
-        <Route path="*" element={<NotFoundPage />} />
-      </Routes>
-    </>
+    <Routes>
+      <Route path="/" element={<HomePage />} />
+      <Route path="*" element={<NotFoundPage />} />
+    </Routes>
   );
 }
 
