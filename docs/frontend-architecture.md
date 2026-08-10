@@ -12,19 +12,23 @@ The `/` route renders `HomePage`, which composes `Header`, `HeroBanner`, `AlbumC
 
 ## Folders
 
-`src/app` holds shared route builders. `src/components/layout` holds page layout components with their own SCSS. `src/components/ui` holds reusable UI pieces with their own SCSS. `src/features/home` holds Home models, mock data, service adapter, and feature sections. `src/pages` holds route-level page components and page-owned SCSS. `src/styles` holds global design tokens. `src/assets/vinyl-vault` holds normalized local asset names imported by Vite.
+`src/app` holds shared route builders. `src/components/layout` holds page layout components with their own SCSS. `src/components/ui` holds reusable UI pieces with their own SCSS, including `Button`, `Checkbox`, `Select`, and `AlbumCard`. `src/features/home` holds Home models, mock data, service adapter, catalog filter config, and feature sections. `src/pages` holds route-level page components and page-owned SCSS. `src/styles` holds global design tokens. `src/assets/vinyl-vault` holds normalized local asset names imported by Vite.
 
 ## CSS and Tokens
 
-SCSS uses BEM-style class names with nested `&` blocks where it improves readability. Shared values such as colors, container width, gutters, typography, radii, and transitions live in `src/styles/tokens.scss`.
+SCSS uses BEM-style class names with nested `&` blocks where it improves readability. Shared values such as colors, container width, gutters, typography, radii, form control heights, button text sizing, z-index roles, and transitions live in `src/styles/tokens.scss`.
 
 Page-specific styles live with their page, for example `src/pages/HomePage/HomePage.scss`. Reusable component styles live next to their component, for example `src/components/ui/AlbumCard/AlbumCard.scss`. `App.scss` is reserved for app shell rules, and `index.scss` is reserved for global base styles.
 
 The font stack intentionally prefers SF Compact-like platform fonts and falls back to Segoe UI, Roboto, Arial, and generic sans-serif because no dedicated font file is currently included.
 
+## UI Kit Primitives
+
+Reusable control styling is centralized in `src/components/ui`. `Button` owns the white Vinyl Vault button family with `primary`, `compact`, `wide`, and `text` variants. `Checkbox` wraps a native checkbox input with the dark UI Kit visual state, and `Select` wraps a native select with the supplied `catalog-filter-chevron.svg` asset. These primitives use semantic tokens instead of local hex values so page features do not duplicate control CSS.
+
 ## Data Models
 
-Home data uses typed models in `home.types.ts`: `AlbumSummary`, `FeaturedArtist`, `HeroPromotion`, and `HomePageData`. Presentation components receive these types as props and do not own content.
+Home data uses typed models in `home.types.ts`: `AlbumSummary`, `FeaturedArtist`, `HeroPromotion`, and `HomePageData`. `AlbumSummary` includes `filterMetadata` for the current mock catalog filter. Presentation components receive these types as props and do not own content.
 
 Artist modal data uses `ArtistDetails`, which reuses `AlbumSummary` for the album strip.
 
@@ -33,6 +37,14 @@ Artist modal data uses `ArtistDetails`, which reuses `AlbumSummary` for the albu
 `getHomePageData()` currently returns `homePageMockData` asynchronously. A future `GET /api/home` integration should replace the body of that adapter and map API responses there, not inside React components.
 
 `getArtistDetailsBySlug()` currently resolves artist details from typed mock data. A future `GET /api/artists/:slug` integration should keep response mapping in that adapter layer.
+
+Catalog filter options and defaults live in `src/features/home/home.filters.ts`. `HomePage` owns the applied filter state and passes it to the page-owned `CatalogFilter` component in `src/pages/HomePage/components/CatalogFilter`. The filter panel keeps its own draft state while open. Checkbox and year changes affect only draft state until Apply is submitted; Clear restores `defaultCatalogFilters`; closing with Escape, repeat toggle, or outside click discards unapplied draft changes.
+
+The current filtering is frontend-only and uses typed mock metadata. A future backend contract should replace this with a catalog query such as `GET /api/home?fromYear=1989&toYear=2026&countries=us&genres=electronic,hip-hop&styles=trip-hop`, with response mapping kept in the Home service layer.
+
+## Catalog Filter Accessibility
+
+The large Home filter is a form named `Catalog filters`. The Header filter trigger exposes `aria-controls` and `aria-expanded`. Genre and Style headings are independent buttons with `aria-expanded`; Country remains expanded. Year range validation is announced through an inline alert and blocks Apply until the range is valid. The panel overlays the Hero on desktop and does not lock body scroll.
 
 ## Routes and Links
 
@@ -50,7 +62,7 @@ Featured Artist cards open `ArtistDetailsModal` with the matching artist content
 
 ## Assets
 
-Use descriptive, lowercase asset names under `src/assets/vinyl-vault`. Do not inline images as base64, destructively crop originals, or reuse a real album image as another album. Missing album art should use the clearly named `album-placeholder.svg` until the correct cover is supplied. UI assets should also state their purpose, such as `featured-artists-next-arrow.svg`.
+Use descriptive, lowercase asset names under `src/assets/vinyl-vault`. Do not inline images as base64, destructively crop originals, or reuse a real album image as another album. Missing album art should use the clearly named `album-placeholder.svg` until the correct cover is supplied. UI assets should also state their purpose, such as `featured-artists-next-arrow.svg` and `catalog-filter-chevron.svg`.
 
 ## Hero Behavior
 

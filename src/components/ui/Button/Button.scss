@@ -1,0 +1,82 @@
+/* ========================================
+   Button - reusable UI Kit control
+   ======================================== */
+
+.ui-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: var(--control-height-md);
+  padding: 0 24px;
+  color: var(--color-button-text);
+  font: inherit;
+  font-size: var(--font-size-button);
+  line-height: var(--line-height-button);
+  font-weight: 600;
+  letter-spacing: 0;
+  cursor: pointer;
+  background: var(--color-button-background);
+  border: 1px solid transparent;
+  border-radius: var(--radius-small);
+  transition:
+    background var(--transition-fast),
+    border-color var(--transition-fast),
+    color var(--transition-fast),
+    filter var(--transition-hover),
+    transform var(--transition-hover);
+  will-change: transform;
+
+  &:hover,
+  &:focus-visible {
+    filter: brightness(1.08);
+    transform: scale(var(--hover-scale));
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--color-focus);
+    outline-offset: 4px;
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+    transform: none;
+  }
+
+  &--primary {
+    min-width: 128px;
+  }
+
+  &--compact {
+    min-width: 128px;
+    min-height: 34px;
+    font-size: 14px;
+    line-height: 20px;
+  }
+
+  &--wide {
+    min-width: 220px;
+    min-height: 48px;
+    text-transform: uppercase;
+  }
+
+  &--text {
+    min-width: 0;
+    padding-inline: 0;
+    color: var(--color-text-secondary);
+    background: transparent;
+    border-color: transparent;
+
+    &:hover,
+    &:focus-visible {
+      color: var(--color-text-primary);
+      filter: none;
+    }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ui-button {
+    transition-duration: 1ms;
+  }
+}

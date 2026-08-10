@@ -7,6 +7,14 @@ export interface AlbumSummary {
   coverSrc: string;
   coverAlt: string;
   isPlaceholder?: boolean;
+  filterMetadata: AlbumFilterMetadata;
+}
+
+export interface AlbumFilterMetadata {
+  countries: string[];
+  genres: string[];
+  releaseYear: number;
+  styles: string[];
 }
 
 export interface FeaturedArtist {

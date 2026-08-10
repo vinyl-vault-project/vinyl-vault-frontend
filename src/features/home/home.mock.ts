@@ -14,6 +14,30 @@ import tomorrowsHarvestCover from '../../assets/vinyl-vault/tomorrows-harvest-co
 import aphexArtist from '../../assets/vinyl-vault/aphex-twin-artist.png';
 import type { ArtistDetails, HomePageData } from './home.types';
 
+const aphexTwinFilterMetadata = {
+  countries: ['uk', 'us'],
+  genres: ['electronic', 'hip-hop'],
+  styles: ['idm', 'ambient', 'trip-hop'],
+};
+
+const boardsOfCanadaFilterMetadata = {
+  countries: ['uk', 'us'],
+  genres: ['electronic', 'hip-hop'],
+  styles: ['ambient', 'downtempo', 'trip-hop'],
+};
+
+const autechreFilterMetadata = {
+  countries: ['uk', 'us'],
+  genres: ['electronic', 'hip-hop'],
+  styles: ['idm', 'techno', 'trip-hop'],
+};
+
+const djShadowFilterMetadata = {
+  countries: ['us'],
+  genres: ['electronic', 'hip-hop'],
+  styles: ['instrumental-hip-hop', 'downtempo', 'trip-hop'],
+};
+
 export const homePageMockData: HomePageData = {
   heroPromotions: [
     {
@@ -39,6 +63,10 @@ export const homePageMockData: HomePageData = {
       title: 'Drukqs',
       coverSrc: drukqsCover,
       coverAlt: 'Aphex Twin Drukqs album cover',
+      filterMetadata: {
+        ...aphexTwinFilterMetadata,
+        releaseYear: 2001,
+      },
     },
     {
       id: 'come-to-daddy',
@@ -48,6 +76,10 @@ export const homePageMockData: HomePageData = {
       title: 'Come to Daddy',
       coverSrc: comeToDaddyCover,
       coverAlt: 'Aphex Twin Come to Daddy album cover',
+      filterMetadata: {
+        ...aphexTwinFilterMetadata,
+        releaseYear: 1997,
+      },
     },
     {
       id: 'selected-ambient-works-85-92',
@@ -57,6 +89,10 @@ export const homePageMockData: HomePageData = {
       title: 'Selected Ambient Works 85-92',
       coverSrc: selectedAmbientCover,
       coverAlt: 'Aphex Twin Selected Ambient Works 85-92 album cover',
+      filterMetadata: {
+        ...aphexTwinFilterMetadata,
+        releaseYear: 1992,
+      },
     },
     {
       id: 'tomorrows-harvest',
@@ -66,6 +102,10 @@ export const homePageMockData: HomePageData = {
       title: "Tomorrow's Harvest",
       coverSrc: tomorrowsHarvestCover,
       coverAlt: "Boards of Canada Tomorrow's Harvest album cover",
+      filterMetadata: {
+        ...boardsOfCanadaFilterMetadata,
+        releaseYear: 2013,
+      },
     },
     {
       id: 'music-has-the-right-to-children',
@@ -75,6 +115,10 @@ export const homePageMockData: HomePageData = {
       title: 'Music Has the Right to Children',
       coverSrc: musicHasTheRightCover,
       coverAlt: 'Boards of Canada Music Has the Right to Children album cover',
+      filterMetadata: {
+        ...boardsOfCanadaFilterMetadata,
+        releaseYear: 1998,
+      },
     },
     {
       id: 'geogaddi',
@@ -84,6 +128,10 @@ export const homePageMockData: HomePageData = {
       title: 'Geogaddi',
       coverSrc: geogaddiCover,
       coverAlt: 'Boards of Canada Geogaddi album cover',
+      filterMetadata: {
+        ...boardsOfCanadaFilterMetadata,
+        releaseYear: 2002,
+      },
     },
   ],
   featuredArtists: [
@@ -134,6 +182,10 @@ export const homePageMockData: HomePageData = {
       coverSrc: placeholderCover,
       coverAlt: 'Placeholder cover for Autechre Incunabula',
       isPlaceholder: true,
+      filterMetadata: {
+        ...autechreFilterMetadata,
+        releaseYear: 1993,
+      },
     },
     {
       id: 'tri-repetae',
@@ -144,6 +196,10 @@ export const homePageMockData: HomePageData = {
       coverSrc: placeholderCover,
       coverAlt: 'Placeholder cover for Autechre Tri Repetae',
       isPlaceholder: true,
+      filterMetadata: {
+        ...autechreFilterMetadata,
+        releaseYear: 1995,
+      },
     },
     {
       id: 'amber',
@@ -154,6 +210,10 @@ export const homePageMockData: HomePageData = {
       coverSrc: placeholderCover,
       coverAlt: 'Placeholder cover for Autechre Amber',
       isPlaceholder: true,
+      filterMetadata: {
+        ...autechreFilterMetadata,
+        releaseYear: 1994,
+      },
     },
     {
       id: 'endtroducing',
@@ -164,6 +224,10 @@ export const homePageMockData: HomePageData = {
       coverSrc: placeholderCover,
       coverAlt: 'Placeholder cover for DJ Shadow Endtroducing',
       isPlaceholder: true,
+      filterMetadata: {
+        ...djShadowFilterMetadata,
+        releaseYear: 1996,
+      },
     },
     {
       id: 'the-private-press',
@@ -174,6 +238,10 @@ export const homePageMockData: HomePageData = {
       coverSrc: placeholderCover,
       coverAlt: 'Placeholder cover for DJ Shadow The Private Press',
       isPlaceholder: true,
+      filterMetadata: {
+        ...djShadowFilterMetadata,
+        releaseYear: 2002,
+      },
     },
     {
       id: 'the-less-you-know-the-better',
@@ -184,6 +252,10 @@ export const homePageMockData: HomePageData = {
       coverSrc: placeholderCover,
       coverAlt: 'Placeholder cover for DJ Shadow The Less You Know, the Better',
       isPlaceholder: true,
+      filterMetadata: {
+        ...djShadowFilterMetadata,
+        releaseYear: 2011,
+      },
     },
   ],
 };
@@ -206,6 +278,10 @@ export const artistDetailsMockData: ArtistDetails[] = [
         title: 'Drukqs',
         coverSrc: drukqsCover,
         coverAlt: 'Aphex Twin Drukqs album cover',
+        filterMetadata: {
+          ...aphexTwinFilterMetadata,
+          releaseYear: 2001,
+        },
       },
       {
         id: 'come-to-daddy',
@@ -215,6 +291,10 @@ export const artistDetailsMockData: ArtistDetails[] = [
         title: 'Come to Daddy',
         coverSrc: comeToDaddyCover,
         coverAlt: 'Aphex Twin Come to Daddy album cover',
+        filterMetadata: {
+          ...aphexTwinFilterMetadata,
+          releaseYear: 1997,
+        },
       },
       {
         id: 'selected-ambient-works-85-92',
@@ -224,6 +304,10 @@ export const artistDetailsMockData: ArtistDetails[] = [
         title: 'Selected Ambient Works 85-92',
         coverSrc: selectedAmbientCover,
         coverAlt: 'Aphex Twin Selected Ambient Works 85-92 album cover',
+        filterMetadata: {
+          ...aphexTwinFilterMetadata,
+          releaseYear: 1992,
+        },
       },
     ],
   },
@@ -245,6 +329,10 @@ export const artistDetailsMockData: ArtistDetails[] = [
         coverSrc: placeholderCover,
         coverAlt: 'Placeholder cover for Boards of Canada Inferno',
         isPlaceholder: true,
+        filterMetadata: {
+          ...boardsOfCanadaFilterMetadata,
+          releaseYear: 2026,
+        },
       },
       {
         id: 'tomorrows-harvest',
@@ -254,6 +342,10 @@ export const artistDetailsMockData: ArtistDetails[] = [
         title: "Tomorrow's Harvest",
         coverSrc: tomorrowsHarvestCover,
         coverAlt: "Boards of Canada Tomorrow's Harvest album cover",
+        filterMetadata: {
+          ...boardsOfCanadaFilterMetadata,
+          releaseYear: 2013,
+        },
       },
       {
         id: 'geogaddi',
@@ -263,6 +355,10 @@ export const artistDetailsMockData: ArtistDetails[] = [
         title: 'Geogaddi',
         coverSrc: geogaddiCover,
         coverAlt: 'Boards of Canada Geogaddi album cover',
+        filterMetadata: {
+          ...boardsOfCanadaFilterMetadata,
+          releaseYear: 2002,
+        },
       },
       {
         id: 'the-campfire-headphase',
@@ -274,6 +370,10 @@ export const artistDetailsMockData: ArtistDetails[] = [
         coverAlt:
           'Placeholder cover for Boards of Canada The Campfire Headphase',
         isPlaceholder: true,
+        filterMetadata: {
+          ...boardsOfCanadaFilterMetadata,
+          releaseYear: 2005,
+        },
       },
       {
         id: 'music-has-the-right-to-children',
@@ -284,6 +384,10 @@ export const artistDetailsMockData: ArtistDetails[] = [
         coverSrc: musicHasTheRightCover,
         coverAlt:
           'Boards of Canada Music Has the Right to Children album cover',
+        filterMetadata: {
+          ...boardsOfCanadaFilterMetadata,
+          releaseYear: 1998,
+        },
       },
     ],
   },
@@ -305,6 +409,10 @@ export const artistDetailsMockData: ArtistDetails[] = [
         coverSrc: placeholderCover,
         coverAlt: 'Placeholder cover for Autechre Incunabula',
         isPlaceholder: true,
+        filterMetadata: {
+          ...autechreFilterMetadata,
+          releaseYear: 1993,
+        },
       },
       {
         id: 'tri-repetae',
@@ -315,6 +423,10 @@ export const artistDetailsMockData: ArtistDetails[] = [
         coverSrc: placeholderCover,
         coverAlt: 'Placeholder cover for Autechre Tri Repetae',
         isPlaceholder: true,
+        filterMetadata: {
+          ...autechreFilterMetadata,
+          releaseYear: 1995,
+        },
       },
       {
         id: 'amber',
@@ -325,6 +437,10 @@ export const artistDetailsMockData: ArtistDetails[] = [
         coverSrc: placeholderCover,
         coverAlt: 'Placeholder cover for Autechre Amber',
         isPlaceholder: true,
+        filterMetadata: {
+          ...autechreFilterMetadata,
+          releaseYear: 1994,
+        },
       },
     ],
   },
@@ -346,6 +462,10 @@ export const artistDetailsMockData: ArtistDetails[] = [
         coverSrc: placeholderCover,
         coverAlt: 'Placeholder cover for DJ Shadow Endtroducing',
         isPlaceholder: true,
+        filterMetadata: {
+          ...djShadowFilterMetadata,
+          releaseYear: 1996,
+        },
       },
       {
         id: 'the-private-press',
@@ -356,6 +476,10 @@ export const artistDetailsMockData: ArtistDetails[] = [
         coverSrc: placeholderCover,
         coverAlt: 'Placeholder cover for DJ Shadow The Private Press',
         isPlaceholder: true,
+        filterMetadata: {
+          ...djShadowFilterMetadata,
+          releaseYear: 2002,
+        },
       },
       {
         id: 'the-less-you-know-the-better',
@@ -367,6 +491,10 @@ export const artistDetailsMockData: ArtistDetails[] = [
         coverAlt:
           'Placeholder cover for DJ Shadow The Less You Know, the Better',
         isPlaceholder: true,
+        filterMetadata: {
+          ...djShadowFilterMetadata,
+          releaseYear: 2011,
+        },
       },
     ],
   },

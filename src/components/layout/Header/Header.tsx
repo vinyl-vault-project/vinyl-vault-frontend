@@ -4,6 +4,7 @@ import { Link, useNavigate } from 'react-router';
 import { routes } from '../../../app/routes';
 import accountIcon from '../../../assets/vinyl-vault/account.svg';
 import basketIcon from '../../../assets/vinyl-vault/basket.svg';
+import catalogFilterChevron from '../../../assets/vinyl-vault/catalog-filter-chevron.svg';
 import homeIcon from '../../../assets/vinyl-vault/home.svg';
 import logo from '../../../assets/vinyl-vault/logo.svg';
 import './Header.scss';
@@ -20,19 +21,17 @@ function SearchIcon() {
   );
 }
 
-function FilterIcon() {
-  return (
-    <svg
-      className="site-header__filter-icon"
-      viewBox="0 0 24 24"
-      aria-hidden="true"
-    >
-      <path d="M4 7h10M18 7h2M4 17h3M11 17h9M8 17a2 2 0 1 0 4 0 2 2 0 0 0-4 0ZM14 7a2 2 0 1 0 4 0 2 2 0 0 0-4 0Z" />
-    </svg>
-  );
+interface HeaderProps {
+  filterPanelId?: string;
+  isFilterOpen?: boolean;
+  onFilterToggle?: () => void;
 }
 
-export function Header() {
+export function Header({
+  filterPanelId,
+  isFilterOpen = false,
+  onFilterToggle,
+}: HeaderProps) {
   const [query, setQuery] = useState('');
   const navigate = useNavigate();
 
@@ -85,9 +84,19 @@ export function Header() {
           <button
             className="icon-button icon-button--muted"
             type="button"
-            aria-label="Open filters"
+            aria-controls={filterPanelId}
+            aria-expanded={isFilterOpen}
+            aria-label={isFilterOpen ? 'Close filters' : 'Open filters'}
+            onClick={onFilterToggle}
           >
-            <FilterIcon />
+            <img
+              className="site-header__filter-icon"
+              src={catalogFilterChevron}
+              width="48"
+              height="24"
+              alt=""
+              aria-hidden="true"
+            />
           </button>
           <Link className="icon-button" to={routes.home} aria-label="Home">
             <img src={homeIcon} width="27" height="27" alt="" />

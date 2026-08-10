@@ -2,6 +2,11 @@ import { type MouseEvent, useEffect, useRef, useState } from 'react';
 
 import { Footer } from '../../components/layout/Footer/Footer';
 import { Header } from '../../components/layout/Header/Header';
+import {
+  type CatalogFilters,
+  defaultCatalogFilters,
+  filterAlbumsByCatalogState,
+} from '../../features/home/home.filters';
 import { AlbumCollection } from '../../features/home/components/AlbumCollection/AlbumCollection';
 import { ArtistDetailsModal } from '../../features/home/components/ArtistDetailsModal/ArtistDetailsModal';
 import { FeaturedArtists } from '../../features/home/components/FeaturedArtists/FeaturedArtists';
@@ -14,6 +19,7 @@ import type {
   ArtistDetails,
   HomePageData,
 } from '../../features/home/home.types';
+import { CatalogFilter } from './components/CatalogFilter/CatalogFilter';
 import './HomePage.scss';
 
 type HomePageStatus =
@@ -23,9 +29,13 @@ type HomePageStatus =
 
 export function HomePage() {
   const [status, setStatus] = useState<HomePageStatus>({ state: 'loading' });
+  const [isCatalogFilterOpen, setIsCatalogFilterOpen] = useState(false);
+  const [catalogFilterSession, setCatalogFilterSession] = useState(0);
+  const [appliedFilters, setAppliedFilters] = useState(defaultCatalogFilters);
   const [selectedArtistDetails, setSelectedArtistDetails] =
     useState<ArtistDetails | null>(null);
   const artistTriggerRef = useRef<HTMLElement | null>(null);
+  const catalogFilterId = 'home-catalog-filter';
 
   useEffect(() => {
     let isActive = true;
@@ -74,6 +84,21 @@ export function HomePage() {
     });
   }
 
+  function handleCatalogFilterToggle() {
+    setIsCatalogFilterOpen((currentState) => {
+      if (!currentState) {
+        setCatalogFilterSession((currentSession) => currentSession + 1);
+      }
+
+      return !currentState;
+    });
+  }
+
+  function handleCatalogFilterApply(nextFilters: CatalogFilters) {
+    setAppliedFilters(nextFilters);
+    setIsCatalogFilterOpen(false);
+  }
+
   if (status.state === 'loading') {
     return (
       <main className="home-page">
@@ -96,14 +121,35 @@ export function HomePage() {
     );
   }
 
+  const albumsOfTheWeek = filterAlbumsByCatalogState(
+    status.data.albumsOfTheWeek,
+    appliedFilters,
+  );
+  const recommendedAlbums = filterAlbumsByCatalogState(
+    status.data.recommendedAlbums,
+    appliedFilters,
+  );
+
   return (
     <>
       <main className="home-page">
-        <Header />
+        <Header
+          filterPanelId={catalogFilterId}
+          isFilterOpen={isCatalogFilterOpen}
+          onFilterToggle={handleCatalogFilterToggle}
+        />
+        <CatalogFilter
+          key={catalogFilterSession}
+          id={catalogFilterId}
+          isOpen={isCatalogFilterOpen}
+          appliedFilters={appliedFilters}
+          onApply={handleCatalogFilterApply}
+          onClose={() => setIsCatalogFilterOpen(false)}
+        />
         <HeroBanner promotions={status.data.heroPromotions} />
         <AlbumCollection
           title="Albums of the week"
-          albums={status.data.albumsOfTheWeek}
+          albums={albumsOfTheWeek}
           onArtistSelect={(artistSlug, event) => {
             void handleArtistSelect(artistSlug, event);
           }}
@@ -116,7 +162,7 @@ export function HomePage() {
         />
         <AlbumCollection
           title="Recommended albums"
-          albums={status.data.recommendedAlbums}
+          albums={recommendedAlbums}
           onArtistSelect={(artistSlug, event) => {
             void handleArtistSelect(artistSlug, event);
           }}

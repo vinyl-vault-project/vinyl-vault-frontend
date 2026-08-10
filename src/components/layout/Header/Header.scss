@@ -102,13 +102,16 @@
   }
 
   &__filter-icon {
-    width: 27px;
-    height: 27px;
-    fill: none;
-    stroke: currentColor;
-    stroke-width: 1.8;
-    stroke-linecap: round;
-    stroke-linejoin: round;
+    width: 32px;
+    max-width: 32px;
+    height: auto;
+    opacity: 0.66;
+    transition: transform var(--transition-hover);
+  }
+
+  .icon-button[aria-expanded='true'] &__filter-icon {
+    opacity: 1;
+    transform: rotate(180deg);
   }
 }
 
