@@ -1,3 +1,4 @@
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router';
 
 import { routes } from '../../../../app/routes';
@@ -7,19 +8,69 @@ interface HeroBannerProps {
   promotions: HeroPromotion[];
 }
 
-function LabelMark({ type }: { type: 'aphex' | 'warp' }) {
-  return (
-    <span
-      className={`hero-banner__mark hero-banner__mark--${type}`}
-      aria-hidden="true"
-    >
-      {type === 'aphex' ? 'A' : 'WARP'}
-    </span>
-  );
-}
-
 export function HeroBanner({ promotions }: HeroBannerProps) {
   const activePromotion = promotions[0];
+  const slides = activePromotion?.slides ?? [];
+  const hasMultipleSlides = slides.length > 1;
+  const [activeSlideIndex, setActiveSlideIndex] = useState(0);
+  const [exitingSlideIndex, setExitingSlideIndex] = useState<number | null>(
+    null,
+  );
+  const transitionTimeoutRef = useRef<number | null>(null);
+  const autoplayIntervalRef = useRef<number | null>(null);
+
+  const clearTransitionTimeout = useCallback(() => {
+    if (transitionTimeoutRef.current !== null) {
+      window.clearTimeout(transitionTimeoutRef.current);
+      transitionTimeoutRef.current = null;
+    }
+  }, []);
+
+  const showSlide = useCallback(
+    (nextSlideIndex: number) => {
+      if (nextSlideIndex === activeSlideIndex) {
+        return;
+      }
+
+      clearTransitionTimeout();
+      setExitingSlideIndex(activeSlideIndex);
+      setActiveSlideIndex(nextSlideIndex);
+      transitionTimeoutRef.current = window.setTimeout(() => {
+        setExitingSlideIndex(null);
+        transitionTimeoutRef.current = null;
+      }, 950);
+    },
+    [activeSlideIndex, clearTransitionTimeout],
+  );
+
+  useEffect(() => {
+    if (!hasMultipleSlides) {
+      return undefined;
+    }
+
+    autoplayIntervalRef.current = window.setInterval(() => {
+      const nextSlideIndex = (activeSlideIndex + 1) % slides.length;
+      showSlide(nextSlideIndex);
+    }, 5000);
+
+    return () => {
+      if (autoplayIntervalRef.current !== null) {
+        window.clearInterval(autoplayIntervalRef.current);
+        autoplayIntervalRef.current = null;
+      }
+    };
+  }, [activeSlideIndex, hasMultipleSlides, showSlide, slides.length]);
+
+  useEffect(
+    () => () => {
+      clearTransitionTimeout();
+
+      if (autoplayIntervalRef.current !== null) {
+        window.clearInterval(autoplayIntervalRef.current);
+      }
+    },
+    [clearTransitionTimeout],
+  );
 
   if (!activePromotion) {
     return (
@@ -37,8 +88,6 @@ export function HeroBanner({ promotions }: HeroBannerProps) {
     );
   }
 
-  const hasMultiplePromotions = promotions.length > 1;
-
   return (
     <section className="hero-banner" aria-labelledby="home-title">
       <img
@@ -50,8 +99,15 @@ export function HeroBanner({ promotions }: HeroBannerProps) {
       <div className="app-container hero-banner__inner">
         <div className="hero-banner__copy">
           <div className="hero-banner__marks" aria-label="Aphex Twin and Warp">
-            {activePromotion.eyebrowMarks.map((mark) => (
-              <LabelMark key={mark} type={mark} />
+            {activePromotion.brandLogos.map((logo) => (
+              <img
+                className="hero-banner__mark"
+                key={logo.id}
+                src={logo.src}
+                width="58"
+                height="45"
+                alt={logo.alt}
+              />
             ))}
           </div>
           <h1 className="hero-banner__title" id="home-title">
@@ -71,31 +127,43 @@ export function HeroBanner({ promotions }: HeroBannerProps) {
         </div>
 
         <div className="hero-banner__visual">
-          <img
-            className="hero-banner__artwork"
-            src={activePromotion.artworkSrc}
-            alt={activePromotion.artworkAlt}
-            width="600"
-            height="600"
-          />
-        </div>
+          <div className="hero-banner__slider-viewport">
+            {slides.map((slide, index) => {
+              const slideStateClass =
+                index === activeSlideIndex
+                  ? 'hero-banner__slide--active'
+                  : index === exitingSlideIndex
+                    ? 'hero-banner__slide--exiting'
+                    : 'hero-banner__slide--idle';
 
-        {hasMultiplePromotions ? (
+              return (
+                <img
+                  className={`hero-banner__slide ${slideStateClass}`}
+                  src={slide.imageSrc}
+                  alt={slide.imageAlt}
+                  width="600"
+                  height="600"
+                  key={slide.id}
+                />
+              );
+            })}
+          </div>
           <div
             className="hero-banner__indicators"
             aria-label="Featured release slides"
           >
-            {promotions.map((promotion, index) => (
+            {slides.map((slide, index) => (
               <button
                 className="hero-banner__indicator"
                 type="button"
-                aria-label={`Show ${promotion.title}`}
-                aria-current={index === 0 ? 'true' : undefined}
-                key={promotion.id}
+                aria-label={`Show ${slide.imageAlt}`}
+                aria-current={index === activeSlideIndex ? 'true' : undefined}
+                key={slide.id}
+                onClick={() => showSlide(index)}
               />
             ))}
           </div>
-        ) : null}
+        </div>
       </div>
     </section>
   );
