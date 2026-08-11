@@ -1,5 +1,6 @@
 import { Route, Routes } from 'react-router';
 
+import { AlbumPage } from './pages/AlbumPage';
 import { HomePage } from './pages/HomePage/HomePage';
 import { SearchResults } from './pages/SearchResults';
 import './App.scss';
@@ -19,6 +20,7 @@ function App() {
     <Routes>
       <Route path="/" element={<HomePage />} />
       <Route path="/search" element={<SearchResults />} />
+      <Route path="/albums/:slug" element={<AlbumPage />} />
       <Route path="*" element={<NotFoundPage />} />
     </Routes>
   );

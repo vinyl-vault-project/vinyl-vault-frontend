@@ -38,6 +38,7 @@ function FilterIcon() {
 }
 
 interface HeaderProps {
+  cartItemCount?: number;
   filterPanelId?: string;
   isFilterOpen?: boolean;
   onFilterToggle?: () => void;
@@ -45,6 +46,7 @@ interface HeaderProps {
 }
 
 export function Header({
+  cartItemCount,
   filterPanelId,
   isFilterOpen = false,
   onFilterToggle,
@@ -119,8 +121,19 @@ export function Header({
           >
             <img src={accountIcon} width="22" height="27" alt="" />
           </Link>
-          <Link className="icon-button" to={routes.cart} aria-label="Cart">
+          <Link
+            className={`icon-button${cartItemCount ? ' icon-button--badged' : ''}`}
+            to={routes.cart}
+            aria-label={
+              cartItemCount ? `Cart with ${cartItemCount} item` : 'Cart'
+            }
+          >
             <img src={basketIcon} width="25" height="26" alt="" />
+            {cartItemCount ? (
+              <span className="icon-button__badge" aria-hidden="true">
+                {cartItemCount}
+              </span>
+            ) : null}
           </Link>
         </nav>
       </div>

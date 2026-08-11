@@ -67,7 +67,7 @@ export const albums: AlbumSummary[] = [
   },
   {
     id: 'drukqs',
-    slug: 'drukqs',
+    slug: 'aphex-twin-drukqs',
     artistSlug: 'aphex-twin',
     artist: 'Aphex Twin',
     title: 'Drukqs',
