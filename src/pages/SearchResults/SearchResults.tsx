@@ -53,9 +53,18 @@ function filterAlbumsByQuery(albums: AlbumSummary[], query: string) {
   });
 }
 
+function filterAlbumsByArtist(albums: AlbumSummary[], artistSlug: string) {
+  if (!artistSlug) {
+    return albums;
+  }
+
+  return albums.filter((album) => album.artistSlug === artistSlug);
+}
+
 export function SearchResults() {
   const [searchParams] = useSearchParams();
   const query = searchParams.get('q') ?? '';
+  const artistSlug = searchParams.get('artist') ?? '';
   const [status, setStatus] = useState<SearchResultsStatus>({
     state: 'loading',
   });
@@ -132,7 +141,7 @@ export function SearchResults() {
   const filteredAlbums =
     status.state === 'ready'
       ? filterAlbumsByCatalogState(
-          filterAlbumsByQuery(status.albums, query),
+          filterAlbumsByArtist(filterAlbumsByQuery(status.albums, query), artistSlug),
           appliedFilters,
         )
       : [];

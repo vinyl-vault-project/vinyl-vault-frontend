@@ -113,6 +113,7 @@
 }
 
 .icon-button {
+  position: relative;
   justify-content: center;
   width: 48px;
   height: 48px;
@@ -141,6 +142,29 @@
 
   &--muted {
     color: #606060;
+  }
+
+  &--badged {
+    color: var(--color-button-text);
+    background: var(--color-button-background);
+
+    img {
+      filter: invert(1);
+    }
+
+    &:hover,
+    &:focus-visible {
+      filter: brightness(1.04);
+    }
+  }
+
+  &__badge {
+    position: absolute;
+    right: 7px;
+    bottom: 8px;
+    font-size: 17px;
+    line-height: 1;
+    font-weight: 800;
   }
 
   img {
