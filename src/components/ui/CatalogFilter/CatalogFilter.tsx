@@ -8,10 +8,10 @@ import {
   useState,
 } from 'react';
 
-import catalogFilterChevron from '../../../../assets/vinyl-vault/catalog-filter-chevron.svg';
-import { Button } from '../../../../components/ui/Button/Button';
-import { Checkbox } from '../../../../components/ui/Checkbox/Checkbox';
-import { Select } from '../../../../components/ui/Select/Select';
+import catalogFilterChevron from '../../../assets/vinyl-vault/catalog-filter-chevron.svg';
+import { Button } from '../Button/Button';
+import { Checkbox } from '../Checkbox/Checkbox';
+import { Select } from '../Select/Select';
 import {
   type CatalogFilters,
   type FilterOption,
@@ -20,7 +20,7 @@ import {
   genreOptions,
   styleOptions,
   yearOptions,
-} from '../../../../features/home/home.filters';
+} from '../../../features/home/home.filters';
 import './CatalogFilter.scss';
 
 interface CatalogFilterProps {

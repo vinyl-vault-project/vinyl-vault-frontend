@@ -1,45 +1,19 @@
+import aphexArtist from '../../assets/vinyl-vault/aphex-twin-artist.png';
+import aphexTwinLogo from '../../assets/vinyl-vault/aphex-twin-logo-white.png';
 import autechreArtist from '../../assets/vinyl-vault/autechre-artist-full.jpg';
 import boardsArtistModal from '../../assets/vinyl-vault/boards-of-canada-modal-artist.png';
 import boardsArtist from '../../assets/vinyl-vault/boards-of-canada-artist.png';
-import comeToDaddyCover from '../../assets/vinyl-vault/come-to-daddy-cover.png';
 import djShadowArtist from '../../assets/vinyl-vault/dj-shadow-artist.png';
 import drukqsOfficialWarpCdBooklet from '../../assets/vinyl-vault/drukqs-official-warp-cd-booklet.png';
 import drukqsAnniversaryVinylDisplay from '../../assets/vinyl-vault/drukqs-anniversary-vinyl-display.png';
-import drukqsCover from '../../assets/vinyl-vault/drukqs-cover.png';
-import geogaddiCover from '../../assets/vinyl-vault/geogaddi-cover.png';
 import heroBackground from '../../assets/vinyl-vault/hero-background.png';
-import musicHasTheRightCover from '../../assets/vinyl-vault/music-has-the-right-cover.png';
-import placeholderCover from '../../assets/vinyl-vault/album-placeholder.svg';
-import selectedAmbientCover from '../../assets/vinyl-vault/selected-ambient-cover.png';
-import tomorrowsHarvestCover from '../../assets/vinyl-vault/tomorrows-harvest-cover.png';
-import aphexArtist from '../../assets/vinyl-vault/aphex-twin-artist.png';
-import aphexTwinLogo from '../../assets/vinyl-vault/aphex-twin-logo-white.png';
 import warpRecordsLogo from '../../assets/vinyl-vault/warp-records-logo-white.png';
+import {
+  getAlbumsByIds,
+  homeAlbumOfTheWeekIds,
+  homeRecommendedAlbumIds,
+} from '../../data/albums';
 import type { ArtistDetails, HomePageData } from './home.types';
-
-const aphexTwinFilterMetadata = {
-  countries: ['uk', 'us'],
-  genres: ['electronic', 'hip-hop'],
-  styles: ['idm', 'ambient', 'trip-hop'],
-};
-
-const boardsOfCanadaFilterMetadata = {
-  countries: ['uk', 'us'],
-  genres: ['electronic', 'hip-hop'],
-  styles: ['ambient', 'downtempo', 'trip-hop'],
-};
-
-const autechreFilterMetadata = {
-  countries: ['uk', 'us'],
-  genres: ['electronic', 'hip-hop'],
-  styles: ['idm', 'techno', 'trip-hop'],
-};
-
-const djShadowFilterMetadata = {
-  countries: ['us'],
-  genres: ['electronic', 'hip-hop'],
-  styles: ['instrumental-hip-hop', 'downtempo', 'trip-hop'],
-};
 
 export const homePageMockData: HomePageData = {
   heroPromotions: [
@@ -78,86 +52,7 @@ export const homePageMockData: HomePageData = {
       ],
     },
   ],
-  albumsOfTheWeek: [
-    {
-      id: 'drukqs',
-      slug: 'drukqs',
-      artistSlug: 'aphex-twin',
-      artist: 'Aphex Twin',
-      title: 'Drukqs',
-      coverSrc: drukqsCover,
-      coverAlt: 'Aphex Twin Drukqs album cover',
-      filterMetadata: {
-        ...aphexTwinFilterMetadata,
-        releaseYear: 2001,
-      },
-    },
-    {
-      id: 'come-to-daddy',
-      slug: 'come-to-daddy',
-      artistSlug: 'aphex-twin',
-      artist: 'Aphex Twin',
-      title: 'Come to Daddy',
-      coverSrc: comeToDaddyCover,
-      coverAlt: 'Aphex Twin Come to Daddy album cover',
-      filterMetadata: {
-        ...aphexTwinFilterMetadata,
-        releaseYear: 1997,
-      },
-    },
-    {
-      id: 'selected-ambient-works-85-92',
-      slug: 'selected-ambient-works-85-92',
-      artistSlug: 'aphex-twin',
-      artist: 'Aphex Twin',
-      title: 'Selected Ambient Works 85-92',
-      coverSrc: selectedAmbientCover,
-      coverAlt: 'Aphex Twin Selected Ambient Works 85-92 album cover',
-      filterMetadata: {
-        ...aphexTwinFilterMetadata,
-        releaseYear: 1992,
-      },
-    },
-    {
-      id: 'tomorrows-harvest',
-      slug: 'tomorrows-harvest',
-      artistSlug: 'boards-of-canada',
-      artist: 'Boards of Canada',
-      title: "Tomorrow's Harvest",
-      coverSrc: tomorrowsHarvestCover,
-      coverAlt: "Boards of Canada Tomorrow's Harvest album cover",
-      filterMetadata: {
-        ...boardsOfCanadaFilterMetadata,
-        releaseYear: 2013,
-      },
-    },
-    {
-      id: 'music-has-the-right-to-children',
-      slug: 'music-has-the-right-to-children',
-      artistSlug: 'boards-of-canada',
-      artist: 'Boards of Canada',
-      title: 'Music Has the Right to Children',
-      coverSrc: musicHasTheRightCover,
-      coverAlt: 'Boards of Canada Music Has the Right to Children album cover',
-      filterMetadata: {
-        ...boardsOfCanadaFilterMetadata,
-        releaseYear: 1998,
-      },
-    },
-    {
-      id: 'geogaddi',
-      slug: 'geogaddi',
-      artistSlug: 'boards-of-canada',
-      artist: 'Boards of Canada',
-      title: 'Geogaddi',
-      coverSrc: geogaddiCover,
-      coverAlt: 'Boards of Canada Geogaddi album cover',
-      filterMetadata: {
-        ...boardsOfCanadaFilterMetadata,
-        releaseYear: 2002,
-      },
-    },
-  ],
+  albumsOfTheWeek: getAlbumsByIds(homeAlbumOfTheWeekIds),
   featuredArtists: [
     {
       id: 'aphex-twin',
@@ -196,92 +91,7 @@ export const homePageMockData: HomePageData = {
       hasDetails: true,
     },
   ],
-  recommendedAlbums: [
-    {
-      id: 'incunabula',
-      slug: 'incunabula',
-      artistSlug: 'autechre',
-      artist: 'Autechre',
-      title: 'Incunabula',
-      coverSrc: placeholderCover,
-      coverAlt: 'Placeholder cover for Autechre Incunabula',
-      isPlaceholder: true,
-      filterMetadata: {
-        ...autechreFilterMetadata,
-        releaseYear: 1993,
-      },
-    },
-    {
-      id: 'tri-repetae',
-      slug: 'tri-repetae',
-      artistSlug: 'autechre',
-      artist: 'Autechre',
-      title: 'Tri Repetae',
-      coverSrc: placeholderCover,
-      coverAlt: 'Placeholder cover for Autechre Tri Repetae',
-      isPlaceholder: true,
-      filterMetadata: {
-        ...autechreFilterMetadata,
-        releaseYear: 1995,
-      },
-    },
-    {
-      id: 'amber',
-      slug: 'amber',
-      artistSlug: 'autechre',
-      artist: 'Autechre',
-      title: 'Amber',
-      coverSrc: placeholderCover,
-      coverAlt: 'Placeholder cover for Autechre Amber',
-      isPlaceholder: true,
-      filterMetadata: {
-        ...autechreFilterMetadata,
-        releaseYear: 1994,
-      },
-    },
-    {
-      id: 'endtroducing',
-      slug: 'endtroducing',
-      artistSlug: 'dj-shadow',
-      artist: 'DJ Shadow',
-      title: 'Endtroducing.....',
-      coverSrc: placeholderCover,
-      coverAlt: 'Placeholder cover for DJ Shadow Endtroducing',
-      isPlaceholder: true,
-      filterMetadata: {
-        ...djShadowFilterMetadata,
-        releaseYear: 1996,
-      },
-    },
-    {
-      id: 'the-private-press',
-      slug: 'the-private-press',
-      artistSlug: 'dj-shadow',
-      artist: 'DJ Shadow',
-      title: 'The Private Press',
-      coverSrc: placeholderCover,
-      coverAlt: 'Placeholder cover for DJ Shadow The Private Press',
-      isPlaceholder: true,
-      filterMetadata: {
-        ...djShadowFilterMetadata,
-        releaseYear: 2002,
-      },
-    },
-    {
-      id: 'the-less-you-know-the-better',
-      slug: 'the-less-you-know-the-better',
-      artistSlug: 'dj-shadow',
-      artist: 'DJ Shadow',
-      title: 'The Less You Know, the Better',
-      coverSrc: placeholderCover,
-      coverAlt: 'Placeholder cover for DJ Shadow The Less You Know, the Better',
-      isPlaceholder: true,
-      filterMetadata: {
-        ...djShadowFilterMetadata,
-        releaseYear: 2011,
-      },
-    },
-  ],
+  recommendedAlbums: getAlbumsByIds(homeRecommendedAlbumIds),
 };
 
 export const artistDetailsMockData: ArtistDetails[] = [
@@ -293,47 +103,13 @@ export const artistDetailsMockData: ArtistDetails[] = [
     imageAlt: 'Portrait of Aphex Twin',
     biography:
       'Aphex Twin is the main recording alias of Richard D. James, a British electronic musician known for reshaping ambient techno, acid, IDM and experimental electronic music. His catalog moves between delicate melodic sketches, distorted drum programming and disorienting sound design, making records like Selected Ambient Works 85-92, Come to Daddy and Drukqs enduring reference points for electronic music collectors.',
-    albums: [
-      {
-        id: 'drukqs',
-        slug: 'drukqs',
-        artistSlug: 'aphex-twin',
-        artist: 'Aphex Twin',
-        title: 'Drukqs',
-        coverSrc: drukqsCover,
-        coverAlt: 'Aphex Twin Drukqs album cover',
-        filterMetadata: {
-          ...aphexTwinFilterMetadata,
-          releaseYear: 2001,
-        },
-      },
-      {
-        id: 'come-to-daddy',
-        slug: 'come-to-daddy',
-        artistSlug: 'aphex-twin',
-        artist: 'Aphex Twin',
-        title: 'Come to Daddy',
-        coverSrc: comeToDaddyCover,
-        coverAlt: 'Aphex Twin Come to Daddy album cover',
-        filterMetadata: {
-          ...aphexTwinFilterMetadata,
-          releaseYear: 1997,
-        },
-      },
-      {
-        id: 'selected-ambient-works-85-92',
-        slug: 'selected-ambient-works-85-92',
-        artistSlug: 'aphex-twin',
-        artist: 'Aphex Twin',
-        title: 'Selected Ambient Works 85-92',
-        coverSrc: selectedAmbientCover,
-        coverAlt: 'Aphex Twin Selected Ambient Works 85-92 album cover',
-        filterMetadata: {
-          ...aphexTwinFilterMetadata,
-          releaseYear: 1992,
-        },
-      },
-    ],
+    albums: getAlbumsByIds([
+      'drukqs',
+      'come-to-daddy',
+      'selected-ambient-works-85-92',
+      'selected-ambient-works-volume-2',
+      'syro',
+    ]),
   },
   {
     id: 'boards-of-canada',
@@ -343,77 +119,12 @@ export const artistDetailsMockData: ArtistDetails[] = [
     imageAlt: 'Boards of Canada electronic music duo',
     biography:
       "Boards of Canada are a Scottish electronic duo formed by brothers Michael Sandison and Marcus Eoin. Their name was inspired by the National Film Board of Canada, whose old educational films helped shape the faded, dreamlike character of their music. Blending analogue synthesizers, worn tape textures, hip-hop-influenced rhythms and fragmented voices, the duo creates music that feels nostalgic, beautiful and quietly unsettling. Their landmark 1998 album Music Has the Right to Children established their unmistakable sound, followed by Geogaddi, The Campfire Headphase and the darker, cinematic Tomorrow's Harvest. After thirteen years without a studio album, Boards of Canada returned in 2026 with Inferno.",
-    albums: [
-      {
-        id: 'inferno',
-        slug: 'inferno',
-        artistSlug: 'boards-of-canada',
-        artist: 'Boards of Canada',
-        title: 'Inferno',
-        coverSrc: placeholderCover,
-        coverAlt: 'Placeholder cover for Boards of Canada Inferno',
-        isPlaceholder: true,
-        filterMetadata: {
-          ...boardsOfCanadaFilterMetadata,
-          releaseYear: 2026,
-        },
-      },
-      {
-        id: 'tomorrows-harvest',
-        slug: 'tomorrows-harvest',
-        artistSlug: 'boards-of-canada',
-        artist: 'Boards of Canada',
-        title: "Tomorrow's Harvest",
-        coverSrc: tomorrowsHarvestCover,
-        coverAlt: "Boards of Canada Tomorrow's Harvest album cover",
-        filterMetadata: {
-          ...boardsOfCanadaFilterMetadata,
-          releaseYear: 2013,
-        },
-      },
-      {
-        id: 'geogaddi',
-        slug: 'geogaddi',
-        artistSlug: 'boards-of-canada',
-        artist: 'Boards of Canada',
-        title: 'Geogaddi',
-        coverSrc: geogaddiCover,
-        coverAlt: 'Boards of Canada Geogaddi album cover',
-        filterMetadata: {
-          ...boardsOfCanadaFilterMetadata,
-          releaseYear: 2002,
-        },
-      },
-      {
-        id: 'the-campfire-headphase',
-        slug: 'the-campfire-headphase',
-        artistSlug: 'boards-of-canada',
-        artist: 'Boards of Canada',
-        title: 'The Campfire Headphase',
-        coverSrc: placeholderCover,
-        coverAlt:
-          'Placeholder cover for Boards of Canada The Campfire Headphase',
-        isPlaceholder: true,
-        filterMetadata: {
-          ...boardsOfCanadaFilterMetadata,
-          releaseYear: 2005,
-        },
-      },
-      {
-        id: 'music-has-the-right-to-children',
-        slug: 'music-has-the-right-to-children',
-        artistSlug: 'boards-of-canada',
-        artist: 'Boards of Canada',
-        title: 'Music Has the Right to Children',
-        coverSrc: musicHasTheRightCover,
-        coverAlt:
-          'Boards of Canada Music Has the Right to Children album cover',
-        filterMetadata: {
-          ...boardsOfCanadaFilterMetadata,
-          releaseYear: 1998,
-        },
-      },
-    ],
+    albums: getAlbumsByIds([
+      'inferno',
+      'tomorrows-harvest',
+      'geogaddi',
+      'music-has-the-right-to-children',
+    ]),
   },
   {
     id: 'autechre',
@@ -423,50 +134,7 @@ export const artistDetailsMockData: ArtistDetails[] = [
     imageAlt: 'Autechre artist portrait',
     biography:
       'Autechre are the Manchester electronic duo Rob Brown and Sean Booth. Their work is associated with Warp Records and a precise, exploratory approach to rhythm, texture and synthesis. Early albums such as Incunabula, Amber and Tri Repetae helped define a colder, more architectural side of 1990s electronic music while still keeping a strong sense of movement and atmosphere.',
-    albums: [
-      {
-        id: 'incunabula',
-        slug: 'incunabula',
-        artistSlug: 'autechre',
-        artist: 'Autechre',
-        title: 'Incunabula',
-        coverSrc: placeholderCover,
-        coverAlt: 'Placeholder cover for Autechre Incunabula',
-        isPlaceholder: true,
-        filterMetadata: {
-          ...autechreFilterMetadata,
-          releaseYear: 1993,
-        },
-      },
-      {
-        id: 'tri-repetae',
-        slug: 'tri-repetae',
-        artistSlug: 'autechre',
-        artist: 'Autechre',
-        title: 'Tri Repetae',
-        coverSrc: placeholderCover,
-        coverAlt: 'Placeholder cover for Autechre Tri Repetae',
-        isPlaceholder: true,
-        filterMetadata: {
-          ...autechreFilterMetadata,
-          releaseYear: 1995,
-        },
-      },
-      {
-        id: 'amber',
-        slug: 'amber',
-        artistSlug: 'autechre',
-        artist: 'Autechre',
-        title: 'Amber',
-        coverSrc: placeholderCover,
-        coverAlt: 'Placeholder cover for Autechre Amber',
-        isPlaceholder: true,
-        filterMetadata: {
-          ...autechreFilterMetadata,
-          releaseYear: 1994,
-        },
-      },
-    ],
+    albums: getAlbumsByIds(['incunabula', 'tri-repetae', 'amber']),
   },
   {
     id: 'dj-shadow',
@@ -476,50 +144,10 @@ export const artistDetailsMockData: ArtistDetails[] = [
     imageAlt: 'DJ Shadow artist photo',
     biography:
       'DJ Shadow is an American producer and DJ whose sample-based records connect hip-hop, turntablism, funk, psych and cinematic electronic music. Endtroducing..... became a landmark for dense vinyl sampling and atmospheric beat construction, followed by later records that continued to push between crate-digging culture and widescreen production.',
-    albums: [
-      {
-        id: 'endtroducing',
-        slug: 'endtroducing',
-        artistSlug: 'dj-shadow',
-        artist: 'DJ Shadow',
-        title: 'Endtroducing.....',
-        coverSrc: placeholderCover,
-        coverAlt: 'Placeholder cover for DJ Shadow Endtroducing',
-        isPlaceholder: true,
-        filterMetadata: {
-          ...djShadowFilterMetadata,
-          releaseYear: 1996,
-        },
-      },
-      {
-        id: 'the-private-press',
-        slug: 'the-private-press',
-        artistSlug: 'dj-shadow',
-        artist: 'DJ Shadow',
-        title: 'The Private Press',
-        coverSrc: placeholderCover,
-        coverAlt: 'Placeholder cover for DJ Shadow The Private Press',
-        isPlaceholder: true,
-        filterMetadata: {
-          ...djShadowFilterMetadata,
-          releaseYear: 2002,
-        },
-      },
-      {
-        id: 'the-less-you-know-the-better',
-        slug: 'the-less-you-know-the-better',
-        artistSlug: 'dj-shadow',
-        artist: 'DJ Shadow',
-        title: 'The Less You Know, the Better',
-        coverSrc: placeholderCover,
-        coverAlt:
-          'Placeholder cover for DJ Shadow The Less You Know, the Better',
-        isPlaceholder: true,
-        filterMetadata: {
-          ...djShadowFilterMetadata,
-          releaseYear: 2011,
-        },
-      },
-    ],
+    albums: getAlbumsByIds([
+      'endtroducing',
+      'the-private-press',
+      'the-less-you-know-the-better',
+    ]),
   },
 ];

@@ -4,6 +4,7 @@ import { Link } from 'react-router';
 
 import { routes } from '../../../../app/routes';
 import type { ArtistDetails } from '../../home.types';
+import './ArtistDetailsModal.scss';
 
 interface ArtistDetailsModalProps {
   artist: ArtistDetails;

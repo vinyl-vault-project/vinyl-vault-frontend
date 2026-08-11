@@ -1,6 +1,7 @@
 import { Route, Routes } from 'react-router';
 
 import { HomePage } from './pages/HomePage/HomePage';
+import { SearchResults } from './pages/SearchResults';
 import './App.scss';
 
 function NotFoundPage() {
@@ -17,6 +18,7 @@ function App() {
   return (
     <Routes>
       <Route path="/" element={<HomePage />} />
+      <Route path="/search" element={<SearchResults />} />
       <Route path="*" element={<NotFoundPage />} />
     </Routes>
   );
