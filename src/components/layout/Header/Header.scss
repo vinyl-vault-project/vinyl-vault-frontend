@@ -103,15 +103,12 @@
 
   &__filter-icon {
     width: 32px;
-    max-width: 32px;
-    height: auto;
-    opacity: 0.66;
-    transition: transform var(--transition-hover);
+    height: 32px;
+    transition: color var(--transition-fast);
   }
 
-  .icon-button[aria-expanded='true'] &__filter-icon {
-    opacity: 1;
-    transform: rotate(180deg);
+  .icon-button[aria-expanded='true'] {
+    color: var(--color-text-primary);
   }
 }
 
@@ -143,7 +140,7 @@
   }
 
   &--muted {
-    color: #8a8a8a;
+    color: #606060;
   }
 
   img {
