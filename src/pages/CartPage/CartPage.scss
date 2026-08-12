@@ -480,43 +480,75 @@
 @media (max-width: 560px) {
   .cart-page {
     background:
-      linear-gradient(180deg, #000 0%, rgba(0, 0, 0, 0.78) 12%, rgba(0, 0, 0, 0.36) 54%, #000 100%),
-      var(--cart-page-bg) center top / cover no-repeat,
+      linear-gradient(180deg, #000 0%, rgba(0, 0, 0, 0.72) 22%, #000 100%),
+      var(--cart-page-bg) left top / cover no-repeat,
       #000;
 
+    &__content {
+      width: min(100% - 48px, 326px);
+      padding-top: 112px;
+      padding-bottom: 0;
+    }
+
     h1 {
-      font-size: 40px;
+      margin-bottom: 31px;
+      font-size: 25px;
+      text-transform: none;
+    }
+
+    &__items {
+      gap: 0;
+      max-width: none;
     }
 
     &__item {
-      grid-template-columns: 120px minmax(0, 1fr);
-      gap: 18px;
+      grid-template-columns: 1fr;
+      gap: 23px;
+      justify-items: center;
+      text-align: center;
     }
 
     &__cover-link,
     &__cover-link img {
-      width: 120px;
+      width: min(100%, 240px);
     }
 
     &__item-copy {
-      font-size: 25px;
+      gap: 12px;
+      max-width: 260px;
+      font-size: 30px;
+      line-height: 1.28;
     }
 
     &__item-commerce {
-      grid-column: 1 / -1;
-      justify-items: start;
-      margin-left: 138px;
+      grid-column: auto;
+      justify-items: center;
+      margin-left: 0;
+
+      p {
+        font-size: 22px;
+      }
     }
 
     &__summary {
-      margin-top: 44px;
-      padding-inline: 16px;
+      width: calc(100% + 48px);
+      margin: 86px -24px 0;
+      padding: 26px 24px 25px;
     }
 
     &__summary-total {
-      justify-items: start;
+      justify-items: end;
 
       strong {
+        font-size: 24px;
+        letter-spacing: 3px;
+      }
+    }
+
+    &__empty {
+      padding-block: 12px 44px;
+
+      p {
         font-size: 20px;
       }
     }

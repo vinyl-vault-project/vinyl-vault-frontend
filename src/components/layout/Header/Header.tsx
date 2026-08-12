@@ -45,6 +45,7 @@ interface HeaderProps {
   isFilterOpen?: boolean;
   onFilterToggle?: () => void;
   searchQuery?: string;
+  showSearchOnMobile?: boolean;
 }
 
 export function Header({
@@ -53,6 +54,7 @@ export function Header({
   isFilterOpen = false,
   onFilterToggle,
   searchQuery = '',
+  showSearchOnMobile = true,
 }: HeaderProps) {
   const [query, setQuery] = useState(searchQuery);
   const cartItems = useCartItems();
@@ -71,7 +73,30 @@ export function Header({
 
   return (
     <header className="site-header">
-      <div className="app-container site-header__inner">
+      <div
+        className={`app-container site-header__inner${
+          showSearchOnMobile ? '' : ' site-header__inner--mobile-search-hidden'
+        }`}
+      >
+        {auth.isAuthenticated ? (
+          <Link
+            className="site-header__menu-toggle"
+            to={routes.accountLibrary}
+            aria-label="Account and library"
+          >
+            <img src={accountIcon} width="22" height="27" alt="" />
+          </Link>
+        ) : (
+          <button
+            className="site-header__menu-toggle"
+            type="button"
+            aria-label="Log in to account"
+            onClick={() => openAuthModal({ context: 'account', mode: 'login' })}
+          >
+            <img src={accountIcon} width="22" height="27" alt="" />
+          </button>
+        )}
+
         <Link
           className="site-header__logo-link"
           to={routes.home}
@@ -103,6 +128,18 @@ export function Header({
             value={query}
             onChange={(event) => setQuery(event.target.value)}
           />
+          {onFilterToggle ? (
+            <button
+              className="site-header__mobile-filter-button"
+              type="button"
+              aria-controls={filterPanelId}
+              aria-expanded={isFilterOpen}
+              aria-label={isFilterOpen ? 'Close filters' : 'Open filters'}
+              onClick={onFilterToggle}
+            >
+              <FilterIcon />
+            </button>
+          ) : null}
         </form>
 
         <nav className="site-header__nav" aria-label="Primary">
@@ -116,7 +153,11 @@ export function Header({
           >
             <FilterIcon />
           </button>
-          <Link className="icon-button" to={routes.home} aria-label="Home">
+          <Link
+            className="icon-button"
+            to={routes.home}
+            aria-label="Home"
+          >
             <img src={homeIcon} width="27" height="27" alt="" />
           </Link>
           {auth.isAuthenticated ? (

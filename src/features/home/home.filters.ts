@@ -44,10 +44,10 @@ export const styleOptions: FilterOption[] = [
 ];
 
 export const defaultCatalogFilters: CatalogFilters = {
-  countries: ['us'],
+  countries: [],
   fromYear: 1989,
-  genres: ['electronic', 'hip-hop'],
-  styles: ['trip-hop'],
+  genres: [],
+  styles: [],
   toYear: 2026,
 };
 

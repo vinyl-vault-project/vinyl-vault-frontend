@@ -181,8 +181,70 @@
 
 @media (max-width: 560px) {
   .catalog-filter {
+    position: fixed;
+    inset: 0;
+    min-height: 100svh;
+    padding-top: 136px;
+    overflow: hidden;
+    background: rgba(0, 0, 0, 0.38);
+    overscroll-behavior: contain;
+    touch-action: none;
+
+    &__panel {
+      width: min(100% - 48px, 296px);
+      max-height: calc(100svh - 136px);
+      min-height: 0;
+      margin: 0 auto 32px;
+      padding: 18px 0 22px;
+      overflow-y: auto;
+      background: var(--color-surface);
+      box-shadow: 0 22px 54px rgba(0, 0, 0, 0.56);
+      overscroll-behavior: contain;
+      touch-action: pan-y;
+    }
+
     &__inner {
       grid-template-columns: 1fr;
+      gap: 20px;
+      width: 100%;
+      padding-inline: 18px;
+    }
+
+    &__actions {
+      gap: 14px;
+      order: 5;
+
+      > .catalog-filter__years {
+        order: 1;
+      }
+
+      > .ui-button--compact {
+        order: 2;
+      }
+
+      > .ui-button--text {
+        order: 3;
+      }
+    }
+
+    &__years {
+      margin-top: 0;
+    }
+
+    &__legend,
+    &__group-heading {
+      margin-bottom: 10px;
+      font-size: 10px;
+      line-height: 1.2;
+      letter-spacing: 1.3px;
+    }
+
+    &__option-list {
+      gap: 9px;
+    }
+
+    &__year-divider {
+      height: 20px;
     }
   }
 }
