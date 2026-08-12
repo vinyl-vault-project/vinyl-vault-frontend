@@ -285,6 +285,7 @@ export function AlbumPage() {
             filterPanelId={catalogFilterId}
             isFilterOpen={isCatalogFilterOpen}
             onFilterToggle={handleCatalogFilterToggle}
+            showSearchOnMobile={false}
           />
           <CatalogFilter
             key={catalogFilterSession}
@@ -312,6 +313,7 @@ export function AlbumPage() {
             filterPanelId={catalogFilterId}
             isFilterOpen={isCatalogFilterOpen}
             onFilterToggle={handleCatalogFilterToggle}
+            showSearchOnMobile={false}
           />
           <CatalogFilter
             key={catalogFilterSession}
@@ -352,6 +354,7 @@ export function AlbumPage() {
           filterPanelId={catalogFilterId}
           isFilterOpen={isCatalogFilterOpen}
           onFilterToggle={handleCatalogFilterToggle}
+          showSearchOnMobile={false}
         />
         <CatalogFilter
           key={catalogFilterSession}

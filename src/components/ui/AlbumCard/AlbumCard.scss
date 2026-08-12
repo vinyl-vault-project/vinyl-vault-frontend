@@ -133,17 +133,27 @@
 
 @media (max-width: 560px) {
   .album-card {
+    width: 100%;
+
     &__cover-link,
     &__cover-frame {
       width: 100%;
     }
 
+    &__artist-button {
+      margin-top: 12px;
+    }
+
     &__artist-name {
       font-size: 20px;
+      line-height: 1.12;
     }
 
     &__title-link {
-      font-size: 18px;
+      min-height: 0;
+      margin-top: 6px;
+      font-size: 17px;
+      line-height: 1.2;
     }
   }
 }

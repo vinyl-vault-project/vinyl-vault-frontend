@@ -695,29 +695,108 @@
 @media (max-width: 560px) {
   .album-page {
     &__hero {
-      padding-top: 190px;
+      padding-top: 88px;
+      padding-bottom: 44px;
+      background:
+        linear-gradient(180deg, rgba(70, 22, 0, 0.58) 0%, #000 74%),
+        var(--album-hero-bg) center top / cover no-repeat;
+    }
+
+    &__hero-inner {
+      gap: 28px;
+      width: min(100% - 36px, 340px);
+    }
+
+    &__summary {
+      display: grid;
+      justify-items: center;
+      max-width: none;
+    }
+
+    &__cover {
+      width: min(100%, 216px);
+    }
+
+    &__summary-copy {
+      max-width: 220px;
+      margin-top: 17px;
+      text-align: center;
     }
 
     &__artist-link,
     &__album-title,
     &__year {
-      font-size: 25px;
+      display: block;
+      font-size: 27px;
+      line-height: 1.25;
+    }
+
+    &__artist-link {
+      font-weight: 800;
     }
 
     &__save-button {
-      right: 8px;
-      bottom: 0;
+      right: 0;
+      bottom: 2px;
+      width: 42px;
+      height: 48px;
+
+      img {
+        width: 36px;
+        height: 36px;
+      }
+    }
+
+    &__tracklist {
+      width: 100%;
+      height: 384px;
+      background: transparent;
+    }
+
+    &__tracks {
+      max-height: 352px;
     }
 
     &__tracklist-header,
     &__track {
-      grid-template-columns: 42px minmax(0, 1fr) 66px 18px;
-      padding-inline: 10px;
+      grid-template-columns: 42px minmax(0, 1fr) 58px 16px;
+      padding-inline: 0;
     }
 
     &__track span {
       font-size: 12px;
-      letter-spacing: 1px;
+      letter-spacing: 1.6px;
+    }
+
+    &__track {
+      min-height: 36px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.24);
+    }
+
+    &__description-section {
+      margin-top: 0;
+      padding: 58px 0 42px;
+      background:
+        linear-gradient(180deg, #000 0%, rgba(0, 0, 0, 0.38) 52%, #000 100%),
+        var(--album-description-bg) center / cover no-repeat;
+    }
+
+    &__description-inner {
+      width: min(100% - 36px, 340px);
+      gap: 42px;
+    }
+
+    &__details-image {
+      max-width: 290px;
+      margin-inline: auto;
+    }
+
+    &__description-copy {
+      font-size: 12px;
+      line-height: 1.55;
+      font-weight: 700;
+      letter-spacing: 4px;
+      text-transform: uppercase;
     }
 
     &__metadata {
@@ -725,12 +804,14 @@
     }
 
     &__store-section {
-      padding-bottom: 34px;
+      padding: 26px 0 228px;
+      background: #000;
     }
 
     &__recommendations-grid {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 28px 14px;
+      grid-template-columns: repeat(2, minmax(0, 145px));
+      gap: 24px 16px;
+      justify-content: center;
     }
   }
 
@@ -756,22 +837,34 @@
   }
 
   .album-purchase-bar {
-    bottom: 87px;
+    bottom: 73px;
 
     &__inner {
       width: 100%;
-      padding: 15px 18px;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 14px 18px;
+      padding: 15px 18px 16px;
       border-radius: 0;
     }
 
     &__meta {
+      grid-column: 2;
+      grid-row: 1;
       font-size: 17px;
       line-height: 22px;
+    }
+
+    &__button {
+      grid-column: 1 / -1;
+      min-height: 41px;
+      font-size: 13px;
+      font-weight: 800;
+      letter-spacing: 1.8px;
     }
   }
 
   .album-page ~ .site-footer {
-    padding-bottom: 192px;
+    padding-bottom: 194px;
 
     .site-footer__inner {
       justify-content: flex-start;

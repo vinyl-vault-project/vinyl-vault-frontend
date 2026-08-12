@@ -509,14 +509,162 @@
 
 /* Mobile layout - compact Home sections */
 @media (max-width: 560px) {
-  .hero-banner__description {
-    font-size: 17px;
+  .home-page {
+    background: #000;
   }
 
-  .album-collection__grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+  .section-title {
+    max-width: 190px;
+    margin-inline: auto;
+    font-size: 22px;
+    line-height: 1.05;
   }
 
+  .hero-banner {
+    min-height: 560px;
+    padding-top: 121px;
+    padding-bottom: 24px;
+
+    &__background {
+      height: 560px;
+      object-position: center top;
+    }
+
+    &::before {
+      height: 118px;
+    }
+
+    &::after {
+      height: 176px;
+    }
+
+    &__inner {
+      gap: 0;
+      width: min(100% - 32px, 306px);
+      margin-inline: auto;
+    }
+
+    &__copy {
+      display: flex;
+      flex-direction: column;
+      order: 2;
+      align-items: flex-start;
+      margin-top: 28px;
+    }
+
+    &__marks {
+      gap: 14px;
+      min-height: 33px;
+      margin-bottom: 14px;
+      order: 1;
+    }
+
+    &__mark {
+      height: 33px;
+
+      &:nth-child(2) {
+        height: 25px;
+      }
+    }
+
+    &__title {
+      order: 2;
+      max-width: 300px;
+      margin-bottom: 8px;
+      font-size: 17px;
+      line-height: 1.22;
+    }
+
+    &__description {
+      order: 3;
+      max-width: 300px;
+      margin-bottom: 19px;
+      font-size: 13px;
+      line-height: 1.28;
+    }
+
+    &__cta {
+      order: 4;
+      width: auto;
+      min-width: 157px;
+      min-height: 42px;
+      padding-inline: 17px 14px;
+      font-size: 15px;
+
+      span {
+        width: 12px;
+        height: 12px;
+        border-width: 2px;
+      }
+    }
+
+    &__visual {
+      justify-self: center;
+      order: 1;
+      width: 268px;
+      max-width: 268px;
+      aspect-ratio: 1 / 0.82;
+    }
+
+    &__slider-viewport {
+      top: 0;
+      left: 8px;
+      width: 238px;
+    }
+
+    &__indicators {
+      bottom: 2px;
+    }
+
+    &__indicator {
+      width: 58px;
+      height: 8px;
+    }
+  }
+
+  .album-collection {
+    padding-bottom: 24px;
+
+    &__grid {
+      grid-template-columns: 190px;
+      gap: 28px;
+      justify-content: center;
+    }
+  }
+
+  .featured-artists {
+    padding-bottom: 26px;
+
+    &__strip {
+      display: grid;
+      gap: 28px;
+      width: 190px;
+      height: auto;
+      margin-inline: auto;
+      overflow: visible;
+    }
+
+    &__card,
+    &__card--wide,
+    &__card--medium,
+    &__card--narrow,
+    &__card--edge {
+      width: 190px;
+      min-width: 0;
+      height: 190px;
+    }
+
+    &__name {
+      right: 10px;
+      bottom: 10px;
+      left: 10px;
+      font-size: 15px;
+    }
+
+    &__next {
+      display: none;
+    }
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

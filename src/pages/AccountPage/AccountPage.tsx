@@ -107,6 +107,7 @@ export function AccountPage() {
           isFilterOpen={isCatalogFilterOpen}
           onFilterToggle={handleCatalogFilterToggle}
           searchQuery="Electronic music"
+          showSearchOnMobile={false}
         />
         <CatalogFilter
           key={catalogFilterSession}
