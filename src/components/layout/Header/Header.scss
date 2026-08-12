@@ -145,10 +145,17 @@
   }
 
   &--badged {
+    gap: 3px;
+    width: 53px;
+    height: 45px;
     color: var(--color-button-text);
     background: var(--color-button-background);
 
     img {
+      width: 25px;
+      max-width: none;
+      height: 26px;
+      max-height: none;
       filter: invert(1);
     }
 
@@ -159,12 +166,11 @@
   }
 
   &__badge {
-    position: absolute;
-    right: 7px;
-    bottom: 8px;
-    font-size: 17px;
-    line-height: 1;
-    font-weight: 800;
+    position: static;
+    color: var(--color-button-text);
+    font-size: 32px;
+    line-height: 38px;
+    font-weight: 500;
   }
 
   img {
@@ -227,6 +233,21 @@
   .icon-button {
     width: 38px;
     height: 38px;
+
+    &--badged {
+      width: 48px;
+      height: 38px;
+
+      img {
+        width: 22px;
+        height: 23px;
+      }
+    }
+
+    &__badge {
+      font-size: 28px;
+      line-height: 32px;
+    }
   }
 }
 

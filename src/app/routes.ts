@@ -1,7 +1,8 @@
 export const routes = {
   home: '/',
   cart: '/cart',
-  accountLibrary: '/account/library',
+  account: '/account',
+  accountLibrary: '/account',
   contact: '/contact',
   about: '/about',
   instagram: 'https://www.instagram.com/',
