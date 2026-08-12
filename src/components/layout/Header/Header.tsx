@@ -6,6 +6,7 @@ import accountIcon from '../../../assets/vinyl-vault/account.svg';
 import basketIcon from '../../../assets/vinyl-vault/basket.svg';
 import homeIcon from '../../../assets/vinyl-vault/home.svg';
 import logo from '../../../assets/vinyl-vault/logo.svg';
+import { openAuthModal, useAuthState } from '../../../state/auth';
 import { getCartItemCount, useCartItems } from '../../../state/cart';
 import './Header.scss';
 
@@ -55,6 +56,7 @@ export function Header({
 }: HeaderProps) {
   const [query, setQuery] = useState(searchQuery);
   const cartItems = useCartItems();
+  const auth = useAuthState();
   const resolvedCartItemCount = cartItemCount ?? getCartItemCount(cartItems);
   const navigate = useNavigate();
 
@@ -117,13 +119,24 @@ export function Header({
           <Link className="icon-button" to={routes.home} aria-label="Home">
             <img src={homeIcon} width="27" height="27" alt="" />
           </Link>
-          <Link
-            className="icon-button"
-            to={routes.accountLibrary}
-            aria-label="Account and library"
-          >
-            <img src={accountIcon} width="22" height="27" alt="" />
-          </Link>
+          {auth.isAuthenticated ? (
+            <Link
+              className="icon-button"
+              to={routes.accountLibrary}
+              aria-label="Account and library"
+            >
+              <img src={accountIcon} width="22" height="27" alt="" />
+            </Link>
+          ) : (
+            <button
+              className="icon-button"
+              type="button"
+              aria-label="Log in to account"
+              onClick={() => openAuthModal({ context: 'account', mode: 'login' })}
+            >
+              <img src={accountIcon} width="22" height="27" alt="" />
+            </button>
+          )}
           <Link
             className={`icon-button${
               resolvedCartItemCount ? ' icon-button--badged' : ''

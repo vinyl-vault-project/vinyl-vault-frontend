@@ -18,6 +18,7 @@ import {
   type CatalogFilters,
   defaultCatalogFilters,
 } from '../../features/home/home.filters';
+import { openAuthModal, useAuthState } from '../../state/auth';
 import {
   decreaseCartItem,
   getCartAlbumItems,
@@ -86,6 +87,7 @@ function ChevronDownIcon() {
 
 export function CartPage() {
   const cartItems = useCartItems();
+  const auth = useAuthState();
   const [searchParams, setSearchParams] = useSearchParams();
   const [isCatalogFilterOpen, setIsCatalogFilterOpen] = useState(false);
   const [catalogFilterSession, setCatalogFilterSession] = useState(0);
@@ -97,9 +99,20 @@ export function CartPage() {
   const catalogFilterId = 'cart-page-catalog-filter';
 
   function openCheckout() {
-    if (cartItems.length > 0) {
-      setSearchParams({ checkout: 'true' });
+    if (cartItems.length === 0) {
+      return;
     }
+
+    if (!auth.isAuthenticated) {
+      openAuthModal({
+        context: 'checkout',
+        message: 'To complete your purchase, please log in or create an account.',
+        mode: 'login',
+      });
+      return;
+    }
+
+    setSearchParams({ checkout: 'true' });
   }
 
   function closeCheckout() {
