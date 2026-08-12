@@ -1,0 +1,57 @@
+/* ========================================
+   Select - reusable UI Kit control
+   ======================================== */
+
+.ui-select {
+  position: relative;
+  display: block;
+  width: 128px;
+
+  &__control {
+    width: 100%;
+    height: var(--control-height-md);
+    padding: 0 42px 0 16px;
+    color: var(--color-text-secondary);
+    font: inherit;
+    font-size: var(--font-size-small);
+    line-height: var(--line-height-small);
+    font-weight: 600;
+    appearance: none;
+    cursor: pointer;
+    background: var(--color-control-background);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-small);
+    transition:
+      border-color var(--transition-fast),
+      filter var(--transition-hover),
+      transform var(--transition-hover);
+
+    &:hover,
+    &:focus-visible {
+      border-color: var(--color-text-secondary);
+      filter: brightness(1.08);
+      transform: scale(var(--hover-scale));
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--color-focus);
+      outline-offset: 4px;
+    }
+  }
+
+  &__icon {
+    position: absolute;
+    top: 50%;
+    right: 12px;
+    width: 18px;
+    height: auto;
+    pointer-events: none;
+    transform: translateY(-50%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ui-select__control {
+    transition-duration: 1ms;
+  }
+}

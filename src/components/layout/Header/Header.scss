@@ -1,0 +1,372 @@
+/* ========================================
+   Header - primary site navigation
+   ======================================== */
+
+.site-header {
+  position: absolute;
+  z-index: 10;
+  top: 31px;
+  right: 0;
+  left: 0;
+
+  &__inner {
+    display: grid;
+    grid-template-columns: 238px minmax(280px, 560px) 332px;
+    gap: 32px;
+    align-items: center;
+    min-height: 48px;
+  }
+
+  &__logo-link,
+  &__nav,
+  &__search,
+  &__menu-toggle,
+  .icon-button {
+    display: flex;
+    align-items: center;
+  }
+
+  &__menu-toggle,
+  &__mobile-filter-button {
+    display: none;
+  }
+
+  &__logo-link {
+    min-width: 0;
+    border-radius: var(--radius-small);
+    transition: transform var(--transition-hover);
+    transform-origin: left center;
+    will-change: transform;
+
+    &:hover,
+    &:focus-visible {
+      transform: scale(var(--hover-scale));
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--color-focus);
+      outline-offset: 4px;
+    }
+  }
+
+  &__logo {
+    width: 238px;
+    height: 48px;
+  }
+
+  &__search {
+    position: relative;
+    height: 44px;
+    transition:
+      transform var(--transition-hover),
+      filter var(--transition-hover);
+    transform-origin: center;
+    will-change: transform;
+
+    &:hover,
+    &:focus-within {
+      filter: brightness(1.08);
+      transform: scale(var(--hover-scale));
+    }
+  }
+
+  &__search-icon {
+    position: absolute;
+    left: 17px;
+    width: 18px;
+    height: 18px;
+    fill: none;
+    stroke: #181818;
+    stroke-width: 1.7;
+    pointer-events: none;
+  }
+
+  &__search-input {
+    width: 100%;
+    height: 100%;
+    padding: 0 18px 0 48px;
+    color: var(--color-input-text);
+    background: var(--color-input);
+    border: 0;
+    border-radius: var(--radius-small);
+    outline: 0;
+
+    &::placeholder {
+      color: #363636;
+      opacity: 1;
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--color-focus);
+      outline-offset: 4px;
+    }
+  }
+
+  &__nav {
+    justify-content: space-between;
+    gap: 28px;
+  }
+
+  &__filter-icon {
+    width: 32px;
+    height: 32px;
+    transition: color var(--transition-fast);
+  }
+
+  .icon-button[aria-expanded='true'] {
+    color: var(--color-text-primary);
+  }
+}
+
+.icon-button {
+  position: relative;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  padding: 0;
+  color: var(--color-text-primary);
+  text-decoration: none;
+  background: transparent;
+  border: 0;
+  border-radius: var(--radius-small);
+  transition:
+    color var(--transition-fast),
+    transform var(--transition-hover),
+    filter var(--transition-hover);
+  will-change: transform;
+
+  &:hover,
+  &:focus-visible {
+    filter: brightness(1.08);
+    transform: scale(var(--hover-scale));
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--color-focus);
+    outline-offset: 4px;
+  }
+
+  &--muted {
+    color: #606060;
+  }
+
+  &--badged {
+    gap: 3px;
+    width: 53px;
+    height: 45px;
+    color: var(--color-button-text);
+    background: var(--color-button-background);
+
+    img {
+      width: 25px;
+      max-width: none;
+      height: 26px;
+      max-height: none;
+      filter: invert(1);
+    }
+
+    &:hover,
+    &:focus-visible {
+      filter: brightness(1.04);
+    }
+  }
+
+  &__badge {
+    position: static;
+    color: var(--color-button-text);
+    font-size: 32px;
+    line-height: 38px;
+    font-weight: 500;
+  }
+
+  img {
+    width: auto;
+    max-width: 27px;
+    height: auto;
+    max-height: 27px;
+  }
+}
+
+@media (max-width: 1180px) {
+  .site-header {
+    &__inner {
+      grid-template-columns: 210px minmax(240px, 1fr) auto;
+      gap: 20px;
+    }
+
+    &__logo {
+      width: 210px;
+      height: auto;
+    }
+
+    &__nav {
+      gap: 10px;
+    }
+  }
+}
+
+@media (max-width: 900px) {
+  .site-header {
+    top: 22px;
+
+    &__inner {
+      position: relative;
+      grid-template-columns: 48px minmax(0, 1fr) 48px;
+      gap: 14px;
+      justify-items: center;
+    }
+
+    &__logo {
+      width: 176px;
+      height: auto;
+    }
+
+    &__search {
+      order: 3;
+      grid-column: 1 / -1;
+      width: 100%;
+      max-width: 430px;
+    }
+
+    &__nav {
+      display: contents;
+
+      .icon-button:not(:last-child) {
+        display: none;
+      }
+
+      .icon-button:last-child {
+        grid-column: 3;
+        grid-row: 1;
+        justify-self: end;
+      }
+    }
+
+    &__inner--mobile-search-hidden {
+      .site-header__search {
+        display: none;
+      }
+    }
+
+    &__mobile-filter-button {
+      position: absolute;
+      top: 50%;
+      right: 7px;
+      display: grid;
+      place-items: center;
+      width: 34px;
+      height: 34px;
+      padding: 0;
+      color: #606060;
+      background: transparent;
+      border: 0;
+      border-radius: var(--radius-small);
+      transform: translateY(-50%);
+
+      &[aria-expanded='true'] {
+        color: #181818;
+      }
+
+      &:focus-visible {
+        outline: 2px solid var(--color-focus);
+        outline-offset: 2px;
+      }
+
+      .site-header__filter-icon {
+        width: 24px;
+        height: 24px;
+      }
+    }
+
+    &__menu-toggle {
+      display: flex;
+      justify-content: center;
+      width: 48px;
+      height: 48px;
+      padding: 0;
+      justify-self: start;
+      background: transparent;
+      border: 0;
+      border-radius: var(--radius-small);
+
+      img {
+        width: 22px;
+        height: 27px;
+      }
+
+      &:focus-visible {
+        outline: 2px solid var(--color-focus);
+        outline-offset: 3px;
+      }
+    }
+
+    &__logo-link {
+      justify-self: center;
+      transform-origin: center;
+    }
+
+  }
+}
+
+@media (max-width: 560px) {
+  .site-header {
+    top: 18px;
+
+    &__inner {
+      gap: 12px 10px;
+    }
+
+    &__logo {
+      width: 153px;
+    }
+
+    &__search {
+      height: 44px;
+      max-width: 263px;
+      margin-top: 8px;
+    }
+
+    &__search-input {
+      padding-right: 47px;
+      padding-left: 44px;
+      font-size: 15px;
+    }
+
+    &__search-icon {
+      left: 15px;
+    }
+  }
+
+  .icon-button {
+    width: 48px;
+    height: 48px;
+
+    &--badged {
+      width: 58px;
+      height: 48px;
+
+      img {
+        width: 25px;
+        height: 26px;
+      }
+    }
+
+    &__badge {
+      font-size: 28px;
+      line-height: 32px;
+    }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .site-header {
+    &__logo-link,
+    &__search {
+      transition-duration: 1ms;
+    }
+  }
+
+  .icon-button {
+    transition-duration: 1ms;
+  }
+}

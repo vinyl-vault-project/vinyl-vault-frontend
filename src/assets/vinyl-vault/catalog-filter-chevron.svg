@@ -1,0 +1,10 @@
+<svg width="48" height="24" viewBox="0 0 48 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <g clip-path="url(#catalog-filter-chevron-clip)">
+    <path d="M34.84 4.90401L36.96 7.026L25.406 18.584C25.2209 18.7703 25.0007 18.9182 24.7582 19.0191C24.5157 19.12 24.2557 19.1719 23.993 19.1719C23.7304 19.1719 23.4703 19.12 23.2278 19.0191C22.9853 18.9182 22.7652 18.7703 22.58 18.584L11.02 7.026L13.14 4.906L23.99 15.754L34.84 4.90401Z" fill="white"/>
+  </g>
+  <defs>
+    <clipPath id="catalog-filter-chevron-clip">
+      <rect width="24" height="48" fill="white" transform="matrix(0 1 -1 0 48 0)"/>
+    </clipPath>
+  </defs>
+</svg>
