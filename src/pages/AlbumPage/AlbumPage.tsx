@@ -14,12 +14,17 @@ import { routes } from '../../app/routes';
 import { Footer } from '../../components/layout/Footer/Footer';
 import { Header } from '../../components/layout/Header/Header';
 import { AlbumCard } from '../../components/ui/AlbumCard/AlbumCard';
+import { CatalogFilter } from '../../components/ui/CatalogFilter/CatalogFilter';
 import type { AlbumDetail, AlbumTrack } from '../../data/albumDetails';
+import {
+  type CatalogFilters,
+  defaultCatalogFilters,
+} from '../../features/home/home.filters';
 import { getAlbumDetail } from '../../features/home/home.service';
+import { addCartItem, getCartItemCount, useCartItems } from '../../state/cart';
+import { toggleSavedAlbum, useSavedAlbumIds } from '../../state/library';
 import './AlbumPage.scss';
 
-const savedAlbumsStorageKey = 'vinyl-vault:saved-albums';
-const cartStorageKey = 'vinyl-vault:cart-items';
 const emptyTracks: AlbumTrack[] = [];
 
 type AlbumPageStatus =
@@ -27,47 +32,6 @@ type AlbumPageStatus =
   | { state: 'ready'; detail: AlbumDetail }
   | { state: 'not-found' }
   | { state: 'error'; message: string };
-
-interface StoredCartItem {
-  albumId: string;
-  quantity: number;
-}
-
-function readStringList(key: string) {
-  try {
-    const rawValue = window.localStorage.getItem(key);
-    const parsedValue: unknown = rawValue ? JSON.parse(rawValue) : [];
-
-    return Array.isArray(parsedValue)
-      ? parsedValue.filter((value): value is string => typeof value === 'string')
-      : [];
-  } catch {
-    return [];
-  }
-}
-
-function readCartItems() {
-  try {
-    const rawValue = window.localStorage.getItem(cartStorageKey);
-    const parsedValue: unknown = rawValue ? JSON.parse(rawValue) : [];
-
-    if (!Array.isArray(parsedValue)) {
-      return [];
-    }
-
-    return parsedValue.filter(
-      (item): item is StoredCartItem =>
-        typeof item === 'object' &&
-        item !== null &&
-        'albumId' in item &&
-        'quantity' in item &&
-        typeof item.albumId === 'string' &&
-        typeof item.quantity === 'number',
-    );
-  } catch {
-    return [];
-  }
-}
 
 function formatPrice(price: number, currency: string) {
   return new Intl.NumberFormat('en-US', {
@@ -143,11 +107,12 @@ export function AlbumPage() {
   const { slug = '' } = useParams();
   const navigate = useNavigate();
   const [status, setStatus] = useState<AlbumPageStatus>({ state: 'loading' });
-  const [savedAlbumIds, setSavedAlbumIds] = useState(() =>
-    readStringList(savedAlbumsStorageKey),
-  );
-  const [cartItems, setCartItems] = useState(readCartItems);
+  const savedAlbumIds = useSavedAlbumIds();
+  const cartItems = useCartItems();
   const [activeTrackId, setActiveTrackId] = useState('');
+  const [isCatalogFilterOpen, setIsCatalogFilterOpen] = useState(false);
+  const [catalogFilterSession, setCatalogFilterSession] = useState(0);
+  const [appliedFilters, setAppliedFilters] = useState(defaultCatalogFilters);
   const [isPlaying, setIsPlaying] = useState(false);
   const [progress, setProgress] = useState(0);
   const [volume, setVolume] = useState(72);
@@ -201,7 +166,8 @@ export function AlbumPage() {
   const isCurrentAlbumSaved = detail
     ? savedAlbumIds.includes(detail.album.id)
     : false;
-  const cartItemCount = cartItems.reduce((total, item) => total + item.quantity, 0);
+  const cartItemCount = getCartItemCount(cartItems);
+  const catalogFilterId = 'album-page-catalog-filter';
 
   useEffect(() => {
     if (audioRef.current) {
@@ -239,29 +205,12 @@ export function AlbumPage() {
     }
   }, [activeTrack?.audioSrc, isPlaying]);
 
-  function persistSavedAlbums(nextSavedAlbumIds: string[]) {
-    setSavedAlbumIds(nextSavedAlbumIds);
-    window.localStorage.setItem(
-      savedAlbumsStorageKey,
-      JSON.stringify(nextSavedAlbumIds),
-    );
-  }
-
-  function persistCartItems(nextCartItems: StoredCartItem[]) {
-    setCartItems(nextCartItems);
-    window.localStorage.setItem(cartStorageKey, JSON.stringify(nextCartItems));
-  }
-
   function handleSaveToggle() {
     if (!detail) {
       return;
     }
 
-    const nextSavedAlbumIds = isCurrentAlbumSaved
-      ? savedAlbumIds.filter((albumId) => albumId !== detail.album.id)
-      : [...savedAlbumIds, detail.album.id];
-
-    persistSavedAlbums(nextSavedAlbumIds);
+    toggleSavedAlbum(detail.album.id);
   }
 
   function handleAddToCart() {
@@ -269,25 +218,29 @@ export function AlbumPage() {
       return;
     }
 
-    const existingItem = cartItems.find((item) => item.albumId === detail.album.id);
-    const nextCartItems = existingItem
-      ? cartItems.map((item) =>
-          item.albumId === detail.album.id
-            ? { ...item, quantity: item.quantity + 1 }
-            : item,
-        )
-      : [...cartItems, { albumId: detail.album.id, quantity: 1 }];
+    addCartItem(detail.album.id);
+  }
 
-    persistCartItems(nextCartItems);
+  function handleCatalogFilterToggle() {
+    setIsCatalogFilterOpen((currentState) => {
+      if (!currentState) {
+        setCatalogFilterSession((currentSession) => currentSession + 1);
+      }
+
+      return !currentState;
+    });
+  }
+
+  function handleCatalogFilterApply(nextFilters: CatalogFilters) {
+    setAppliedFilters(nextFilters);
+    setIsCatalogFilterOpen(false);
   }
 
   function selectTrack(track: AlbumTrack) {
     setActiveTrackId(track.id);
     setProgress(0);
 
-    if (!track.audioSrc) {
-      setIsPlaying(false);
-    }
+    setIsPlaying(Boolean(track.audioSrc));
   }
 
   function handleTrackClick(track: AlbumTrack) {
@@ -327,7 +280,20 @@ export function AlbumPage() {
     return (
       <>
         <main className="album-page album-page--status">
-          <Header cartItemCount={cartItemCount} />
+          <Header
+            cartItemCount={cartItemCount}
+            filterPanelId={catalogFilterId}
+            isFilterOpen={isCatalogFilterOpen}
+            onFilterToggle={handleCatalogFilterToggle}
+          />
+          <CatalogFilter
+            key={catalogFilterSession}
+            id={catalogFilterId}
+            isOpen={isCatalogFilterOpen}
+            appliedFilters={appliedFilters}
+            onApply={handleCatalogFilterApply}
+            onClose={() => setIsCatalogFilterOpen(false)}
+          />
           <section className="app-container album-page__status" aria-live="polite">
             Loading album...
           </section>
@@ -341,7 +307,20 @@ export function AlbumPage() {
     return (
       <>
         <main className="album-page album-page--status">
-          <Header cartItemCount={cartItemCount} />
+          <Header
+            cartItemCount={cartItemCount}
+            filterPanelId={catalogFilterId}
+            isFilterOpen={isCatalogFilterOpen}
+            onFilterToggle={handleCatalogFilterToggle}
+          />
+          <CatalogFilter
+            key={catalogFilterSession}
+            id={catalogFilterId}
+            isOpen={isCatalogFilterOpen}
+            appliedFilters={appliedFilters}
+            onApply={handleCatalogFilterApply}
+            onClose={() => setIsCatalogFilterOpen(false)}
+          />
           <section className="app-container album-page__status" role="alert">
             <h1>
               {status.state === 'not-found'
@@ -368,7 +347,20 @@ export function AlbumPage() {
   return (
     <>
       <main className="album-page">
-        <Header cartItemCount={cartItemCount} />
+        <Header
+          cartItemCount={cartItemCount}
+          filterPanelId={catalogFilterId}
+          isFilterOpen={isCatalogFilterOpen}
+          onFilterToggle={handleCatalogFilterToggle}
+        />
+        <CatalogFilter
+          key={catalogFilterSession}
+          id={catalogFilterId}
+          isOpen={isCatalogFilterOpen}
+          appliedFilters={appliedFilters}
+          onApply={handleCatalogFilterApply}
+          onClose={() => setIsCatalogFilterOpen(false)}
+        />
 
         <section
           className="album-page__hero"

@@ -6,6 +6,7 @@ import accountIcon from '../../../assets/vinyl-vault/account.svg';
 import basketIcon from '../../../assets/vinyl-vault/basket.svg';
 import homeIcon from '../../../assets/vinyl-vault/home.svg';
 import logo from '../../../assets/vinyl-vault/logo.svg';
+import { getCartItemCount, useCartItems } from '../../../state/cart';
 import './Header.scss';
 
 function SearchIcon() {
@@ -53,6 +54,8 @@ export function Header({
   searchQuery = '',
 }: HeaderProps) {
   const [query, setQuery] = useState(searchQuery);
+  const cartItems = useCartItems();
+  const resolvedCartItemCount = cartItemCount ?? getCartItemCount(cartItems);
   const navigate = useNavigate();
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
@@ -122,16 +125,20 @@ export function Header({
             <img src={accountIcon} width="22" height="27" alt="" />
           </Link>
           <Link
-            className={`icon-button${cartItemCount ? ' icon-button--badged' : ''}`}
+            className={`icon-button${
+              resolvedCartItemCount ? ' icon-button--badged' : ''
+            }`}
             to={routes.cart}
             aria-label={
-              cartItemCount ? `Cart with ${cartItemCount} item` : 'Cart'
+              resolvedCartItemCount
+                ? `Cart with ${resolvedCartItemCount} item`
+                : 'Cart'
             }
           >
             <img src={basketIcon} width="25" height="26" alt="" />
-            {cartItemCount ? (
+            {resolvedCartItemCount ? (
               <span className="icon-button__badge" aria-hidden="true">
-                {cartItemCount}
+                {resolvedCartItemCount}
               </span>
             ) : null}
           </Link>
