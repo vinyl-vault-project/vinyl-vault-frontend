@@ -6,15 +6,3 @@
   width: min(var(--container-width), calc(100% - (var(--page-gutter) * 2)));
   margin-inline: auto;
 }
-
-.app-not-found {
-  display: grid;
-  min-height: 100svh;
-  place-items: center;
-  background: var(--color-page);
-
-  &__status {
-    padding-block: 120px;
-    color: var(--color-text-secondary);
-  }
-}

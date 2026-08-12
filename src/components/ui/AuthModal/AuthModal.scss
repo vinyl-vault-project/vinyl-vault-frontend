@@ -1,0 +1,354 @@
+/* ========================================
+   Auth Modal
+   ======================================== */
+
+.auth-modal {
+  position: fixed;
+  z-index: var(--z-modal);
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 42px 24px;
+  overflow-y: auto;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(16px);
+
+  &__dialog {
+    position: relative;
+    width: min(100%, 804px);
+    min-height: 760px;
+    overflow: hidden;
+    color: var(--color-text-primary);
+    background:
+      linear-gradient(90deg, rgba(0, 0, 0, 0.28) 0%, rgba(0, 0, 0, 0.7) 40%, rgba(0, 0, 0, 0.22) 100%),
+      linear-gradient(180deg, rgba(0, 0, 0, 0.24) 0%, rgba(0, 0, 0, 0.4) 100%),
+      var(--auth-modal-bg) center / cover no-repeat,
+      #070707;
+    border-radius: var(--radius-small);
+    box-shadow: 0 34px 110px rgba(0, 0, 0, 0.56);
+
+    &--login {
+      min-height: 780px;
+    }
+
+    &--register {
+      min-height: 805px;
+    }
+
+    &--reset-password {
+      min-height: 760px;
+    }
+  }
+
+  &__back {
+    position: absolute;
+    top: 72px;
+    left: 88px;
+    display: grid;
+    place-items: center;
+    width: 54px;
+    height: 54px;
+    padding: 0;
+    color: var(--color-text-primary);
+    background: transparent;
+    border: 0;
+    border-radius: var(--radius-small);
+
+    svg {
+      width: 44px;
+      height: 44px;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 2.4;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    &:hover,
+    &:focus-visible {
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--color-focus);
+      outline-offset: 4px;
+    }
+  }
+
+  &__form {
+    display: grid;
+    width: min(100% - 176px, 620px);
+    padding-top: 150px;
+    margin: 0 auto;
+  }
+
+  &__heading {
+    margin-bottom: 24px;
+
+    h2 {
+      margin: 0 0 8px;
+      font-size: 39px;
+      line-height: 1.05;
+      font-weight: 400;
+      letter-spacing: 0;
+
+      strong {
+        font-weight: 800;
+      }
+    }
+
+    p {
+      margin: 0;
+      color: var(--color-text-secondary);
+      font-size: 22px;
+      line-height: 1.2;
+    }
+  }
+
+  &__context-message {
+    max-width: 560px;
+    margin: -6px 0 20px;
+    color: var(--color-text-secondary);
+    font-size: 18px;
+    line-height: 1.3;
+  }
+
+  &__fields {
+    display: grid;
+    gap: 22px;
+  }
+
+  &__submit {
+    display: inline-flex;
+    gap: 12px;
+    align-items: center;
+    justify-content: center;
+    width: 386px;
+    min-height: 48px;
+    padding: 0 20px;
+    margin: 24px auto 0;
+    color: #111;
+    font-size: 20px;
+    line-height: 24px;
+    background: var(--color-button-background);
+    border: 0;
+    border-radius: var(--radius-small);
+    transition:
+      background var(--transition-fast),
+      transform var(--transition-hover);
+
+    svg {
+      width: 27px;
+      height: 27px;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 2.4;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    &:hover,
+    &:focus-visible {
+      background: #fff;
+      transform: scale(var(--hover-scale));
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--color-focus);
+      outline-offset: 4px;
+    }
+  }
+
+  &__status {
+    margin: 16px 0 0;
+    color: var(--color-text-secondary);
+    font-size: 16px;
+    line-height: 1.3;
+    text-align: center;
+  }
+
+  &__links {
+    display: grid;
+    gap: 18px;
+    justify-items: center;
+    margin-top: 21px;
+
+    &--compact {
+      margin-top: 14px;
+    }
+
+    button {
+      min-height: 24px;
+      padding: 0;
+      color: var(--color-text-secondary);
+      font-size: 20px;
+      line-height: 1.2;
+      text-decoration: underline;
+      text-underline-offset: 4px;
+      background: transparent;
+      border: 0;
+
+      &:hover,
+      &:focus-visible {
+        color: var(--color-text-primary);
+      }
+
+      &:focus-visible {
+        outline: 2px solid var(--color-focus);
+        outline-offset: 4px;
+      }
+    }
+  }
+}
+
+.auth-field {
+  display: grid;
+  gap: 14px;
+  color: var(--color-text-primary);
+  font-size: 24px;
+  line-height: 1;
+  font-weight: 800;
+
+  input {
+    width: 100%;
+    height: 76px;
+    padding: 0 24px;
+    color: var(--color-text-primary);
+    font-size: 24px;
+    line-height: 1;
+    font-weight: 400;
+    background: #000;
+    border: 0;
+    border-radius: var(--radius-small);
+    outline: 0;
+
+    &::placeholder {
+      color: rgba(255, 255, 255, 0.36);
+      opacity: 1;
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--color-focus);
+      outline-offset: 4px;
+    }
+
+    &[aria-invalid='true'] {
+      outline: 2px solid rgba(238, 34, 34, 0.78);
+      outline-offset: 2px;
+    }
+  }
+
+  em {
+    color: var(--color-error);
+    font-size: 14px;
+    line-height: 1.2;
+    font-style: normal;
+    font-weight: 700;
+  }
+}
+
+@media (max-width: 900px) {
+  .auth-modal {
+    padding: 26px 18px;
+
+    &__dialog {
+      width: min(100%, 680px);
+      min-height: min(760px, calc(100svh - 52px));
+      overflow-y: auto;
+    }
+
+    &__back {
+      top: 42px;
+      left: 48px;
+    }
+
+    &__form {
+      width: min(100% - 96px, 560px);
+      padding-top: 118px;
+      padding-bottom: 46px;
+    }
+
+    &__heading h2 {
+      font-size: 31px;
+    }
+
+    &__heading p,
+    &__links button {
+      font-size: 17px;
+    }
+  }
+
+  .auth-field {
+    gap: 10px;
+    font-size: 18px;
+
+    input {
+      height: 58px;
+      padding-inline: 16px;
+      font-size: 18px;
+    }
+  }
+}
+
+@media (max-width: 560px) {
+  .auth-modal {
+    padding: 18px;
+
+    &__dialog {
+      width: 100%;
+      min-height: auto;
+      max-height: calc(100svh - 36px);
+      background-position: center;
+    }
+
+    &__back {
+      top: 26px;
+      left: 28px;
+      width: 44px;
+      height: 44px;
+
+      svg {
+        width: 34px;
+        height: 34px;
+      }
+    }
+
+    &__form {
+      width: calc(100% - 48px);
+      padding-top: 86px;
+      padding-bottom: 34px;
+    }
+
+    &__heading {
+      margin-bottom: 20px;
+
+      h2 {
+        font-size: 27px;
+      }
+    }
+
+    &__context-message {
+      font-size: 15px;
+    }
+
+    &__submit {
+      width: min(100%, 386px);
+      min-height: 46px;
+      font-size: 18px;
+    }
+
+    &__links {
+      gap: 12px;
+
+      button {
+        font-size: 16px;
+      }
+    }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .auth-modal__submit {
+    transition-duration: 1ms;
+  }
+}

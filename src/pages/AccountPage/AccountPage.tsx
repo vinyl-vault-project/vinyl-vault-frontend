@@ -1,4 +1,10 @@
-import { type CSSProperties, type MouseEvent, useMemo, useState } from 'react';
+import {
+  type CSSProperties,
+  type MouseEvent,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 import { Link, useNavigate } from 'react-router';
 
 import { routes } from '../../app/routes';
@@ -13,7 +19,7 @@ import {
   type CatalogFilters,
   defaultCatalogFilters,
 } from '../../features/home/home.filters';
-import { authState } from '../../state/auth';
+import { mockLogout, openAuthModal, useAuthState } from '../../state/auth';
 import { useSavedAlbumIds } from '../../state/library';
 import './AccountPage.scss';
 
@@ -36,6 +42,7 @@ function LogoutIcon() {
 
 export function AccountPage() {
   const navigate = useNavigate();
+  const auth = useAuthState();
   const savedAlbumIds = useSavedAlbumIds();
   const [isCatalogFilterOpen, setIsCatalogFilterOpen] = useState(false);
   const [catalogFilterSession, setCatalogFilterSession] = useState(0);
@@ -43,6 +50,19 @@ export function AccountPage() {
   const purchasedAlbums = useMemo(() => getPurchasedAlbumSummaries(), []);
   const savedAlbums = useMemo(() => getAlbumsByIds(savedAlbumIds), [savedAlbumIds]);
   const catalogFilterId = 'account-page-catalog-filter';
+
+  useEffect(() => {
+    if (auth.isAuthenticated) {
+      return;
+    }
+
+    openAuthModal({
+      context: 'account',
+      message: 'Please log in or create an account to view your library.',
+      mode: 'login',
+    });
+    navigate(routes.home, { replace: true });
+  }, [auth.isAuthenticated, navigate]);
 
   function handleArtistSelect(
     artistSlug: string,
@@ -65,6 +85,11 @@ export function AccountPage() {
   function handleCatalogFilterApply(nextFilters: CatalogFilters) {
     setAppliedFilters(nextFilters);
     setIsCatalogFilterOpen(false);
+  }
+
+  function handleLogout() {
+    mockLogout();
+    navigate(routes.home);
   }
 
   return (
@@ -103,7 +128,8 @@ export function AccountPage() {
             <button
               className="account-page__logout"
               type="button"
-              aria-label={`Log out ${authState.user?.name ?? 'account'}`}
+              aria-label={`Log out ${auth.user?.name ?? 'account'}`}
+              onClick={handleLogout}
             >
               <LogoutIcon />
               Log out
