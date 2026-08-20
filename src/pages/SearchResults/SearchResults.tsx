@@ -26,6 +26,8 @@ type SearchResultsStatus =
   | { state: 'ready'; albums: AlbumSummary[] }
   | { state: 'error'; message: string };
 
+const ALBUMS_PER_PAGE = 15;
+
 function normalizeSearchText(value: string) {
   return value.trim().toLowerCase();
 }
@@ -71,6 +73,7 @@ export function SearchResults() {
   const [isCatalogFilterOpen, setIsCatalogFilterOpen] = useState(false);
   const [catalogFilterSession, setCatalogFilterSession] = useState(0);
   const [appliedFilters, setAppliedFilters] = useState(defaultCatalogFilters);
+  const [currentPage, setCurrentPage] = useState(1);
   const [selectedArtistDetails, setSelectedArtistDetails] =
     useState<ArtistDetails | null>(null);
   const artistTriggerRef = useRef<HTMLElement | null>(null);
@@ -135,17 +138,41 @@ export function SearchResults() {
 
   function handleCatalogFilterApply(nextFilters: CatalogFilters) {
     setAppliedFilters(nextFilters);
+    setCurrentPage(1);
     setIsCatalogFilterOpen(false);
   }
 
   const filteredAlbums =
     status.state === 'ready'
       ? filterAlbumsByCatalogState(
-          filterAlbumsByArtist(filterAlbumsByQuery(status.albums, query), artistSlug),
+          filterAlbumsByArtist(
+            filterAlbumsByQuery(status.albums, query),
+            artistSlug,
+          ),
           appliedFilters,
         )
       : [];
 
+  const totalPages = Math.ceil(filteredAlbums.length / ALBUMS_PER_PAGE);
+
+  const validCurrentPage = Math.min(currentPage, Math.max(totalPages, 1));
+
+  const firstAlbumIndex = (validCurrentPage - 1) * ALBUMS_PER_PAGE;
+
+  const lastAlbumIndex = firstAlbumIndex + ALBUMS_PER_PAGE;
+
+  const visibleAlbums = filteredAlbums.slice(firstAlbumIndex, lastAlbumIndex);
+
+  function handlePageChange(page: number) {
+    setCurrentPage(page);
+
+    window.requestAnimationFrame(() => {
+      document.getElementById('search-results-title')?.scrollIntoView({
+        behavior: 'smooth',
+        block: 'start',
+      });
+    });
+  }
   return (
     <>
       <main className="search-results-page">
@@ -187,7 +214,7 @@ export function SearchResults() {
 
           {status.state === 'ready' && filteredAlbums.length > 0 ? (
             <div className="search-results-page__grid">
-              {filteredAlbums.map((album) => (
+              {visibleAlbums.map((album) => (
                 <AlbumCard
                   key={album.id}
                   album={album}
@@ -211,6 +238,50 @@ export function SearchResults() {
           artist={selectedArtistDetails}
           onClose={handleArtistModalClose}
         />
+      ) : null}
+      {status.state === 'ready' && totalPages > 1 ? (
+        <nav
+          className="search-results-page__pagination"
+          aria-label="Search results pagination"
+        >
+          <button
+            className="search-results-page__pagination-button"
+            type="button"
+            disabled={validCurrentPage === 1}
+            onClick={() => handlePageChange(validCurrentPage - 1)}
+          >
+            Previous
+          </button>
+
+          {Array.from({ length: totalPages }, (_, index) => {
+            const page = index + 1;
+
+            return (
+              <button
+                className={`search-results-page__pagination-button${
+                  page === currentPage
+                    ? ' search-results-page__pagination-button--active'
+                    : ''
+                }`}
+                type="button"
+                aria-current={page === validCurrentPage ? 'page' : undefined}
+                key={page}
+                onClick={() => handlePageChange(page)}
+              >
+                {page}
+              </button>
+            );
+          })}
+
+          <button
+            className="search-results-page__pagination-button"
+            type="button"
+            disabled={validCurrentPage === totalPages}
+            onClick={() => handlePageChange(validCurrentPage + 1)}
+          >
+            Next
+          </button>
+        </nav>
       ) : null}
       <Footer />
     </>

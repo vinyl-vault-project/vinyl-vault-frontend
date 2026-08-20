@@ -21,6 +21,7 @@ import {
   defaultCatalogFilters,
 } from '../../features/home/home.filters';
 import { getAlbumDetail } from '../../features/home/home.service';
+import { openAuthModal, useAuthState } from '../../state/auth';
 import { addCartItem, getCartItemCount, useCartItems } from '../../state/cart';
 import { toggleSavedAlbum, useSavedAlbumIds } from '../../state/library';
 import './AlbumPage.scss';
@@ -107,6 +108,7 @@ export function AlbumPage() {
   const { slug = '' } = useParams();
   const navigate = useNavigate();
   const [status, setStatus] = useState<AlbumPageStatus>({ state: 'loading' });
+  const auth = useAuthState();
   const savedAlbumIds = useSavedAlbumIds();
   const cartItems = useCartItems();
   const [activeTrackId, setActiveTrackId] = useState('');
@@ -210,11 +212,30 @@ export function AlbumPage() {
       return;
     }
 
+    if (!auth.isAuthenticated) {
+      openAuthModal({
+        context: 'account',
+        message: 'Please log in or create an account to save albums.',
+        mode: 'login',
+      });
+      return;
+    }
+
     toggleSavedAlbum(detail.album.id);
   }
 
   function handleAddToCart() {
     if (!detail || detail.product.availability !== 'in-stock') {
+      return;
+    }
+
+    if (!auth.isAuthenticated) {
+      openAuthModal({
+        context: 'checkout',
+        message:
+          'Please log in or create an account to add products to your cart.',
+        mode: 'login',
+      });
       return;
     }
 
@@ -270,7 +291,9 @@ export function AlbumPage() {
       return;
     }
 
-    const currentIndex = tracks.findIndex((track) => track.id === activeTrack.id);
+    const currentIndex = tracks.findIndex(
+      (track) => track.id === activeTrack.id,
+    );
     const offset = direction === 'next' ? 1 : -1;
     const nextIndex = (currentIndex + offset + tracks.length) % tracks.length;
     selectTrack(tracks[nextIndex]);
@@ -295,7 +318,10 @@ export function AlbumPage() {
             onApply={handleCatalogFilterApply}
             onClose={() => setIsCatalogFilterOpen(false)}
           />
-          <section className="app-container album-page__status" aria-live="polite">
+          <section
+            className="app-container album-page__status"
+            aria-live="polite"
+          >
             Loading album...
           </section>
         </main>
@@ -368,7 +394,9 @@ export function AlbumPage() {
         <section
           className="album-page__hero"
           style={
-            { '--album-hero-bg': `url(${assets.heroBackground})` } as CSSProperties
+            {
+              '--album-hero-bg': `url(${assets.heroBackground})`,
+            } as CSSProperties
           }
           aria-labelledby="album-page-title"
         >
@@ -534,7 +562,6 @@ interface PurchaseBarProps {
 
 function PurchaseBar({
   availability,
-  format,
   isAvailable,
   onAddToCart,
   priceLabel,
@@ -548,9 +575,7 @@ function PurchaseBar({
           >
             {isAvailable ? 'in stock' : 'out of stock'}
           </span>
-          <span>
-            {priceLabel}_{format.toUpperCase()}
-          </span>
+          <span>{priceLabel}</span>
         </div>
         <button
           className="album-purchase-bar__button"
@@ -558,7 +583,7 @@ function PurchaseBar({
           disabled={!isAvailable}
           onClick={onAddToCart}
         >
-          Add full album to cart
+          ADD TO CART
         </button>
       </div>
     </aside>
@@ -587,8 +612,8 @@ function Tracklist({
     <section className="album-page__tracklist" aria-label="Tracklist">
       <div className="album-page__tracklist-header" aria-hidden="true">
         <span>#</span>
-        <span>TITLE_ID</span>
-        <span>DUR</span>
+        <span>TITLE</span>
+        <span>DURATION</span>
       </div>
       <div className="album-page__tracks" role="list">
         {tracks.map((track) => {
@@ -667,7 +692,11 @@ function AudioPlayer({
       </div>
       <div className="album-player__inner">
         <div className="album-player__controls">
-          <button type="button" aria-label="Previous track" onClick={onPrevious}>
+          <button
+            type="button"
+            aria-label="Previous track"
+            onClick={onPrevious}
+          >
             <SkipBackIcon />
           </button>
           <button
