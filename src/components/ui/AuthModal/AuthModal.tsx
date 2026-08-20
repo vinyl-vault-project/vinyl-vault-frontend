@@ -6,7 +6,7 @@ import {
   useRef,
   useState,
 } from 'react';
-
+import { Eye, EyeOff } from 'lucide-react';
 import authModalBackground from '../../../assets/vinyl-vault/auth-modal-background.png';
 import {
   closeAuthModal,
@@ -234,7 +234,11 @@ function AuthModalDialog() {
         aria-modal="true"
         aria-labelledby={titleId}
         aria-describedby={modalState.message ? messageId : undefined}
-        style={{ '--auth-modal-bg': `url(${authModalBackground})` } as React.CSSProperties}
+        style={
+          {
+            '--auth-modal-bg': `url(${authModalBackground})`,
+          } as React.CSSProperties
+        }
         onKeyDown={handleDialogKeyDown}
       >
         <button className="auth-modal__back" type="button" onClick={handleBack}>
@@ -262,7 +266,7 @@ function AuthModalDialog() {
             {isRegisterMode ? (
               <AuthField
                 id="auth-name"
-                label="Name"
+                label="Username"
                 value={values.name}
                 placeholder="Jonny"
                 error={errors.name}
@@ -281,7 +285,7 @@ function AuthModalDialog() {
             {!isResetMode ? (
               <AuthField
                 id="auth-password"
-                label="Keep a password"
+                label="Enter your password"
                 type="password"
                 value={values.password}
                 placeholder="Password228"
@@ -304,7 +308,10 @@ function AuthModalDialog() {
 
           {isResetMode && errors.email ? (
             <div className="auth-modal__links auth-modal__links--compact">
-              <button type="button" onClick={() => setAuthModalMode('register')}>
+              <button
+                type="button"
+                onClick={() => setAuthModalMode('register')}
+              >
                 Register now
               </button>
             </div>
@@ -318,7 +325,10 @@ function AuthModalDialog() {
               >
                 Forgot your password? Let's fix it
               </button>
-              <button type="button" onClick={() => setAuthModalMode('register')}>
+              <button
+                type="button"
+                onClick={() => setAuthModalMode('register')}
+              >
                 Don't have an account? Create one now
               </button>
             </div>
@@ -356,20 +366,48 @@ function AuthField({
   type = 'text',
   value,
 }: AuthFieldProps) {
+  const [isPasswordVisible, setIsPasswordVisible] = useState(false);
+
+  const isPasswordField = type === 'password';
+
+  const inputType = isPasswordField && isPasswordVisible ? 'text' : type;
+
   return (
-    <label className="auth-field">
-      <span>{label}</span>
-      <input
-        id={id}
-        type={type}
-        value={value}
-        placeholder={placeholder}
-        aria-invalid={Boolean(error)}
-        aria-describedby={error ? `${id}-error` : undefined}
-        onChange={(event) => onChange(event.target.value)}
-      />
+    <div className="auth-field">
+      <label htmlFor={id}>{label}</label>
+
+      <div className="auth-field__input-wrapper">
+        <input
+          id={id}
+          type={inputType}
+          value={value}
+          placeholder={placeholder}
+          aria-invalid={Boolean(error)}
+          aria-describedby={error ? `${id}-error` : undefined}
+          onChange={(event) => onChange(event.target.value)}
+        />
+
+        {isPasswordField ? (
+          <button
+            className="auth-field__password-toggle"
+            type="button"
+            aria-label={isPasswordVisible ? 'Hide password' : 'Show password'}
+            aria-pressed={isPasswordVisible}
+            onClick={() =>
+              setIsPasswordVisible((currentValue) => !currentValue)
+            }
+          >
+            {isPasswordVisible ? (
+              <EyeOff aria-hidden="true" />
+            ) : (
+              <Eye aria-hidden="true" />
+            )}
+          </button>
+        ) : null}
+      </div>
+
       {error ? <em id={`${id}-error`}>{error}</em> : null}
-    </label>
+    </div>
   );
 }
 

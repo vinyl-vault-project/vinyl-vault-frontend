@@ -47,8 +47,14 @@ export function AccountPage() {
   const [isCatalogFilterOpen, setIsCatalogFilterOpen] = useState(false);
   const [catalogFilterSession, setCatalogFilterSession] = useState(0);
   const [appliedFilters, setAppliedFilters] = useState(defaultCatalogFilters);
-  const purchasedAlbums = useMemo(() => getPurchasedAlbumSummaries(), []);
-  const savedAlbums = useMemo(() => getAlbumsByIds(savedAlbumIds), [savedAlbumIds]);
+  const purchasedAlbums = useMemo(
+    () => (auth.isAuthenticated ? getPurchasedAlbumSummaries() : []),
+    [auth.isAuthenticated],
+  );
+  const savedAlbums = useMemo(
+    () => (auth.isAuthenticated ? getAlbumsByIds(savedAlbumIds) : []),
+    [auth.isAuthenticated, savedAlbumIds],
+  );
   const catalogFilterId = 'account-page-catalog-filter';
 
   useEffect(() => {
@@ -63,6 +69,10 @@ export function AccountPage() {
     });
     navigate(routes.home, { replace: true });
   }, [auth.isAuthenticated, navigate]);
+
+  if (!auth.isAuthenticated) {
+    return null;
+  }
 
   function handleArtistSelect(
     artistSlug: string,
@@ -137,9 +147,15 @@ export function AccountPage() {
             </button>
           </div>
 
-          <section className="account-page__purchased" aria-label="Purchased albums">
+          <section
+            className="account-page__purchased"
+            aria-label="Purchased albums"
+          >
             {purchasedAlbums.map((purchase) => (
-              <article className="account-page__purchase" key={purchase.albumId}>
+              <article
+                className="account-page__purchase"
+                key={purchase.albumId}
+              >
                 <Link
                   className="account-page__purchase-cover"
                   to={routes.album(purchase.album.slug)}
@@ -166,7 +182,10 @@ export function AccountPage() {
             ))}
           </section>
 
-          <section className="account-page__saved" aria-labelledby="saved-title">
+          <section
+            className="account-page__saved"
+            aria-labelledby="saved-title"
+          >
             <h2 id="saved-title">Saved</h2>
             {savedAlbums.length > 0 ? (
               <div className="account-page__saved-grid">
@@ -180,8 +199,8 @@ export function AccountPage() {
               </div>
             ) : (
               <p className="account-page__saved-empty">
-                No saved albums yet. Use the bookmark on album pages to add records
-                here.
+                No saved albums yet. Use the bookmark on album pages to add
+                records here.
               </p>
             )}
           </section>

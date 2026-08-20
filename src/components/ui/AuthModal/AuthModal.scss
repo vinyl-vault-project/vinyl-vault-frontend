@@ -378,3 +378,36 @@
     transition-duration: 1ms;
   }
 }
+
+.auth-field {
+  &__input-wrapper {
+    position: relative;
+  }
+
+  &__input-wrapper input {
+    width: 100%;
+    padding-right: 48px;
+  }
+
+  &__password-toggle {
+    position: absolute;
+    top: 50%;
+    right: 14px;
+    display: grid;
+    place-items: center;
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    color: inherit;
+    cursor: pointer;
+    background: transparent;
+    border: 0;
+    transform: translateY(-50%);
+  }
+
+  &__password-toggle svg {
+    width: 22px;
+    height: 22px;
+    stroke-width: 2;
+  }
+}

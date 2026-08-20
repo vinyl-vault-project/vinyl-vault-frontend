@@ -43,14 +43,22 @@ export function HeroBanner({ promotions }: HeroBannerProps) {
     [activeSlideIndex, clearTransitionTimeout],
   );
 
+  const showNextSlide = useCallback(() => {
+    if (!hasMultipleSlides) {
+      return;
+    }
+
+    const nextSlideIndex = (activeSlideIndex + 1) % slides.length;
+    showSlide(nextSlideIndex);
+  }, [activeSlideIndex, hasMultipleSlides, showSlide, slides.length]);
+
   useEffect(() => {
     if (!hasMultipleSlides) {
       return undefined;
     }
 
     autoplayIntervalRef.current = window.setInterval(() => {
-      const nextSlideIndex = (activeSlideIndex + 1) % slides.length;
-      showSlide(nextSlideIndex);
+      showNextSlide();
     }, 5000);
 
     return () => {
@@ -59,8 +67,7 @@ export function HeroBanner({ promotions }: HeroBannerProps) {
         autoplayIntervalRef.current = null;
       }
     };
-  }, [activeSlideIndex, hasMultipleSlides, showSlide, slides.length]);
-
+  }, [hasMultipleSlides, showNextSlide]);
   useEffect(
     () => () => {
       clearTransitionTimeout();
@@ -127,7 +134,7 @@ export function HeroBanner({ promotions }: HeroBannerProps) {
         </div>
 
         <div className="hero-banner__visual">
-          <div className="hero-banner__slider-viewport">
+          <div className="hero-banner__slider-viewport" onClick={showNextSlide}>
             {slides.map((slide, index) => {
               const slideStateClass =
                 index === activeSlideIndex

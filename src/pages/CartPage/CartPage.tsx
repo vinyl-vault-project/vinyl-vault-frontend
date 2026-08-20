@@ -182,7 +182,7 @@ export function CartPage() {
                   </div>
                   <div className="cart-page__item-commerce">
                     <p>
-                      {formatPrice(item.unitPrice)}_{item.selectedFormat}
+                      {formatPrice(item.unitPrice)}
                     </p>
                     <div className="cart-page__quantity" aria-live="polite">
                       <button
@@ -215,10 +215,10 @@ export function CartPage() {
           <section className="cart-page__summary" aria-label="Order summary">
             <div className="cart-page__summary-total" aria-live="polite">
               <span>Subtotal</span>
-              <strong>Total: {formatPrice(total)}_VINYL</strong>
+              <strong>Total: {formatPrice(total)}</strong>
             </div>
             <button type="button" disabled={cartItems.length === 0} onClick={openCheckout}>
-              Pay and order
+              Order
             </button>
           </section>
         </section>
@@ -440,7 +440,7 @@ function CheckoutModal({ onClose }: CheckoutModalProps) {
 
           <div className="checkout-modal__actions">
             <p aria-live="polite">{statusMessage}</p>
-            <button type="submit">Go to paypal payment</button>
+            <button type="submit">Order</button>
           </div>
         </form>
       </div>

@@ -2,6 +2,7 @@ import { useSyncExternalStore } from 'react';
 
 import { getAlbumDetailBySlug } from '../data/albumDetails';
 import { albums } from '../data/albums';
+import { authState } from './auth';
 
 const cartStorageKey = 'vinyl-vault:cart-items';
 const cartChangeEventName = 'vinyl-vault:cart-items-change';
@@ -67,7 +68,9 @@ function normalizeCartItem(value: unknown): CartItem | null {
         ? rawItem.selectedFormat.toUpperCase()
         : product.selectedFormat,
     unitPrice:
-      typeof rawItem.unitPrice === 'number' ? rawItem.unitPrice : product.unitPrice,
+      typeof rawItem.unitPrice === 'number'
+        ? rawItem.unitPrice
+        : product.unitPrice,
   };
 }
 
@@ -111,6 +114,10 @@ export function writeCartItems(items: CartItem[]) {
 }
 
 export function addCartItem(albumId: string) {
+  if (!authState.isAuthenticated) {
+    return;
+  }
+
   const product = getAlbumProduct(albumId);
 
   if (!product) {
@@ -141,7 +148,9 @@ export function addCartItem(albumId: string) {
 export function increaseCartItem(albumId: string) {
   writeCartItems(
     readCartItems().map((item) =>
-      item.albumId === albumId ? { ...item, quantity: item.quantity + 1 } : item,
+      item.albumId === albumId
+        ? { ...item, quantity: item.quantity + 1 }
+        : item,
     ),
   );
 }
@@ -161,7 +170,9 @@ export function decreaseCartItem(albumId: string) {
 export function getCartAlbumItems(items: CartItem[]): CartAlbumItem[] {
   return items
     .map((item) => {
-      const album = albums.find((currentAlbum) => currentAlbum.id === item.albumId);
+      const album = albums.find(
+        (currentAlbum) => currentAlbum.id === item.albumId,
+      );
 
       return album ? { ...item, album } : null;
     })
@@ -194,5 +205,9 @@ function subscribeToCart(callback: () => void) {
 }
 
 export function useCartItems() {
-  return useSyncExternalStore(subscribeToCart, readCartItems, () => emptyCartItems);
+  return useSyncExternalStore(
+    subscribeToCart,
+    readCartItems,
+    () => emptyCartItems,
+  );
 }

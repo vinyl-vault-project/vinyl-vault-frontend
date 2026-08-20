@@ -7,8 +7,6 @@ const primaryLinks = [
   { label: 'Home', to: routes.home },
   { label: 'Cart', to: routes.cart },
   { label: 'Account / Library', to: routes.accountLibrary },
-  { label: 'Contact', to: routes.contact },
-  { label: 'About', to: routes.about },
 ];
 
 const secondaryLinks = [
