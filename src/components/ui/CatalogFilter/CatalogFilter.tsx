@@ -1,6 +1,5 @@
 import {
-  type FormEvent,
-  type PointerEvent,
+  type SyntheticEvent,
   useEffect,
   useId,
   useMemo,
@@ -49,7 +48,7 @@ export function CatalogFilter({
     styles: true,
   });
   const [yearError, setYearError] = useState('');
-  const panelRef = useRef<HTMLDivElement | null>(null);
+  const panelRef = useRef<HTMLFormElement | null>(null);
   const errorId = useId();
   const yearSelectOptions = useMemo(
     () =>
@@ -74,15 +73,30 @@ export function CatalogFilter({
       }
     }
 
+    function handlePointerDown(event: globalThis.PointerEvent) {
+      const target = event.target;
+
+      if (!(target instanceof Node)) {
+        return;
+      }
+
+      if (panelRef.current && !panelRef.current.contains(target)) {
+        onClose();
+      }
+    }
+
     document.addEventListener('keydown', handleKeyDown);
+    document.addEventListener('pointerdown', handlePointerDown);
 
     return () => {
       document.body.style.overflow = previousBodyOverflow;
+
       document.removeEventListener('keydown', handleKeyDown);
+      document.removeEventListener('pointerdown', handlePointerDown);
     };
   }, [isOpen, onClose]);
 
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  function handleSubmit(event: SyntheticEvent<HTMLFormElement>) {
     event.preventDefault();
 
     if (draftFilters.fromYear > draftFilters.toYear) {
@@ -99,12 +113,6 @@ export function CatalogFilter({
   function handleClear() {
     setDraftFilters(defaultCatalogFilters);
     setYearError('');
-  }
-
-  function handleOverlayPointerDown(event: PointerEvent<HTMLDivElement>) {
-    if (event.target === panelRef.current) {
-      onClose();
-    }
   }
 
   function updateYear(field: 'fromYear' | 'toYear', value: string) {
@@ -141,12 +149,11 @@ export function CatalogFilter({
 
   return (
     <div
-      ref={panelRef}
       className={`catalog-filter${isOpen ? ' catalog-filter--open' : ''}`}
       id={id}
-      onPointerDown={handleOverlayPointerDown}
     >
       <form
+        ref={panelRef}
         className="catalog-filter__panel"
         aria-label="Catalog filters"
         aria-describedby={yearError ? errorId : undefined}
@@ -154,13 +161,6 @@ export function CatalogFilter({
       >
         <div className="app-container catalog-filter__inner">
           <div className="catalog-filter__actions">
-            <Button type="submit" variant="compact">
-              Apply Filters
-            </Button>
-            <Button type="button" variant="text" onClick={handleClear}>
-              Clear filters
-            </Button>
-
             <fieldset className="catalog-filter__years">
               <legend className="catalog-filter__legend">Release Year</legend>
               <Select
@@ -207,15 +207,27 @@ export function CatalogFilter({
             onChange={updateOption}
           />
 
-          <FilterGroup
-            field="styles"
-            title="Style"
-            isExpanded={expandedGroups.styles}
-            onToggle={() => toggleGroup('styles')}
-            options={styleOptions}
-            selectedValues={draftFilters.styles}
-            onChange={updateOption}
-          />
+          <div className="catalog-filter__style-column">
+            <FilterGroup
+              field="styles"
+              title="Style"
+              isExpanded={expandedGroups.styles}
+              onToggle={() => toggleGroup('styles')}
+              options={styleOptions}
+              selectedValues={draftFilters.styles}
+              onChange={updateOption}
+            />
+
+            <div className="catalog-filter__apply">
+              <Button type="submit" variant="compact">
+                Apply Filters
+              </Button>
+
+              <Button type="button" variant="text" onClick={handleClear}>
+                Clear filters
+              </Button>
+            </div>
+          </div>
         </div>
       </form>
     </div>

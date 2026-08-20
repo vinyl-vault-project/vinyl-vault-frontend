@@ -534,7 +534,6 @@ interface PurchaseBarProps {
 
 function PurchaseBar({
   availability,
-  format,
   isAvailable,
   onAddToCart,
   priceLabel,
@@ -549,7 +548,7 @@ function PurchaseBar({
             {isAvailable ? 'in stock' : 'out of stock'}
           </span>
           <span>
-            {priceLabel}_{format.toUpperCase()}
+            {priceLabel}
           </span>
         </div>
         <button
@@ -558,7 +557,7 @@ function PurchaseBar({
           disabled={!isAvailable}
           onClick={onAddToCart}
         >
-          Add full album to cart
+          ADD TO CART
         </button>
       </div>
     </aside>
@@ -587,8 +586,8 @@ function Tracklist({
     <section className="album-page__tracklist" aria-label="Tracklist">
       <div className="album-page__tracklist-header" aria-hidden="true">
         <span>#</span>
-        <span>TITLE_ID</span>
-        <span>DUR</span>
+        <span>TITLE</span>
+        <span>DURATION</span>
       </div>
       <div className="album-page__tracks" role="list">
         {tracks.map((track) => {

@@ -6,9 +6,20 @@
   min-height: 1550px;
   color: var(--color-text-primary);
   background:
-    linear-gradient(180deg, #000 0%, rgba(0, 0, 0, 0.84) 5%, rgba(0, 0, 0, 0) 17%),
+    linear-gradient(
+      180deg,
+      #000 0%,
+      rgba(0, 0, 0, 0.84) 5%,
+      rgba(0, 0, 0, 0) 17%
+    ),
     linear-gradient(180deg, rgba(0, 0, 0, 0) 70%, #000 100%),
-    linear-gradient(90deg, #000 0%, rgba(0, 0, 0, 0.82) 18%, rgba(0, 0, 0, 0.5) 43%, rgba(0, 0, 0, 0.2) 100%),
+    linear-gradient(
+      90deg,
+      #000 0%,
+      rgba(0, 0, 0, 0.82) 18%,
+      rgba(0, 0, 0, 0.5) 43%,
+      rgba(0, 0, 0, 0.2) 100%
+    ),
     var(--account-page-bg) left top / 100% auto no-repeat,
     #000;
 
@@ -173,17 +184,19 @@
   .account-page {
     min-height: auto;
     background:
-      linear-gradient(180deg, #000 0%, rgba(0, 0, 0, 0.78) 12%, rgba(0, 0, 0, 0.36) 54%, #000 100%),
+      linear-gradient(
+        180deg,
+        #000 0%,
+        rgba(0, 0, 0, 0.78) 12%,
+        rgba(0, 0, 0, 0.36) 54%,
+        #000 100%
+      ),
       var(--account-page-bg) left top / cover no-repeat,
       #000;
 
     &__content {
       padding-top: 190px;
       padding-bottom: 92px;
-    }
-
-    &__heading-row {
-      flex-direction: column;
     }
 
     &__purchase {
@@ -203,6 +216,10 @@
     &__saved-grid {
       grid-template-columns: repeat(3, minmax(0, 1fr));
     }
+    &__logout {
+      flex-shrink: 0;
+      margin-left: auto;
+    }
   }
 }
 
@@ -217,7 +234,10 @@
     }
 
     &__heading-row {
-      gap: 14px;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 16px;
+      align-items: start;
       margin-bottom: 62px;
     }
 
@@ -232,9 +252,18 @@
     }
 
     &__logout {
-      display: none;
-    }
+      display: inline-flex;
+      flex-shrink: 0;
+      gap: 7px;
+      margin-top: 0;
+      margin-left: 0;
+      font-size: 17px;
 
+      svg {
+        width: 21px;
+        height: 21px;
+      }
+    }
     &__purchased {
       gap: 48px;
       max-width: none;
