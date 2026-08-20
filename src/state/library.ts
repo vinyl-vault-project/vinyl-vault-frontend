@@ -1,5 +1,7 @@
 import { useSyncExternalStore } from 'react';
 
+import { authState } from './auth';
+
 const savedAlbumsStorageKey = 'vinyl-vault:saved-albums';
 const savedAlbumsChangeEventName = 'vinyl-vault:saved-albums-change';
 const emptySavedAlbumIds: string[] = [];
@@ -26,7 +28,9 @@ export function readSavedAlbumIds() {
 
     cachedSavedRawValue = rawValue;
     cachedSavedAlbumIds = Array.isArray(parsedValue)
-      ? parsedValue.filter((value): value is string => typeof value === 'string')
+      ? parsedValue.filter(
+          (value): value is string => typeof value === 'string',
+        )
       : emptySavedAlbumIds;
 
     return cachedSavedAlbumIds;
@@ -48,6 +52,10 @@ export function writeSavedAlbumIds(albumIds: string[]) {
 }
 
 export function toggleSavedAlbum(albumId: string) {
+  if (!authState.isAuthenticated) {
+    return;
+  }
+
   const savedAlbumIds = readSavedAlbumIds();
   const nextSavedAlbumIds = savedAlbumIds.includes(albumId)
     ? savedAlbumIds.filter((currentAlbumId) => currentAlbumId !== albumId)
