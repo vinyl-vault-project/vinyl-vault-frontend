@@ -5,7 +5,7 @@ import {
   useMemo,
   useState,
 } from 'react';
-import { Link, useNavigate } from 'react-router';
+import { useNavigate } from 'react-router';
 
 import { routes } from '../../app/routes';
 import accountBackground from '../../assets/vinyl-vault/account-library-shelf-turntable-headphones.png';
@@ -13,7 +13,7 @@ import { Footer } from '../../components/layout/Footer/Footer';
 import { Header } from '../../components/layout/Header/Header';
 import { AlbumCard } from '../../components/ui/AlbumCard/AlbumCard';
 import { CatalogFilter } from '../../components/ui/CatalogFilter/CatalogFilter';
-import { getPurchasedAlbumSummaries } from '../../data/accountLibrary';
+import { getAccountOrder, accountOrders } from '../../data/accountLibrary';
 import { getAlbumsByIds } from '../../data/albums';
 import {
   type CatalogFilters,
@@ -22,13 +22,7 @@ import {
 import { mockLogout, openAuthModal, useAuthState } from '../../state/auth';
 import { useSavedAlbumIds } from '../../state/library';
 import './AccountPage.scss';
-
-function formatPrice(price: number) {
-  return new Intl.NumberFormat('en-US', {
-    currency: 'USD',
-    style: 'currency',
-  }).format(price);
-}
+import { OrderCard } from './components/OrderCard';
 
 function LogoutIcon() {
   return (
@@ -47,8 +41,13 @@ export function AccountPage() {
   const [isCatalogFilterOpen, setIsCatalogFilterOpen] = useState(false);
   const [catalogFilterSession, setCatalogFilterSession] = useState(0);
   const [appliedFilters, setAppliedFilters] = useState(defaultCatalogFilters);
-  const purchasedAlbums = useMemo(
-    () => (auth.isAuthenticated ? getPurchasedAlbumSummaries() : []),
+  const orders = useMemo(
+    () =>
+      auth.isAuthenticated
+        ? accountOrders
+            .map((order) => getAccountOrder(order.id))
+            .filter((order): order is NonNullable<typeof order> => Boolean(order))
+        : [],
     [auth.isAuthenticated],
   );
   const savedAlbums = useMemo(
@@ -148,37 +147,12 @@ export function AccountPage() {
           </div>
 
           <section
-            className="account-page__purchased"
-            aria-label="Purchased albums"
+            className="account-page__orders"
+            aria-labelledby="order-history-title"
           >
-            {purchasedAlbums.map((purchase) => (
-              <article
-                className="account-page__purchase"
-                key={purchase.albumId}
-              >
-                <Link
-                  className="account-page__purchase-cover"
-                  to={routes.album(purchase.album.slug)}
-                  aria-label={`Open ${purchase.album.artist} - ${purchase.album.title}`}
-                >
-                  <img
-                    src={purchase.album.coverSrc}
-                    width="252"
-                    height="252"
-                    alt={purchase.album.coverAlt}
-                  />
-                </Link>
-                <div className="account-page__purchase-copy">
-                  <Link to={routes.album(purchase.album.slug)}>
-                    {purchase.album.artist}
-                  </Link>
-                  <span>{purchase.album.title}</span>
-                  <strong>{purchase.album.filterMetadata.releaseYear}</strong>
-                </div>
-                <p className="account-page__purchase-price">
-                  {formatPrice(purchase.unitPrice)}_{purchase.selectedFormat}
-                </p>
-              </article>
+            <h2 id="order-history-title">Order history</h2>
+            {orders.map((order) => (
+              <OrderCard key={order.id} order={order} />
             ))}
           </section>
 

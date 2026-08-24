@@ -2,7 +2,6 @@ import { type FormEvent, useState } from 'react';
 import { Link, useNavigate } from 'react-router';
 
 import { routes } from '../../../app/routes';
-import accountIcon from '../../../assets/vinyl-vault/account.svg';
 import basketIcon from '../../../assets/vinyl-vault/basket.svg';
 import homeIcon from '../../../assets/vinyl-vault/home.svg';
 import logo from '../../../assets/vinyl-vault/logo.svg';
@@ -48,6 +47,25 @@ interface HeaderProps {
   showSearchOnMobile?: boolean;
 }
 
+function AccountIcon({ filled = false }: { filled?: boolean }) {
+  return (
+    <svg
+      className="site-header__account-icon"
+      viewBox="0 0 22 27"
+      aria-hidden="true"
+    >
+      <path
+        d="M16.4286 6.83333C16.4286 9.77688 13.9961 12.1667 11 12.1667C8.00389 12.1667 5.57143 9.77688 5.57143 6.83333C5.57143 3.88979 8.00389 1.5 11 1.5C13.9961 1.5 16.4286 3.88979 16.4286 6.83333ZM11 16.1667C5.75681 16.1667 1.5 20.3488 1.5 25.5H20.5C20.5 20.3488 16.2432 16.1667 11 16.1667Z"
+        fill={filled ? 'currentColor' : 'none'}
+        stroke="currentColor"
+        strokeWidth="3"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
 export function Header({
   cartItemCount,
   filterPanelId,
@@ -84,7 +102,7 @@ export function Header({
             to={routes.accountLibrary}
             aria-label="Account and library"
           >
-            <img src={accountIcon} width="22" height="27" alt="" />
+            <AccountIcon filled />
           </Link>
         ) : (
           <button
@@ -93,7 +111,7 @@ export function Header({
             aria-label="Log in to account"
             onClick={() => openAuthModal({ context: 'account', mode: 'login' })}
           >
-            <img src={accountIcon} width="22" height="27" alt="" />
+            <AccountIcon />
           </button>
         )}
 
@@ -116,7 +134,13 @@ export function Header({
           role="search"
           onSubmit={handleSubmit}
         >
-          <SearchIcon />
+          <button
+            className="site-header__search-button"
+            type="submit"
+            aria-label="Search"
+          >
+            <SearchIcon />
+          </button>
           <label className="visually-hidden" htmlFor="site-search">
             Search
           </label>
@@ -125,6 +149,7 @@ export function Header({
             className="site-header__search-input"
             type="search"
             placeholder="Search"
+            title="Enter the artist name or album title"
             value={query}
             onChange={(event) => setQuery(event.target.value)}
           />
@@ -166,7 +191,7 @@ export function Header({
               to={routes.accountLibrary}
               aria-label="Account and library"
             >
-              <img src={accountIcon} width="22" height="27" alt="" />
+              <AccountIcon filled />
             </Link>
           ) : (
             <button
@@ -175,7 +200,7 @@ export function Header({
               aria-label="Log in to account"
               onClick={() => openAuthModal({ context: 'account', mode: 'login' })}
             >
-              <img src={accountIcon} width="22" height="27" alt="" />
+              <AccountIcon />
             </button>
           )}
           <Link

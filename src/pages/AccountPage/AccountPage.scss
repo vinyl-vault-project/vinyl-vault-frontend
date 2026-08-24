@@ -23,6 +23,28 @@
     var(--account-page-bg) left top / 100% auto no-repeat,
     #000;
 
+  &--order-details {
+    min-height: 100svh;
+  }
+
+  &__back-link {
+    display: inline-block;
+    margin-bottom: 24px;
+    color: var(--color-text-secondary);
+    text-underline-offset: 4px;
+
+    &:focus-visible {
+      outline: 2px solid var(--color-focus);
+      outline-offset: 4px;
+    }
+  }
+
+  &__details-title {
+    margin: 0 0 32px;
+    font-size: 40px;
+    line-height: 1;
+  }
+
   &__content {
     padding-top: 184px;
     padding-bottom: 150px;
@@ -84,73 +106,173 @@
     }
   }
 
-  &__purchased {
+  &__orders {
     display: grid;
-    gap: 48px;
-    max-width: 720px;
-  }
-
-  &__purchase {
-    display: grid;
-    grid-template-columns: 252px minmax(220px, 1fr) 180px;
     gap: 32px;
-    align-items: center;
+    max-width: 768px;
+
+    > h2 {
+      margin: 0;
+      color: var(--color-text-primary);
+      font-size: 20px;
+      line-height: 1;
+      font-weight: 800;
+      text-transform: capitalize;
+    }
   }
 
-  &__purchase-cover {
-    width: 252px;
-    overflow: hidden;
-    border-radius: var(--radius-small);
-    transition:
-      filter var(--transition-hover),
-      transform var(--transition-hover);
+  &__order-card {
+    display: grid;
+    gap: 24px;
+    padding: 16px;
+    background: rgba(0, 0, 0, 0.85);
+  }
+
+  &__order-heading {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    align-items: start;
+
+    h3,
+    p {
+      margin: 0;
+    }
+
+    h3 {
+      font-size: 32px;
+      line-height: 1;
+      font-weight: 500;
+    }
+
+    p {
+      margin-top: 16px;
+      color: rgba(255, 255, 255, 0.8);
+      font-size: 24px;
+      line-height: 1;
+      font-weight: 500;
+    }
+  }
+
+  &__status-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 122px;
+    height: 44px;
+    padding: 10px;
+    border: 2px solid currentColor;
+    border-radius: 8px;
+    font-size: 18px;
+    line-height: 1;
+    font-weight: 500;
+
+    &--pending {
+      color: #ff8d28;
+      background: rgba(255, 141, 40, 0.2);
+      border-color: rgba(255, 141, 40, 0.45);
+    }
+
+    &--cancelled {
+      min-width: 133px;
+      color: #ee2222;
+      background: rgba(238, 34, 34, 0.2);
+      border-color: rgba(238, 34, 34, 0.45);
+    }
+  }
+
+  &__order-items {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 24px;
+  }
+
+  &__order-item {
+    min-width: 0;
+
+    a {
+      display: block;
+      overflow: hidden;
+      border-radius: var(--radius-small);
+      transition:
+        filter var(--transition-hover),
+        transform var(--transition-hover);
+
+      &:hover,
+      &:focus-visible {
+        filter: brightness(1.08);
+        transform: scale(1.02);
+      }
+
+      &:focus-visible {
+        outline: 2px solid var(--color-focus);
+        outline-offset: 4px;
+      }
+    }
 
     img {
-      width: 252px;
+      display: block;
+      width: 100%;
       aspect-ratio: 1;
       object-fit: cover;
       border-radius: var(--radius-small);
     }
 
+    > span {
+      display: block;
+      margin-top: 16px;
+      font-size: 14px;
+      line-height: 1;
+    }
+  }
+
+  &__order-summary {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    align-items: center;
+    color: var(--color-text-secondary);
+    font-size: 30px;
+    line-height: 1;
+
+    strong {
+      color: var(--color-text-secondary);
+      font-weight: 500;
+      white-space: nowrap;
+    }
+  }
+
+  &__order-link {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    align-items: center;
+    padding-top: 24px;
+    color: var(--color-text-primary);
+    font-size: 20px;
+    line-height: 1;
+    text-decoration: none;
+    border-top: 2px solid rgba(255, 255, 255, 0.45);
+
+    svg {
+      width: 24px;
+      height: 24px;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
     &:hover,
     &:focus-visible {
-      filter: brightness(1.08);
-      transform: scale(1.03);
+      color: var(--color-text-secondary);
     }
 
     &:focus-visible {
       outline: 2px solid var(--color-focus);
       outline-offset: 4px;
     }
-  }
-
-  &__purchase-copy {
-    display: grid;
-    gap: 11px;
-    min-width: 0;
-    font-size: 34px;
-    line-height: 1.1;
-
-    a {
-      font-weight: 500;
-      text-decoration: none;
-    }
-
-    span {
-      font-weight: 700;
-    }
-
-    strong {
-      font-weight: 800;
-    }
-  }
-
-  &__purchase-price {
-    margin: 0;
-    color: var(--color-text-secondary);
-    font-size: 22px;
-    line-height: 1;
-    white-space: nowrap;
   }
 
   &__saved {
@@ -166,9 +288,9 @@
 
   &__saved-grid {
     display: grid;
-    grid-template-columns: repeat(3, 191px);
+    grid-template-columns: repeat(auto-fill, minmax(191px, 1fr));
     gap: 20px 27px;
-    max-width: 650px;
+    max-width: 100%;
   }
 
   &__saved-empty {
@@ -199,23 +321,6 @@
       padding-bottom: 92px;
     }
 
-    &__purchase {
-      grid-template-columns: 180px minmax(0, 1fr);
-      gap: 24px;
-    }
-
-    &__purchase-cover,
-    &__purchase-cover img {
-      width: 180px;
-    }
-
-    &__purchase-price {
-      grid-column: 2;
-    }
-
-    &__saved-grid {
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-    }
     &__logout {
       flex-shrink: 0;
       margin-left: auto;
@@ -264,33 +369,52 @@
         height: 21px;
       }
     }
-    &__purchased {
-      gap: 48px;
+    &__orders {
+      gap: 24px;
       max-width: none;
     }
 
-    &__purchase {
-      grid-template-columns: 1fr;
-      gap: 23px;
-      justify-items: center;
-      text-align: center;
+    &__order-card {
+      gap: 20px;
+      padding: 16px;
     }
 
-    &__purchase-cover,
-    &__purchase-cover img {
-      width: min(100%, 240px);
+    &__order-heading h3 {
+      font-size: 25px;
     }
 
-    &__purchase-copy {
+    &__order-heading p {
+      margin-top: 12px;
+      font-size: 17px;
+    }
+
+    &__status-badge {
+      min-width: 0;
+      height: 40px;
+      padding: 8px;
+      font-size: 15px;
+
+      &--cancelled {
+        min-width: 0;
+      }
+    }
+
+    &__order-items {
       gap: 12px;
-      max-width: 282px;
-      font-size: 29px;
-      line-height: 1.28;
     }
 
-    &__purchase-price {
-      grid-column: auto;
+    &__order-item > span {
+      margin-top: 10px;
+      font-size: 12px;
+    }
+
+    &__order-summary {
       font-size: 21px;
+    }
+
+    &__order-link {
+      padding-top: 18px;
+      font-size: 17px;
     }
 
     &__saved {
@@ -311,7 +435,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .account-page__purchase-cover {
+  .account-page__order-item a {
     transition-duration: 1ms;
   }
 }
