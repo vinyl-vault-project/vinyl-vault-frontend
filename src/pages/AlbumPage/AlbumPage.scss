@@ -142,7 +142,8 @@
       filter var(--transition-hover);
     will-change: transform;
 
-    img {
+    img,
+    .album-page__bookmark-icon {
       width: 42px;
       height: 42px;
       filter: drop-shadow(0 8px 22px rgba(0, 0, 0, 0.32));
@@ -165,7 +166,8 @@
       outline-offset: 4px;
     }
 
-    &--active img {
+    &--active img,
+    &--active .album-page__bookmark-icon {
       filter: drop-shadow(0 0 18px rgba(255, 255, 255, 0.36));
     }
   }
@@ -260,9 +262,6 @@
       outline-offset: -2px;
     }
 
-    &:nth-last-child(-n + 2) {
-      opacity: 0.45;
-    }
   }
 
   &__playing-bars {
@@ -742,6 +741,11 @@
       height: 48px;
 
       img {
+        width: 36px;
+        height: 36px;
+      }
+
+      .album-page__bookmark-icon {
         width: 36px;
         height: 36px;
       }

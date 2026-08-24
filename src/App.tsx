@@ -2,6 +2,7 @@ import { Route, Routes } from 'react-router';
 
 import { AlbumPage } from './pages/AlbumPage';
 import { AccountPage } from './pages/AccountPage';
+import { OrderDetailsPage } from './pages/OrderDetailsPage/OrderDetailsPage';
 import { CartPage } from './pages/CartPage';
 import { AuthModal } from './components/ui/AuthModal';
 import { ErrorPage } from './pages/ErrorPage';
@@ -19,6 +20,7 @@ function App() {
         <Route path="/cart" element={<CartPage />} />
         <Route path="/account" element={<AccountPage />} />
         <Route path="/account/library" element={<AccountPage />} />
+        <Route path="/account/orders/:orderId" element={<OrderDetailsPage />} />
         <Route path="*" element={<ErrorPage />} />
       </Routes>
       <AuthModal />

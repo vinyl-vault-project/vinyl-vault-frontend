@@ -1,0 +1,359 @@
+.order-details-page {
+  position: relative;
+  isolation: isolate;
+  display: flow-root;
+  min-height: 100svh;
+  color: var(--color-text-primary);
+  background: #000;
+
+  &::before,
+  &::after {
+    position: absolute;
+    top: 87px;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    pointer-events: none;
+    content: '';
+  }
+
+  &::before {
+    z-index: -2;
+    background: var(--order-details-bg) center top / cover no-repeat;
+    filter: blur(32px);
+    transform: scale(1.06);
+  }
+
+  &::after {
+    z-index: -1;
+    background: linear-gradient(to bottom, rgba(0, 0, 0, 0.4) 0%, rgba(0, 0, 0, 0.64) 48%, rgba(0, 0, 0, 0.92) 70%, #000 84%, #000 100%);
+  }
+
+  &__content {
+    position: relative;
+    width: min(1344px, calc(100% - 96px));
+    margin-top: 173px;
+    padding-top: 24px;
+    padding-bottom: 96px;
+    padding-inline: 24px;
+    background: rgba(0, 0, 0, 0.8);
+    border-radius: 4px;
+  }
+
+  &__back {
+    display: inline-flex;
+    gap: 4px;
+    align-items: center;
+    margin-bottom: 28px;
+    color: var(--color-text-primary);
+    font-size: 16px;
+    line-height: 20px;
+    text-decoration: none;
+
+    svg {
+      width: 20px;
+      height: 20px;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    &:hover,
+    &:focus-visible {
+      color: var(--color-text-secondary);
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--color-focus);
+      outline-offset: 4px;
+    }
+  }
+
+  &__heading {
+    display: flex;
+    gap: 24px;
+    align-items: start;
+    max-width: 1200px;
+
+    h1,
+    p {
+      margin: 0;
+    }
+
+    h1 {
+      font-size: 40px;
+      line-height: 54px;
+      font-weight: 556;
+    }
+
+    p {
+      margin-top: 4px;
+      color: rgba(255, 255, 255, 0.8);
+      font-size: 20px;
+      line-height: 28px;
+    }
+  }
+
+  &__title-row {
+    display: flex;
+    gap: 24px;
+    align-items: center;
+  }
+
+  &__status {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 122px;
+    height: 44px;
+    padding: 10px;
+    border: 2px solid rgba(255, 141, 40, 0.45);
+    border-radius: 8px;
+    color: #ff8d28;
+    font-size: 16px;
+    line-height: 20px;
+
+    &--pending {
+      background: rgba(255, 141, 40, 0.2);
+    }
+
+    &--cancelled {
+      min-width: 133px;
+      color: #ee2222;
+      background: rgba(238, 34, 34, 0.2);
+      border-color: rgba(238, 34, 34, 0.45);
+    }
+  }
+
+  &__divider,
+  &__item,
+  &__summary-row {
+    border-bottom: 2px solid #606060;
+  }
+
+  &__divider {
+    max-width: 1200px;
+    margin: 24px 0 28px;
+  }
+
+  h2 {
+    margin: 0 0 24px;
+    font-size: 32px;
+    line-height: 38px;
+    font-weight: 556;
+  }
+
+  &__items {
+    max-width: 1200px;
+  }
+
+  &__item {
+    display: grid;
+    grid-template-columns: 240px minmax(0, 1fr) 120px;
+    gap: 32px;
+    align-items: center;
+    min-height: 268px;
+    padding: 0 0 24px;
+    margin-bottom: 24px;
+
+    img {
+      width: 240px;
+      height: 240px;
+      object-fit: cover;
+      border-radius: 2px;
+    }
+  }
+
+  &__item-copy {
+    min-width: 0;
+
+    strong,
+    h3,
+    p {
+      display: block;
+      margin: 0;
+    }
+
+    strong,
+    h3 {
+      font-size: 32px;
+      line-height: 38px;
+      font-weight: 500;
+    }
+
+    p {
+      color: rgba(255, 255, 255, 0.7);
+      font-size: 20px;
+      line-height: 28px;
+    }
+  }
+
+  &__item-price {
+    display: grid;
+    justify-items: end;
+    gap: 8px;
+    align-self: center;
+
+    span {
+      font-size: 20px;
+      line-height: 28px;
+      white-space: nowrap;
+    }
+
+    small {
+      font-size: 14px;
+      line-height: 20px;
+    }
+  }
+
+  &__summary,
+  &__shipping {
+    max-width: 1200px;
+    margin-top: 32px;
+  }
+
+  &__summary-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 0 0 12px;
+    margin-bottom: 12px;
+    font-size: 32px;
+    line-height: 38px;
+
+    &--total {
+      padding-bottom: 12px;
+      font-size: 40px;
+      line-height: 54px;
+    }
+  }
+
+  &__shipping {
+    h2 {
+      text-decoration: underline;
+      text-underline-offset: 4px;
+    }
+
+    p {
+      margin: 0 0 8px;
+      font-size: 32px;
+      line-height: 38px;
+    }
+  }
+
+  &__cancel {
+    display: block;
+    width: min(100%, 1200px);
+    min-height: 119px;
+    margin-top: 48px;
+    color: #ee2222;
+    font-size: 24px;
+    line-height: 32px;
+    background: rgba(238, 34, 34, 0.2);
+    border: 0;
+    border-radius: 8px;
+
+    &:hover,
+    &:focus-visible {
+      background: rgba(238, 34, 34, 0.28);
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--color-focus);
+      outline-offset: 4px;
+    }
+  }
+}
+
+@media (max-width: 560px) {
+  .order-details-page {
+    &__content {
+      width: min(100% - 36px, 414px);
+      margin-top: 112px;
+      padding-top: 16px;
+      padding-bottom: 56px;
+      padding-inline: 16px;
+    }
+
+    &__heading h1 {
+      font-size: 28px;
+      line-height: 34px;
+    }
+
+    &__heading p {
+      font-size: 14px;
+      line-height: 20px;
+    }
+
+    &__status {
+      min-width: 90px;
+      height: 40px;
+      padding: 8px;
+      font-size: 14px;
+    }
+
+    h2 {
+      font-size: 20px;
+      line-height: 24px;
+    }
+
+    &__item {
+      grid-template-columns: 96px minmax(0, 1fr) 58px;
+      gap: 12px;
+      min-height: 112px;
+      padding-bottom: 12px;
+      margin-bottom: 12px;
+
+      img {
+        width: 96px;
+        height: 96px;
+      }
+    }
+
+    &__item-copy {
+      strong,
+      h3 {
+        font-size: 16px;
+        line-height: 22px;
+      }
+
+      p {
+        font-size: 11px;
+        line-height: 16px;
+      }
+    }
+
+    &__item-price span {
+      font-size: 14px;
+      line-height: 20px;
+    }
+
+    &__item-price small {
+      font-size: 12px;
+    }
+
+    &__summary-row {
+      font-size: 16px;
+      line-height: 20px;
+    }
+
+    &__shipping p {
+      font-size: 16px;
+      line-height: 20px;
+    }
+
+    &__cancel {
+      min-height: 64px;
+      margin-top: 32px;
+      font-size: 20px;
+      line-height: 28px;
+    }
+
+    &__summary-row--total {
+      font-size: 20px;
+      line-height: 24px;
+    }
+  }
+}

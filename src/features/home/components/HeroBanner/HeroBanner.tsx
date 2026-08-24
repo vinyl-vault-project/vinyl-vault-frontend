@@ -105,18 +105,6 @@ export function HeroBanner({ promotions }: HeroBannerProps) {
       />
       <div className="app-container hero-banner__inner">
         <div className="hero-banner__copy">
-          <div className="hero-banner__marks" aria-label="Aphex Twin and Warp">
-            {activePromotion.brandLogos.map((logo) => (
-              <img
-                className="hero-banner__mark"
-                key={logo.id}
-                src={logo.src}
-                width="58"
-                height="45"
-                alt={logo.alt}
-              />
-            ))}
-          </div>
           <h1 className="hero-banner__title" id="home-title">
             {activePromotion.title}
             <span>{activePromotion.releaseLine}</span>
@@ -134,7 +122,19 @@ export function HeroBanner({ promotions }: HeroBannerProps) {
         </div>
 
         <div className="hero-banner__visual">
-          <div className="hero-banner__slider-viewport" onClick={showNextSlide}>
+          <div
+            className="hero-banner__slider-viewport"
+            role="button"
+            tabIndex={hasMultipleSlides ? 0 : -1}
+            aria-label="Show next featured release"
+            onClick={showNextSlide}
+            onKeyDown={(event) => {
+              if (event.key === 'Enter' || event.key === ' ') {
+                event.preventDefault();
+                showNextSlide();
+              }
+            }}
+          >
             {slides.map((slide, index) => {
               const slideStateClass =
                 index === activeSlideIndex

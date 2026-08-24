@@ -104,6 +104,24 @@ function VolumeIcon({ className }: IconProps) {
   );
 }
 
+function BookmarkIcon({ filled }: { filled: boolean }) {
+  return (
+    <svg
+      className="album-page__bookmark-icon"
+      viewBox="0 0 48 48"
+      aria-hidden="true"
+    >
+      <path
+        d="M10 42V10C10 8.9 10.392 7.95867 11.176 7.176C11.96 6.39333 12.9013 6.00133 14 6H34C35.1 6 36.042 6.392 36.826 7.176C37.61 7.96 38.0013 8.90133 38 10V42L24 36L10 42Z"
+        fill={filled ? 'currentColor' : 'none'}
+        stroke="currentColor"
+        strokeWidth="3"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
 export function AlbumPage() {
   const { slug = '' } = useParams();
   const navigate = useNavigate();
@@ -436,7 +454,7 @@ export function AlbumPage() {
                 aria-pressed={isCurrentAlbumSaved}
                 onClick={handleSaveToggle}
               >
-                <img src={assets.bookmarkIcon} alt="" aria-hidden="true" />
+                <BookmarkIcon filled={isCurrentAlbumSaved} />
               </button>
             </article>
 

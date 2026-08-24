@@ -3,6 +3,7 @@ export const routes = {
   cart: '/cart',
   account: '/account',
   accountLibrary: '/account',
+  accountOrder: (orderId: string) => `/account/orders/${orderId}`,
   contact: '/contact',
   about: '/about',
   instagram: 'https://www.instagram.com/',
