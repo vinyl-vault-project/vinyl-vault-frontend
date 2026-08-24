@@ -188,6 +188,11 @@
   }
 
   &__slider-viewport {
+    &:focus-visible {
+      outline: 2px solid var(--color-focus);
+      outline-offset: 4px;
+    }
+
     position: absolute;
     top: -18px;
     left: 0;
@@ -304,6 +309,7 @@
     grid-template-columns: repeat(6, minmax(0, 191px));
     gap: 16px;
     align-items: start;
+    justify-content: space-between;
   }
 }
 
@@ -475,11 +481,13 @@
     }
 
     &__copy {
+      order: 2;
       padding-top: 0;
     }
 
     &__visual {
-      justify-self: start;
+      order: 1;
+      justify-self: center;
       width: 100%;
       min-width: 0;
       max-width: 520px;
