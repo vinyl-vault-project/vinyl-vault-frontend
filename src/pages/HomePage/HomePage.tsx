@@ -6,7 +6,7 @@ import { CatalogFilter } from '../../components/ui/CatalogFilter/CatalogFilter';
 import {
   type CatalogFilters,
   defaultCatalogFilters,
-  filterAlbumsByCatalogState,
+  toReleaseQuery,
 } from '../../features/home/home.filters';
 import { AlbumCollection } from '../../features/home/components/AlbumCollection/AlbumCollection';
 import { ArtistDetailsModal } from '../../features/home/components/ArtistDetailsModal/ArtistDetailsModal';
@@ -42,7 +42,7 @@ export function HomePage() {
 
     async function loadHomePageData() {
       try {
-        const data = await getHomePageData();
+        const data = await getHomePageData(toReleaseQuery(appliedFilters));
 
         if (isActive) {
           setStatus({ state: 'ready', data });
@@ -62,7 +62,7 @@ export function HomePage() {
     return () => {
       isActive = false;
     };
-  }, []);
+  }, [appliedFilters]);
 
   async function handleArtistSelect(
     artistSlug: string,
@@ -121,15 +121,6 @@ export function HomePage() {
     );
   }
 
-  const albumsOfTheWeek = filterAlbumsByCatalogState(
-    status.data.albumsOfTheWeek,
-    appliedFilters,
-  );
-  const recommendedAlbums = filterAlbumsByCatalogState(
-    status.data.recommendedAlbums,
-    appliedFilters,
-  );
-
   return (
     <>
       <main className="home-page">
@@ -149,7 +140,7 @@ export function HomePage() {
         <HeroBanner promotions={status.data.heroPromotions} />
         <AlbumCollection
           title="Albums of the week"
-          albums={albumsOfTheWeek}
+          albums={status.data.albumsOfTheWeek}
           onArtistSelect={(artistSlug, event) => {
             void handleArtistSelect(artistSlug, event);
           }}
@@ -162,7 +153,7 @@ export function HomePage() {
         />
         <AlbumCollection
           title="Recommended albums"
-          albums={recommendedAlbums}
+          albums={status.data.recommendedAlbums}
           onArtistSelect={(artistSlug, event) => {
             void handleArtistSelect(artistSlug, event);
           }}

@@ -3,11 +3,11 @@ import {
   type FormEvent,
   type KeyboardEvent as ReactKeyboardEvent,
   useEffect,
-  useMemo,
   useRef,
   useState,
 } from 'react';
-import { Link, useSearchParams } from 'react-router';
+import { Link, useNavigate, useSearchParams } from 'react-router';
+import { createOrder } from '../../api/orders.api';
 
 import { routes } from '../../app/routes';
 import cartBackground from '../../assets/vinyl-vault/cart-packing-desk-background.png';
@@ -21,10 +21,10 @@ import {
 import { openAuthModal, useAuthState } from '../../state/auth';
 import {
   decreaseCartItem,
-  getCartAlbumItems,
   getCartItemCount,
-  getCartTotal,
   increaseCartItem,
+  refreshCart,
+  useCart,
   useCartItems,
 } from '../../state/cart';
 import './CartPage.scss';
@@ -63,10 +63,7 @@ const requiredShippingFields: Array<keyof ShippingFormValues> = [
 ];
 
 function formatPrice(price: number) {
-  return new Intl.NumberFormat('en-US', {
-    currency: 'USD',
-    style: 'currency',
-  }).format(price);
+  return price.toFixed(2);
 }
 
 function BackIcon() {
@@ -89,14 +86,18 @@ export function CartPage() {
   const cartItems = useCartItems();
   const auth = useAuthState();
   const [searchParams, setSearchParams] = useSearchParams();
+  const cart = useCart();
   const [isCatalogFilterOpen, setIsCatalogFilterOpen] = useState(false);
   const [catalogFilterSession, setCatalogFilterSession] = useState(0);
   const [appliedFilters, setAppliedFilters] = useState(defaultCatalogFilters);
-  const albumItems = useMemo(() => getCartAlbumItems(cartItems), [cartItems]);
   const cartItemCount = getCartItemCount(cartItems);
-  const total = getCartTotal(cartItems);
+  const total = Number(cart.total);
   const isCheckoutOpen = searchParams.get('checkout') === 'true';
   const catalogFilterId = 'cart-page-catalog-filter';
+
+  useEffect(() => {
+    if (auth.isAuthenticated) void refreshCart();
+  }, [auth.isAuthenticated]);
 
   function openCheckout() {
     if (cartItems.length === 0) {
@@ -106,7 +107,8 @@ export function CartPage() {
     if (!auth.isAuthenticated) {
       openAuthModal({
         context: 'checkout',
-        message: 'To complete your purchase, please log in or create an account.',
+        message:
+          'To complete your purchase, please log in or create an account.',
         mode: 'login',
       });
       return;
@@ -156,47 +158,51 @@ export function CartPage() {
           onApply={handleCatalogFilterApply}
           onClose={() => setIsCatalogFilterOpen(false)}
         />
-        <section className="app-container cart-page__content" aria-labelledby="cart-title">
+        <section
+          className="app-container cart-page__content"
+          aria-labelledby="cart-title"
+        >
           <h1 id="cart-title">Cart</h1>
 
-          {albumItems.length > 0 ? (
+          {cartItems.length > 0 ? (
             <div className="cart-page__items">
-              {albumItems.map((item) => (
-                <article className="cart-page__item" key={item.albumId}>
+              {cartItems.map((item) => (
+                <article className="cart-page__item" key={item.id}>
                   <Link
                     className="cart-page__cover-link"
-                    to={routes.album(item.album.slug)}
-                    aria-label={`Open ${item.album.artist} - ${item.album.title}`}
+                    to={routes.album(item.product.release.slug)}
+                    aria-label={`Open ${item.product.release.title}`}
                   >
                     <img
-                      src={item.album.coverSrc}
+                      src={item.product.release.cover_url || ''}
                       width="252"
                       height="252"
-                      alt={item.album.coverAlt}
+                      alt={`${item.product.release.title} cover`}
                     />
                   </Link>
                   <div className="cart-page__item-copy">
-                    <Link to={routes.album(item.album.slug)}>{item.album.artist}</Link>
-                    <span>{item.album.title}</span>
-                    <strong>{item.album.filterMetadata.releaseYear}</strong>
+                    <Link to={routes.album(item.product.release.slug)}>
+                      {item.product.release.artists[0]?.name ||
+                        'Unknown artist'}
+                    </Link>
+                    <span>{item.product.release.title}</span>
+                    <strong>{item.product.release.release_year}</strong>
                   </div>
                   <div className="cart-page__item-commerce">
-                    <p>
-                      {formatPrice(item.unitPrice)}
-                    </p>
+                    <p>{formatPrice(Number(item.product.price))}</p>
                     <div className="cart-page__quantity" aria-live="polite">
                       <button
                         type="button"
-                        aria-label={`Decrease ${item.album.title} quantity`}
-                        onClick={() => decreaseCartItem(item.albumId)}
+                        aria-label={`Decrease ${item.product.release.title} quantity`}
+                        onClick={() => void decreaseCartItem(item)}
                       >
                         -
                       </button>
                       <span>{String(item.quantity).padStart(2, '0')}</span>
                       <button
                         type="button"
-                        aria-label={`Increase ${item.album.title} quantity`}
-                        onClick={() => increaseCartItem(item.albumId)}
+                        aria-label={`Increase ${item.product.release.title} quantity`}
+                        onClick={() => void increaseCartItem(item)}
                       >
                         +
                       </button>
@@ -217,7 +223,11 @@ export function CartPage() {
               <span>Subtotal</span>
               <strong>Total: {formatPrice(total)}</strong>
             </div>
-            <button type="button" disabled={cartItems.length === 0} onClick={openCheckout}>
+            <button
+              type="button"
+              disabled={cartItems.length === 0}
+              onClick={openCheckout}
+            >
               Order
             </button>
           </section>
@@ -235,9 +245,12 @@ interface CheckoutModalProps {
 }
 
 function CheckoutModal({ onClose }: CheckoutModalProps) {
+  const navigate = useNavigate();
   const dialogRef = useRef<HTMLDivElement | null>(null);
   const [values, setValues] = useState(initialShippingValues);
-  const [errors, setErrors] = useState<Partial<Record<keyof ShippingFormValues, string>>>({});
+  const [errors, setErrors] = useState<
+    Partial<Record<keyof ShippingFormValues, string>>
+  >({});
   const [statusMessage, setStatusMessage] = useState('');
 
   useEffect(() => {
@@ -258,7 +271,8 @@ function CheckoutModal({ onClose }: CheckoutModalProps) {
 
       const nextFocusableElements = getFocusableElements(dialogRef.current);
       const firstElement = nextFocusableElements[0];
-      const lastElement = nextFocusableElements[nextFocusableElements.length - 1];
+      const lastElement =
+        nextFocusableElements[nextFocusableElements.length - 1];
 
       if (!firstElement || !lastElement) {
         return;
@@ -287,7 +301,7 @@ function CheckoutModal({ onClose }: CheckoutModalProps) {
     setStatusMessage('');
   }
 
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const nextErrors: Partial<Record<keyof ShippingFormValues, string>> = {};
 
@@ -297,14 +311,37 @@ function CheckoutModal({ onClose }: CheckoutModalProps) {
       }
     });
 
-    if (values.email.trim() && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(values.email)) {
+    if (
+      values.email.trim() &&
+      !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(values.email)
+    ) {
       nextErrors.email = 'Use a valid email';
     }
 
     setErrors(nextErrors);
 
     if (Object.keys(nextErrors).length === 0) {
-      setStatusMessage('Shipping details are ready for PayPal integration.');
+      try {
+        const order = await createOrder({
+          first_name: values.name,
+          last_name: values.surname,
+          email: values.email,
+          phone: values.phone,
+          city: values.city,
+          shipping_address: values.streetAddress,
+          postal_code: values.postalCode,
+          country: values.country,
+        });
+        await refreshCart();
+        onClose();
+        navigate(routes.accountOrder(order.order_number));
+      } catch (error) {
+        setStatusMessage(
+          error instanceof Error
+            ? error.message
+            : 'Order could not be created.',
+        );
+      }
     }
   }
 
@@ -332,12 +369,20 @@ function CheckoutModal({ onClose }: CheckoutModalProps) {
         aria-labelledby="checkout-title"
         onKeyDown={handleDialogKeyDown}
       >
-        <button className="checkout-modal__back" type="button" onClick={onClose}>
+        <button
+          className="checkout-modal__back"
+          type="button"
+          onClick={onClose}
+        >
           <BackIcon />
           Back
         </button>
 
-        <form className="checkout-modal__form" noValidate onSubmit={handleSubmit}>
+        <form
+          className="checkout-modal__form"
+          noValidate
+          onSubmit={handleSubmit}
+        >
           <div className="checkout-modal__heading">
             <h2 id="checkout-title">Shipping details</h2>
             <p>
@@ -422,8 +467,12 @@ function CheckoutModal({ onClose }: CheckoutModalProps) {
               <select
                 value={values.country}
                 aria-invalid={Boolean(errors.country)}
-                aria-describedby={errors.country ? 'shipping-country-error' : undefined}
-                onChange={(event) => handleChange('country', event.target.value)}
+                aria-describedby={
+                  errors.country ? 'shipping-country-error' : undefined
+                }
+                onChange={(event) =>
+                  handleChange('country', event.target.value)
+                }
               >
                 <option value="">Select country</option>
                 <option value="United States">United States</option>

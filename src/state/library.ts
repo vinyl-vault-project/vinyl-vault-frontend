@@ -1,87 +1,45 @@
 import { useSyncExternalStore } from 'react';
-
-import { authState } from './auth';
-
-const savedAlbumsStorageKey = 'vinyl-vault:saved-albums';
-const savedAlbumsChangeEventName = 'vinyl-vault:saved-albums-change';
-const emptySavedAlbumIds: string[] = [];
-let cachedSavedRawValue: string | null = null;
-let cachedSavedAlbumIds: string[] = emptySavedAlbumIds;
-
-function isBrowser() {
-  return typeof window !== 'undefined';
+import { deleteSaved, getSaved, saveRelease } from '../api/saved.api';
+import type { SavedReleaseDto } from '../api/api.types';
+const empty: SavedReleaseDto[] = [];
+let saved: SavedReleaseDto[] = empty;
+const listeners = new Set<() => void>();
+function notify() {
+  listeners.forEach((listener) => listener());
 }
-
-export function readSavedAlbumIds() {
-  if (!isBrowser()) {
-    return emptySavedAlbumIds;
-  }
-
-  try {
-    const rawValue = window.localStorage.getItem(savedAlbumsStorageKey);
-
-    if (rawValue === cachedSavedRawValue) {
-      return cachedSavedAlbumIds;
-    }
-
-    const parsedValue: unknown = rawValue ? JSON.parse(rawValue) : [];
-
-    cachedSavedRawValue = rawValue;
-    cachedSavedAlbumIds = Array.isArray(parsedValue)
-      ? parsedValue.filter(
-          (value): value is string => typeof value === 'string',
-        )
-      : emptySavedAlbumIds;
-
-    return cachedSavedAlbumIds;
-  } catch {
-    cachedSavedRawValue = null;
-    cachedSavedAlbumIds = emptySavedAlbumIds;
-
-    return cachedSavedAlbumIds;
-  }
+function setSaved(next: SavedReleaseDto[]) {
+  saved = next;
+  notify();
 }
-
-export function writeSavedAlbumIds(albumIds: string[]) {
-  if (!isBrowser()) {
-    return;
-  }
-
-  window.localStorage.setItem(savedAlbumsStorageKey, JSON.stringify(albumIds));
-  window.dispatchEvent(new Event(savedAlbumsChangeEventName));
+export async function refreshSavedAlbums() {
+  const response = await getSaved();
+  setSaved(Array.isArray(response) ? response : response.results);
 }
-
-export function toggleSavedAlbum(albumId: string) {
-  if (!authState.isAuthenticated) {
-    return;
-  }
-
-  const savedAlbumIds = readSavedAlbumIds();
-  const nextSavedAlbumIds = savedAlbumIds.includes(albumId)
-    ? savedAlbumIds.filter((currentAlbumId) => currentAlbumId !== albumId)
-    : [...savedAlbumIds, albumId];
-
-  writeSavedAlbumIds(nextSavedAlbumIds);
-}
-
-function subscribeToSavedAlbums(callback: () => void) {
-  if (!isBrowser()) {
-    return () => {};
-  }
-
-  window.addEventListener(savedAlbumsChangeEventName, callback);
-  window.addEventListener('storage', callback);
-
-  return () => {
-    window.removeEventListener(savedAlbumsChangeEventName, callback);
-    window.removeEventListener('storage', callback);
-  };
-}
-
-export function useSavedAlbumIds() {
-  return useSyncExternalStore(
-    subscribeToSavedAlbums,
-    readSavedAlbumIds,
-    () => emptySavedAlbumIds,
+export async function toggleSavedAlbum(releaseId: number | string) {
+  const current = saved.find(
+    (item) => String(item.release.id) === String(releaseId),
   );
+  if (current) {
+    await deleteSaved(current.id);
+    setSaved(saved.filter((item) => item.id !== current.id));
+  } else {
+    const created = await saveRelease(releaseId);
+    setSaved([...saved, created]);
+  }
+}
+export function clearSavedAlbumsState() {
+  setSaved(empty);
+}
+export function useSavedAlbums() {
+  return useSyncExternalStore(
+    (listener) => {
+      listeners.add(listener);
+      return () => listeners.delete(listener);
+    },
+    () => saved,
+    () => empty,
+  );
+}
+export function useSavedAlbumIds() {
+  return useSavedAlbums().map((item) => String(item.release.id));
 }

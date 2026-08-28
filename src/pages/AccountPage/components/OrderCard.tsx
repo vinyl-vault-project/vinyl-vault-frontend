@@ -1,10 +1,10 @@
 import { Link } from 'react-router';
 
 import { routes } from '../../../app/routes';
-import type { AccountOrderSummary } from '../../../data/accountLibrary';
+import type { OrderDto } from '../../../api/api.types';
 
 interface OrderCardProps {
-  order: AccountOrderSummary;
+  order: OrderDto;
 }
 
 function ChevronIcon() {
@@ -16,7 +16,7 @@ function ChevronIcon() {
 }
 
 export function OrderCard({ order }: OrderCardProps) {
-  const itemCount = order.items.reduce(
+  const itemCount = (order.items || []).reduce(
     (total, item) => total + item.quantity,
     0,
   );
@@ -25,28 +25,28 @@ export function OrderCard({ order }: OrderCardProps) {
     <article className="account-page__order-card">
       <div className="account-page__order-heading">
         <div>
-          <h3>Order {order.number}</h3>
-          <p>{order.date}</p>
+          <h3>Order {order.order_number}</h3>
+          <p>{new Date(order.created_at).toLocaleDateString()}</p>
         </div>
         <span
           className={`account-page__status-badge account-page__status-badge--${order.status}`}
         >
-          {order.status === 'pending' ? 'Pending' : 'Cancelled'}
+          {order.status}
         </span>
       </div>
 
       <div className="account-page__order-items">
-        {order.items.map((item) => (
-          <div className="account-page__order-item" key={item.albumId}>
+        {(order.items || []).map((item) => (
+          <div className="account-page__order-item" key={item.id}>
             <Link
-              to={routes.album(item.album.slug)}
-              aria-label={`Open ${item.album.artist} - ${item.album.title}`}
+              to={routes.album(item.product.release.slug)}
+              aria-label={`Open ${item.product.release.title}`}
             >
               <img
-                src={item.album.coverSrc}
+                src={item.product.release.cover_url || ''}
                 width="240"
                 height="240"
-                alt={item.album.coverAlt}
+                alt={`${item.product.release.title} cover`}
               />
             </Link>
             <span>{String(item.quantity).padStart(2, '0')}</span>
@@ -56,13 +56,13 @@ export function OrderCard({ order }: OrderCardProps) {
 
       <div className="account-page__order-summary">
         <span>{itemCount} items</span>
-        <strong>Total: ${order.total.toFixed(2)}</strong>
+        <strong>Total: {order.total}</strong>
       </div>
 
       <Link
         className="account-page__order-link"
-        to={routes.accountOrder(order.id)}
-        aria-label={`View details for order ${order.number}`}
+        to={routes.accountOrder(order.order_number)}
+        aria-label={`View details for order ${order.order_number}`}
       >
         <span>View order</span>
         <ChevronIcon />

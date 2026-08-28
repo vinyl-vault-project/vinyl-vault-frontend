@@ -34,11 +34,8 @@ type AlbumPageStatus =
   | { state: 'not-found' }
   | { state: 'error'; message: string };
 
-function formatPrice(price: number, currency: string) {
-  return new Intl.NumberFormat('en-US', {
-    currency,
-    style: 'currency',
-  }).format(price);
+function formatPrice(price: number) {
+  return price.toFixed(2);
 }
 
 function formatTrackNumber(trackNumber: number) {
@@ -136,6 +133,7 @@ export function AlbumPage() {
   const [isPlaying, setIsPlaying] = useState(false);
   const [progress, setProgress] = useState(0);
   const [volume, setVolume] = useState(72);
+  const [selectedProductId, setSelectedProductId] = useState<string>('');
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
   useEffect(() => {
@@ -150,6 +148,9 @@ export function AlbumPage() {
         }
 
         setStatus(detail ? { state: 'ready', detail } : { state: 'not-found' });
+        setSelectedProductId(
+          detail?.product.id ? String(detail.product.id) : '',
+        );
         setIsPlaying(false);
         setProgress(0);
       } catch {
@@ -171,6 +172,10 @@ export function AlbumPage() {
   }, [slug]);
 
   const detail = status.state === 'ready' ? status.detail : null;
+  const selectedProduct = detail?.products?.find(
+    (product) => String(product.id) === selectedProductId,
+  );
+  const product = detail ? { ...detail.product, ...selectedProduct } : null;
   const tracks = detail?.tracks ?? emptyTracks;
   const activeTrack = useMemo(() => {
     if (tracks.length === 0) {
@@ -239,11 +244,11 @@ export function AlbumPage() {
       return;
     }
 
-    toggleSavedAlbum(detail.album.id);
+    void toggleSavedAlbum(detail.album.id);
   }
 
   function handleAddToCart() {
-    if (!detail || detail.product.availability !== 'in-stock') {
+    if (!detail || !product || product.availability !== 'in-stock') {
       return;
     }
 
@@ -257,7 +262,7 @@ export function AlbumPage() {
       return;
     }
 
-    addCartItem(detail.album.id);
+    if (product.id !== undefined) void addCartItem(product.id);
   }
 
   function handleCatalogFilterToggle() {
@@ -386,9 +391,10 @@ export function AlbumPage() {
     );
   }
 
-  const { album, assets, product } = status.detail;
+  const { album, assets } = status.detail;
+  if (!product) return null;
   const isAvailable = product.availability === 'in-stock';
-  const priceLabel = formatPrice(product.price, product.currency);
+  const priceLabel = formatPrice(product.price);
 
   return (
     <>
@@ -487,22 +493,24 @@ export function AlbumPage() {
             <div className="album-page__description-copy">
               <p>{status.detail.description}</p>
               <dl className="album-page__metadata">
-                <div>
-                  <dt>Country</dt>
-                  <dd>{product.pressingCountry}</dd>
-                </div>
-                <div>
-                  <dt>Genre</dt>
-                  <dd>{product.genre.join(', ')}</dd>
-                </div>
-                <div>
-                  <dt>Style</dt>
-                  <dd>{product.style.join(', ')}</dd>
-                </div>
-                <div>
-                  <dt>Label</dt>
-                  <dd>{product.label}</dd>
-                </div>
+                {product.pressingCountry ? (
+                  <div>
+                    <dt>Country</dt>
+                    <dd>{product.pressingCountry}</dd>
+                  </div>
+                ) : null}
+                {product.genre.length > 0 ? (
+                  <div>
+                    <dt>Genre</dt>
+                    <dd>{product.genre.join(', ')}</dd>
+                  </div>
+                ) : null}
+                {product.style.length > 0 ? (
+                  <div>
+                    <dt>Style</dt>
+                    <dd>{product.style.join(', ')}</dd>
+                  </div>
+                ) : null}
               </dl>
             </div>
           </div>
@@ -544,7 +552,9 @@ export function AlbumPage() {
       <PurchaseBar
         isAvailable={isAvailable}
         priceLabel={priceLabel}
-        format={product.format}
+        products={status.detail.products ?? []}
+        selectedProductId={selectedProductId}
+        onProductChange={setSelectedProductId}
         availability={product.availability}
         onAddToCart={handleAddToCart}
       />
@@ -572,7 +582,9 @@ export function AlbumPage() {
 
 interface PurchaseBarProps {
   availability: AlbumDetail['product']['availability'];
-  format: string;
+  products: NonNullable<AlbumDetail['products']>;
+  selectedProductId: string;
+  onProductChange: (productId: string) => void;
   isAvailable: boolean;
   onAddToCart: () => void;
   priceLabel: string;
@@ -583,6 +595,9 @@ function PurchaseBar({
   isAvailable,
   onAddToCart,
   priceLabel,
+  products,
+  selectedProductId,
+  onProductChange,
 }: PurchaseBarProps) {
   return (
     <aside className="album-purchase-bar" aria-label="Album purchase">
@@ -595,6 +610,26 @@ function PurchaseBar({
           </span>
           <span>{priceLabel}</span>
         </div>
+        {products.length > 1 ? (
+          <label className="album-purchase-bar__product-select">
+            <span>Pressing</span>
+            <select
+              value={selectedProductId}
+              onChange={(event) => onProductChange(event.target.value)}
+            >
+              {products.map((item) => (
+                <option
+                  key={item.id}
+                  value={String(item.id)}
+                  disabled={item.availability === 'out-of-stock'}
+                >
+                  {item.pressingCountry || 'Standard'} —{' '}
+                  {formatPrice(item.price)}
+                </option>
+              ))}
+            </select>
+          </label>
+        ) : null}
         <button
           className="album-purchase-bar__button"
           type="button"
@@ -634,26 +669,34 @@ function Tracklist({
         <span>DURATION</span>
       </div>
       <div className="album-page__tracks" role="list">
-        {tracks.map((track) => {
+        {tracks.map((track, index) => {
           const isActive = track.id === activeTrackId;
+          const previousSide = tracks[index - 1]?.side;
+          const side = track.side || 'Other';
 
           return (
-            <button
-              className={`album-page__track${
-                isActive ? ' album-page__track--active' : ''
-              }`}
-              type="button"
-              role="listitem"
-              aria-current={isActive ? 'true' : undefined}
-              key={track.id}
-              onClick={() => onTrackClick(track)}
-              onKeyDown={(event) => onTrackKeyDown(event, track)}
-            >
-              <span>{formatTrackNumber(track.number)}</span>
-              <span>{track.title}</span>
-              <span>{track.duration}</span>
-              {isActive && isPlaying ? <PlaybackBars /> : null}
-            </button>
+            <div key={track.id} className="album-page__track-group">
+              {side !== previousSide ? (
+                <p className="album-page__side-heading">SIDE {side}</p>
+              ) : null}
+              <button
+                className={`album-page__track${isActive ? ' album-page__track--active' : ''}`}
+                type="button"
+                role="listitem"
+                aria-current={isActive ? 'true' : undefined}
+                onClick={() => onTrackClick(track)}
+                onKeyDown={(event) => onTrackKeyDown(event, track)}
+              >
+                <span>
+                  {track.side
+                    ? `${track.side}${track.number}`
+                    : formatTrackNumber(track.number)}
+                </span>
+                <span>{track.title}</span>
+                <span>{track.duration}</span>
+                {isActive && isPlaying ? <PlaybackBars /> : null}
+              </button>
+            </div>
           );
         })}
       </div>
@@ -717,15 +760,35 @@ function AudioPlayer({
           >
             <SkipBackIcon />
           </button>
-          <button
-            className="album-player__play"
-            type="button"
-            aria-label={isPlaying ? 'Pause preview' : 'Play preview'}
-            disabled={!hasAudio}
-            onClick={onPlayToggle}
-          >
-            {isPlaying ? <PauseIcon /> : <PlayIcon />}
-          </button>
+          {hasAudio ? (
+            <button
+              className="album-player__play"
+              type="button"
+              aria-label={isPlaying ? 'Pause preview' : 'Play preview'}
+              onClick={onPlayToggle}
+            >
+              {isPlaying ? <PauseIcon /> : <PlayIcon />}
+            </button>
+          ) : activeTrack?.previewUrl ? (
+            <a
+              className="album-player__play"
+              href={activeTrack.previewUrl}
+              target="_blank"
+              rel="noreferrer"
+              aria-label="Open preview on Bandcamp"
+            >
+              <PlayIcon />
+            </a>
+          ) : (
+            <button
+              className="album-player__play"
+              type="button"
+              aria-label="No audio preview available"
+              disabled
+            >
+              <PlayIcon />
+            </button>
+          )}
           <button type="button" aria-label="Next track" onClick={onNext}>
             <SkipForwardIcon />
           </button>

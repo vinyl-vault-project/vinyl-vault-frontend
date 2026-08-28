@@ -9,7 +9,7 @@ import { ArtistDetailsModal } from '../../features/home/components/ArtistDetails
 import {
   type CatalogFilters,
   defaultCatalogFilters,
-  filterAlbumsByCatalogState,
+  toReleaseQuery,
 } from '../../features/home/home.filters';
 import {
   getArtistDetailsBySlug,
@@ -23,45 +23,10 @@ import './SearchResults.scss';
 
 type SearchResultsStatus =
   | { state: 'loading' }
-  | { state: 'ready'; albums: AlbumSummary[] }
+  | { state: 'ready'; albums: AlbumSummary[]; count: number }
   | { state: 'error'; message: string };
 
 const ALBUMS_PER_PAGE = 15;
-
-function normalizeSearchText(value: string) {
-  return value.trim().toLowerCase();
-}
-
-function filterAlbumsByQuery(albums: AlbumSummary[], query: string) {
-  const normalizedQuery = normalizeSearchText(query);
-
-  if (!normalizedQuery) {
-    return albums;
-  }
-
-  const queryTerms = normalizedQuery.split(/\s+/);
-
-  return albums.filter((album) => {
-    const searchableText = [
-      album.artist,
-      album.title,
-      ...album.filterMetadata.genres,
-      ...album.filterMetadata.styles,
-    ]
-      .join(' ')
-      .toLowerCase();
-
-    return queryTerms.some((term) => searchableText.includes(term));
-  });
-}
-
-function filterAlbumsByArtist(albums: AlbumSummary[], artistSlug: string) {
-  if (!artistSlug) {
-    return albums;
-  }
-
-  return albums.filter((album) => album.artistSlug === artistSlug);
-}
 
 export function SearchResults() {
   const [searchParams] = useSearchParams();
@@ -84,10 +49,19 @@ export function SearchResults() {
 
     async function loadSearchResults() {
       try {
-        const albums = await getSearchResultAlbums();
+        const response = await getSearchResultAlbums({
+          search: query,
+          artist: artistSlug,
+          page: currentPage,
+          ...toReleaseQuery(appliedFilters),
+        });
 
         if (isActive) {
-          setStatus({ state: 'ready', albums });
+          setStatus({
+            state: 'ready',
+            albums: response.albums,
+            count: response.count,
+          });
         }
       } catch {
         if (isActive) {
@@ -104,7 +78,7 @@ export function SearchResults() {
     return () => {
       isActive = false;
     };
-  }, []);
+  }, [appliedFilters, artistSlug, currentPage, query]);
 
   async function handleArtistSelect(
     artistSlug: string,
@@ -142,26 +116,11 @@ export function SearchResults() {
     setIsCatalogFilterOpen(false);
   }
 
-  const filteredAlbums =
-    status.state === 'ready'
-      ? filterAlbumsByCatalogState(
-          filterAlbumsByArtist(
-            filterAlbumsByQuery(status.albums, query),
-            artistSlug,
-          ),
-          appliedFilters,
-        )
-      : [];
-
-  const totalPages = Math.ceil(filteredAlbums.length / ALBUMS_PER_PAGE);
+  const albums = status.state === 'ready' ? status.albums : [];
+  const totalPages =
+    status.state === 'ready' ? Math.ceil(status.count / ALBUMS_PER_PAGE) : 0;
 
   const validCurrentPage = Math.min(currentPage, Math.max(totalPages, 1));
-
-  const firstAlbumIndex = (validCurrentPage - 1) * ALBUMS_PER_PAGE;
-
-  const lastAlbumIndex = firstAlbumIndex + ALBUMS_PER_PAGE;
-
-  const visibleAlbums = filteredAlbums.slice(firstAlbumIndex, lastAlbumIndex);
 
   function handlePageChange(page: number) {
     setCurrentPage(page);
@@ -212,9 +171,9 @@ export function SearchResults() {
             </p>
           ) : null}
 
-          {status.state === 'ready' && filteredAlbums.length > 0 ? (
+          {status.state === 'ready' && albums.length > 0 ? (
             <div className="search-results-page__grid">
-              {visibleAlbums.map((album) => (
+              {albums.map((album) => (
                 <AlbumCard
                   key={album.id}
                   album={album}
@@ -226,7 +185,7 @@ export function SearchResults() {
             </div>
           ) : null}
 
-          {status.state === 'ready' && filteredAlbums.length === 0 ? (
+          {status.state === 'ready' && albums.length === 0 ? (
             <p className="search-results-page__status">
               No albums match this search.
             </p>
@@ -250,6 +209,7 @@ export function SearchResults() {
             disabled={validCurrentPage === 1}
             onClick={() => handlePageChange(validCurrentPage - 1)}
           >
+            <span aria-hidden="true">←</span>
             Previous
           </button>
 
@@ -280,6 +240,7 @@ export function SearchResults() {
             onClick={() => handlePageChange(validCurrentPage + 1)}
           >
             Next
+            <span aria-hidden="true">→</span>
           </button>
         </nav>
       ) : null}

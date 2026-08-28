@@ -35,6 +35,60 @@
     text-align: center;
   }
 
+  &__pagination {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: center;
+    margin: 0 auto 96px;
+    padding: 0 24px;
+  }
+
+  &__pagination-button {
+    display: inline-flex;
+    gap: 8px;
+    align-items: center;
+    justify-content: center;
+    min-width: 42px;
+    height: 42px;
+    padding: 0 12px;
+    color: var(--color-text-primary);
+    font: inherit;
+    font-size: 12px;
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: 0.08em;
+    cursor: pointer;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.42);
+    transition:
+      color var(--transition-hover),
+      background-color var(--transition-hover),
+      border-color var(--transition-hover),
+      transform var(--transition-hover);
+
+    &:hover:not(:disabled),
+    &--active {
+      background: rgba(255, 255, 255, 0.16);
+      border-color: var(--color-text-primary);
+    }
+
+    &:hover:not(:disabled) {
+      transform: translateY(-2px);
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--color-focus);
+      outline-offset: 4px;
+    }
+
+    &:disabled {
+      color: var(--color-text-muted);
+      cursor: not-allowed;
+      opacity: 0.45;
+    }
+  }
+
   .album-card {
     &__cover-link,
     &__cover-frame {
@@ -110,6 +164,19 @@
       grid-template-columns: 190px;
       gap: 28px;
       justify-content: center;
+    }
+
+    &__pagination {
+      gap: 6px;
+      margin-bottom: 72px;
+      padding-inline: 16px;
+    }
+
+    &__pagination-button {
+      min-width: 36px;
+      height: 38px;
+      padding-inline: 9px;
+      font-size: 11px;
     }
 
     .album-card {
