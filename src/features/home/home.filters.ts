@@ -32,3 +32,32 @@ export function toReleaseQuery(filters: CatalogFilters) {
     year_to: filters.toYear,
   };
 }
+
+export function filtersFromSearchParams(
+  searchParams: URLSearchParams,
+): CatalogFilters {
+  const fromYear = Number(searchParams.get('year_from'));
+  const toYear = Number(searchParams.get('year_to'));
+
+  return {
+    countries: [],
+    fromYear: Number.isFinite(fromYear)
+      ? fromYear
+      : defaultCatalogFilters.fromYear,
+    genres: searchParams.getAll('genre'),
+    styles: searchParams.getAll('style'),
+    toYear: Number.isFinite(toYear) ? toYear : defaultCatalogFilters.toYear,
+  };
+}
+
+export function filtersToSearchParams(filters: CatalogFilters) {
+  const searchParams = new URLSearchParams({
+    year_from: String(filters.fromYear),
+    year_to: String(filters.toYear),
+  });
+
+  filters.genres.forEach((genre) => searchParams.append('genre', genre));
+  filters.styles.forEach((style) => searchParams.append('style', style));
+
+  return searchParams;
+}

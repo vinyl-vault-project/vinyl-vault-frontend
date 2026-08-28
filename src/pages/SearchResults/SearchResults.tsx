@@ -8,7 +8,7 @@ import { CatalogFilter } from '../../components/ui/CatalogFilter/CatalogFilter';
 import { ArtistDetailsModal } from '../../features/home/components/ArtistDetailsModal/ArtistDetailsModal';
 import {
   type CatalogFilters,
-  defaultCatalogFilters,
+  filtersFromSearchParams,
   toReleaseQuery,
 } from '../../features/home/home.filters';
 import {
@@ -37,7 +37,9 @@ export function SearchResults() {
   });
   const [isCatalogFilterOpen, setIsCatalogFilterOpen] = useState(false);
   const [catalogFilterSession, setCatalogFilterSession] = useState(0);
-  const [appliedFilters, setAppliedFilters] = useState(defaultCatalogFilters);
+  const [appliedFilters, setAppliedFilters] = useState(() =>
+    filtersFromSearchParams(searchParams),
+  );
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedArtistDetails, setSelectedArtistDetails] =
     useState<ArtistDetails | null>(null);

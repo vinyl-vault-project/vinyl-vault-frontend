@@ -1,11 +1,14 @@
 import { type MouseEvent, useEffect, useRef, useState } from 'react';
+import { useNavigate } from 'react-router';
 
+import { routes } from '../../app/routes';
 import { Footer } from '../../components/layout/Footer/Footer';
 import { Header } from '../../components/layout/Header/Header';
 import { CatalogFilter } from '../../components/ui/CatalogFilter/CatalogFilter';
 import {
   type CatalogFilters,
   defaultCatalogFilters,
+  filtersToSearchParams,
   toReleaseQuery,
 } from '../../features/home/home.filters';
 import { AlbumCollection } from '../../features/home/components/AlbumCollection/AlbumCollection';
@@ -28,10 +31,11 @@ type HomePageStatus =
   | { state: 'error'; message: string };
 
 export function HomePage() {
+  const navigate = useNavigate();
   const [status, setStatus] = useState<HomePageStatus>({ state: 'loading' });
   const [isCatalogFilterOpen, setIsCatalogFilterOpen] = useState(false);
   const [catalogFilterSession, setCatalogFilterSession] = useState(0);
-  const [appliedFilters, setAppliedFilters] = useState(defaultCatalogFilters);
+  const [appliedFilters] = useState(defaultCatalogFilters);
   const [selectedArtistDetails, setSelectedArtistDetails] =
     useState<ArtistDetails | null>(null);
   const artistTriggerRef = useRef<HTMLElement | null>(null);
@@ -95,8 +99,8 @@ export function HomePage() {
   }
 
   function handleCatalogFilterApply(nextFilters: CatalogFilters) {
-    setAppliedFilters(nextFilters);
     setIsCatalogFilterOpen(false);
+    navigate(`${routes.search}?${filtersToSearchParams(nextFilters)}`);
   }
 
   if (status.state === 'loading') {

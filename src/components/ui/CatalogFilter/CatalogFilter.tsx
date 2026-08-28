@@ -316,7 +316,10 @@ function FilterGroup({
         )}
       </legend>
 
-      <div className="catalog-filter__option-list" id={groupId}>
+      <div
+        className={`catalog-filter__option-list catalog-filter__option-list--${field}`}
+        id={groupId}
+      >
         {shouldRenderOptions
           ? options.map((option) => (
               <Checkbox
