@@ -209,6 +209,7 @@ export function SearchResults() {
             disabled={validCurrentPage === 1}
             onClick={() => handlePageChange(validCurrentPage - 1)}
           >
+            <span aria-hidden="true">←</span>
             Previous
           </button>
 
@@ -239,6 +240,7 @@ export function SearchResults() {
             onClick={() => handlePageChange(validCurrentPage + 1)}
           >
             Next
+            <span aria-hidden="true">→</span>
           </button>
         </nav>
       ) : null}
