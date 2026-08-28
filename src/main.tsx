@@ -3,6 +3,7 @@ import { createRoot } from 'react-dom/client';
 import { BrowserRouter } from 'react-router';
 
 import App from './App.tsx';
+import { initializeAuth } from './state/auth.ts';
 import './index.scss';
 
 const rootElement = document.getElementById('root');
@@ -18,3 +19,5 @@ createRoot(rootElement).render(
     </BrowserRouter>
   </StrictMode>,
 );
+
+void initializeAuth();

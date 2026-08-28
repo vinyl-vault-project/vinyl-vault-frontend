@@ -8,16 +8,14 @@ import {
 } from 'react';
 
 import catalogFilterChevron from '../../../assets/vinyl-vault/catalog-filter-chevron.svg';
+import { getGenres, getStyles } from '../../../api/catalog.api';
 import { Button } from '../Button/Button';
 import { Checkbox } from '../Checkbox/Checkbox';
 import { Select } from '../Select/Select';
 import {
   type CatalogFilters,
   type FilterOption,
-  countryOptions,
   defaultCatalogFilters,
-  genreOptions,
-  styleOptions,
   yearOptions,
 } from '../../../features/home/home.filters';
 import './CatalogFilter.scss';
@@ -48,6 +46,9 @@ export function CatalogFilter({
     styles: true,
   });
   const [yearError, setYearError] = useState('');
+  const [genreOptions, setGenreOptions] = useState<FilterOption[]>([]);
+  const [styleOptions, setStyleOptions] = useState<FilterOption[]>([]);
+  const [optionsError, setOptionsError] = useState('');
   const panelRef = useRef<HTMLFormElement | null>(null);
   const errorId = useId();
   const yearSelectOptions = useMemo(
@@ -95,6 +96,37 @@ export function CatalogFilter({
       document.removeEventListener('pointerdown', handlePointerDown);
     };
   }, [isOpen, onClose]);
+
+  useEffect(() => {
+    if (!isOpen) return;
+    let isActive = true;
+    void Promise.all([getGenres(), getStyles()])
+      .then(([genres, styles]) => {
+        if (!isActive) return;
+        setGenreOptions(
+          genres.results.map((item) => ({
+            id: item.slug || String(item.id),
+            label: item.name,
+            count: undefined,
+          })),
+        );
+        setStyleOptions(
+          styles.results.map((item) => ({
+            id: item.slug || String(item.id),
+            label: item.name,
+            count: undefined,
+          })),
+        );
+        setOptionsError('');
+      })
+      .catch(() => {
+        if (isActive)
+          setOptionsError('Filters could not be loaded. Please try again.');
+      });
+    return () => {
+      isActive = false;
+    };
+  }, [isOpen]);
 
   function handleSubmit(event: SyntheticEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -190,14 +222,6 @@ export function CatalogFilter({
           </div>
 
           <FilterGroup
-            field="countries"
-            title="Country"
-            options={countryOptions}
-            selectedValues={draftFilters.countries}
-            onChange={updateOption}
-          />
-
-          <FilterGroup
             field="genres"
             title="Genre"
             isExpanded={expandedGroups.genres}
@@ -206,6 +230,11 @@ export function CatalogFilter({
             selectedValues={draftFilters.genres}
             onChange={updateOption}
           />
+          {optionsError ? (
+            <p className="catalog-filter__error" role="alert">
+              {optionsError}
+            </p>
+          ) : null}
 
           <div className="catalog-filter__style-column">
             <FilterGroup

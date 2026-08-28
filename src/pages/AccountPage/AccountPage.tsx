@@ -6,6 +6,8 @@ import {
   useState,
 } from 'react';
 import { useNavigate } from 'react-router';
+import { getOrders } from '../../api/orders.api';
+import type { OrderDto } from '../../api/api.types';
 
 import { routes } from '../../app/routes';
 import accountBackground from '../../assets/vinyl-vault/account-library-shelf-turntable-headphones.png';
@@ -13,14 +15,12 @@ import { Footer } from '../../components/layout/Footer/Footer';
 import { Header } from '../../components/layout/Header/Header';
 import { AlbumCard } from '../../components/ui/AlbumCard/AlbumCard';
 import { CatalogFilter } from '../../components/ui/CatalogFilter/CatalogFilter';
-import { getAccountOrder, accountOrders } from '../../data/accountLibrary';
-import { getAlbumsByIds } from '../../data/albums';
 import {
   type CatalogFilters,
   defaultCatalogFilters,
 } from '../../features/home/home.filters';
-import { mockLogout, openAuthModal, useAuthState } from '../../state/auth';
-import { useSavedAlbumIds } from '../../state/library';
+import { logoutUser, openAuthModal, useAuthState } from '../../state/auth';
+import { refreshSavedAlbums, useSavedAlbums } from '../../state/library';
 import './AccountPage.scss';
 import { OrderCard } from './components/OrderCard';
 
@@ -37,22 +37,33 @@ function LogoutIcon() {
 export function AccountPage() {
   const navigate = useNavigate();
   const auth = useAuthState();
-  const savedAlbumIds = useSavedAlbumIds();
+  const savedItems = useSavedAlbums();
   const [isCatalogFilterOpen, setIsCatalogFilterOpen] = useState(false);
   const [catalogFilterSession, setCatalogFilterSession] = useState(0);
   const [appliedFilters, setAppliedFilters] = useState(defaultCatalogFilters);
-  const orders = useMemo(
-    () =>
-      auth.isAuthenticated
-        ? accountOrders
-            .map((order) => getAccountOrder(order.id))
-            .filter((order): order is NonNullable<typeof order> => Boolean(order))
-        : [],
-    [auth.isAuthenticated],
-  );
+  const [orders, setOrders] = useState<OrderDto[]>([]);
   const savedAlbums = useMemo(
-    () => (auth.isAuthenticated ? getAlbumsByIds(savedAlbumIds) : []),
-    [auth.isAuthenticated, savedAlbumIds],
+    () =>
+      savedItems.map((item) => ({
+        id: String(item.release.id),
+        slug: item.release.slug,
+        artistSlug: item.release.artists[0]?.slug || '',
+        artist: item.release.artists[0]?.name || 'Unknown artist',
+        title: item.release.title,
+        coverSrc: item.release.cover_url || '',
+        coverAlt: `${item.release.title} cover`,
+        filterMetadata: {
+          countries: item.release.country ? [item.release.country] : [],
+          genres: (item.release.genres ?? []).map((genre) =>
+            typeof genre === 'string' ? genre : genre.name,
+          ),
+          releaseYear: item.release.release_year || 0,
+          styles: (item.release.styles ?? []).map((style) =>
+            typeof style === 'string' ? style : style.name,
+          ),
+        },
+      })),
+    [savedItems],
   );
   const catalogFilterId = 'account-page-catalog-filter';
 
@@ -68,6 +79,17 @@ export function AccountPage() {
     });
     navigate(routes.home, { replace: true });
   }, [auth.isAuthenticated, navigate]);
+
+  useEffect(() => {
+    if (auth.isAuthenticated) void refreshSavedAlbums();
+  }, [auth.isAuthenticated]);
+
+  useEffect(() => {
+    if (!auth.isAuthenticated) return;
+    void getOrders().then((response) =>
+      setOrders(Array.isArray(response) ? response : response.results),
+    );
+  }, [auth.isAuthenticated]);
 
   if (!auth.isAuthenticated) {
     return null;
@@ -96,8 +118,8 @@ export function AccountPage() {
     setIsCatalogFilterOpen(false);
   }
 
-  function handleLogout() {
-    mockLogout();
+  async function handleLogout() {
+    await logoutUser();
     navigate(routes.home);
   }
 
@@ -132,7 +154,7 @@ export function AccountPage() {
         >
           <div className="account-page__heading-row">
             <div>
-              <h1 id="account-title">Your account</h1>
+              <h1 id="account-title">{auth.user?.name ?? 'Your account'}</h1>
               <p>View your purchased music</p>
             </div>
             <button

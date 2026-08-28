@@ -36,7 +36,7 @@ export const homePageMockData: HomePageData = {
       description:
         "Aphex Twin's landmark 2001 album returns to vinyl in a special 4xLP anniversary edition",
       ctaLabel: 'Go to album',
-      albumSlug: 'aphex-twin-drukqs',
+      albumSlug: 'drukqs-2001',
       backgroundSrc: heroBackground,
       slides: [
         {
