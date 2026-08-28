@@ -154,7 +154,7 @@ export function AccountPage() {
         >
           <div className="account-page__heading-row">
             <div>
-              <h1 id="account-title">Your account</h1>
+              <h1 id="account-title">{auth.user?.name ?? 'Your account'}</h1>
               <p>View your purchased music</p>
             </div>
             <button
