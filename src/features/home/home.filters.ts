@@ -36,17 +36,23 @@ export function toReleaseQuery(filters: CatalogFilters) {
 export function filtersFromSearchParams(
   searchParams: URLSearchParams,
 ): CatalogFilters {
-  const fromYear = Number(searchParams.get('year_from'));
-  const toYear = Number(searchParams.get('year_to'));
+  const fromYearValue = searchParams.get('year_from');
+  const toYearValue = searchParams.get('year_to');
+  const fromYear = Number(fromYearValue);
+  const toYear = Number(toYearValue);
 
   return {
     countries: [],
-    fromYear: Number.isFinite(fromYear)
-      ? fromYear
-      : defaultCatalogFilters.fromYear,
+    fromYear:
+      fromYearValue && Number.isFinite(fromYear)
+        ? fromYear
+        : defaultCatalogFilters.fromYear,
     genres: searchParams.getAll('genre'),
     styles: searchParams.getAll('style'),
-    toYear: Number.isFinite(toYear) ? toYear : defaultCatalogFilters.toYear,
+    toYear:
+      toYearValue && Number.isFinite(toYear)
+        ? toYear
+        : defaultCatalogFilters.toYear,
   };
 }
 
