@@ -760,15 +760,35 @@ function AudioPlayer({
           >
             <SkipBackIcon />
           </button>
-          <button
-            className="album-player__play"
-            type="button"
-            aria-label={isPlaying ? 'Pause preview' : 'Play preview'}
-            disabled={!hasAudio}
-            onClick={onPlayToggle}
-          >
-            {isPlaying ? <PauseIcon /> : <PlayIcon />}
-          </button>
+          {hasAudio ? (
+            <button
+              className="album-player__play"
+              type="button"
+              aria-label={isPlaying ? 'Pause preview' : 'Play preview'}
+              onClick={onPlayToggle}
+            >
+              {isPlaying ? <PauseIcon /> : <PlayIcon />}
+            </button>
+          ) : activeTrack?.previewUrl ? (
+            <a
+              className="album-player__play"
+              href={activeTrack.previewUrl}
+              target="_blank"
+              rel="noreferrer"
+              aria-label="Open preview on Bandcamp"
+            >
+              <PlayIcon />
+            </a>
+          ) : (
+            <button
+              className="album-player__play"
+              type="button"
+              aria-label="No audio preview available"
+              disabled
+            >
+              <PlayIcon />
+            </button>
+          )}
           <button type="button" aria-label="Next track" onClick={onNext}>
             <SkipForwardIcon />
           </button>

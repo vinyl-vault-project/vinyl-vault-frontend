@@ -520,7 +520,8 @@
     gap: 8px;
     align-items: center;
 
-    button {
+    button,
+    a {
       display: grid;
       place-items: center;
       width: 30px;
@@ -530,6 +531,7 @@
       background: transparent;
       border: 0;
       border-radius: 999px;
+      text-decoration: none;
 
       &:focus-visible {
         outline: 2px solid var(--color-focus);
