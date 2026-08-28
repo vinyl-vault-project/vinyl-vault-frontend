@@ -42,7 +42,7 @@ Catalog data is loaded from `GET /releases/`; search and applied genre/style/yea
 
 Authenticated cart and saved-release state are server-backed (`/cart/` and `/saved/`), with the saved-record ID retained for deletion. Authentication uses `/auth/login/`, `/auth/register/`, `/auth/me/`, `/auth/token/refresh/`, and `/auth/logout/`. Orders are created through `/orders/` and the account reads `/orders/`.
 
-`getArtistDetailsBySlug()` loads artist details from `GET /artists/{slug}/` and maps that response in the service layer.
+Home hero content, Featured Artists, and their modal content are frontend-owned design content. The hero CTA targets the verified backend Drukqs slug (`drukqs-2001`), so its destination remains a real Album Page.
 
 Catalog filter defaults and request mapping live in `src/features/home/home.filters.ts`. The filter panel keeps draft state while open; Apply causes the page to request the filtered backend catalog. Clear restores `defaultCatalogFilters`; closing with Escape, repeat toggle, or outside click discards unapplied draft changes.
 

@@ -1,12 +1,12 @@
 import albumPlaceholder from '../../assets/vinyl-vault/album-placeholder.svg';
 import {
-  getArtist,
   getRelease,
   getReleases,
   type ReleaseQuery,
 } from '../../api/catalog.api';
 import type { ReleaseDto } from '../../api/api.types';
 import type { AlbumDetail } from '../../data/albumDetails';
+import { artistDetailsMockData, homePageMockData } from './home.mock';
 import type { AlbumSummary, ArtistDetails, HomePageData } from './home.types';
 
 export async function getHomePageData(
@@ -15,9 +15,9 @@ export async function getHomePageData(
   const response = await getReleases({ ...query, ordering: '-release_year' });
   const albums = response.results.map(mapRelease);
   return {
-    heroPromotions: [],
+    heroPromotions: homePageMockData.heroPromotions,
     albumsOfTheWeek: albums.slice(0, 8),
-    featuredArtists: [],
+    featuredArtists: homePageMockData.featuredArtists,
     recommendedAlbums: albums.slice(8, 16),
   };
 }
@@ -25,16 +25,7 @@ export async function getHomePageData(
 export async function getArtistDetailsBySlug(
   slug: string,
 ): Promise<ArtistDetails | null> {
-  const artist = await getArtist(slug);
-  return {
-    id: String(artist.id),
-    slug: artist.slug,
-    name: artist.name,
-    imageSrc: artist.image_url || albumPlaceholder,
-    imageAlt: artist.name,
-    biography: artist.biography || '',
-    albums: artist.releases.map(mapRelease),
-  };
+  return artistDetailsMockData.find((artist) => artist.slug === slug) ?? null;
 }
 
 export async function getSearchResultAlbums(query: ReleaseQuery = {}): Promise<{
