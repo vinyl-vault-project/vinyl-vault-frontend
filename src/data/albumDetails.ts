@@ -14,19 +14,21 @@ export interface AlbumTrack {
   title: string;
   duration: string;
   audioSrc?: string;
+  side?: string;
 }
 
 export type AlbumAvailability = 'in-stock' | 'out-of-stock';
 
 export interface AlbumProductDetails {
+  id?: number | string;
   pressingCountry: string;
   genre: string[];
   style: string[];
-  label: string;
   price: number;
-  currency: string;
-  format: string;
   availability: AlbumAvailability;
+  label?: string;
+  currency?: string;
+  format?: string;
 }
 
 export interface AlbumPageAssets {
@@ -42,6 +44,12 @@ export interface AlbumDetail {
   album: AlbumSummary;
   description: string;
   product: AlbumProductDetails;
+  products?: Array<
+    Pick<
+      AlbumProductDetails,
+      'id' | 'pressingCountry' | 'price' | 'availability'
+    >
+  >;
   tracks: AlbumTrack[];
   relatedAlbums: AlbumSummary[];
   assets: AlbumPageAssets;

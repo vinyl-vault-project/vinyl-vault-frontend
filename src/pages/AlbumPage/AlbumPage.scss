@@ -224,6 +224,14 @@
     }
   }
 
+  &__side-heading {
+    margin: 16px 0 7px;
+    color: var(--color-text-muted);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+  }
+
   &__track {
     width: 100%;
     min-height: 58px;
@@ -261,7 +269,6 @@
       outline: 2px solid var(--color-focus);
       outline-offset: -2px;
     }
-
   }
 
   &__playing-bars {
@@ -414,6 +421,22 @@
     font-size: 20px;
     line-height: 28px;
     font-weight: 400;
+  }
+
+  &__product-select {
+    display: grid;
+    gap: 4px;
+    color: var(--color-text-muted);
+    font-size: 11px;
+    letter-spacing: 0.08em;
+
+    select {
+      min-width: 150px;
+      border: 1px solid currentColor;
+      background: transparent;
+      color: inherit;
+      font: inherit;
+    }
   }
 
   &__availability {

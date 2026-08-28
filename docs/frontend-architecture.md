@@ -34,13 +34,17 @@ Artist modal data uses `ArtistDetails`, which reuses `AlbumSummary` for the albu
 
 ## Data Flow
 
-`getHomePageData()` currently returns `homePageMockData` asynchronously. A future `GET /api/home` integration should replace the body of that adapter and map API responses there, not inside React components.
+## Backend API data flow
 
-`getArtistDetailsBySlug()` currently resolves artist details from typed mock data. A future `GET /api/artists/:slug` integration should keep response mapping in that adapter layer.
+The API base URL is configured only through `VITE_API_URL` (see `.env.example`). API modules in `src/api` use native `fetch`, typed DTOs, JSON requests, Bearer access tokens, and one guarded access-token refresh on a 401. Refresh failure clears the local session.
 
-Catalog filter options and defaults live in `src/features/home/home.filters.ts`. `HomePage` owns the applied filter state and passes it to the page-owned `CatalogFilter` component in `src/pages/HomePage/components/CatalogFilter`. The filter panel keeps its own draft state while open. Checkbox and year changes affect only draft state until Apply is submitted; Clear restores `defaultCatalogFilters`; closing with Escape, repeat toggle, or outside click discards unapplied draft changes.
+Catalog data is loaded from `GET /releases/`; search and applied genre/style/year filters are sent as query parameters rather than filtered from mock records. Filter choices come from `GET /genres/` and `GET /styles/`. There is currently no backend contract for a country filter, so it is not displayed. Release pages use `GET /releases/{slug}/`, mapping the backend DTO in `home.service.ts`. Track durations are formatted from `duration_seconds`, and tracks are grouped by their backend `side` value.
 
-The current filtering is frontend-only and uses typed mock metadata. A future backend contract should replace this with a catalog query such as `GET /api/home?fromYear=1989&toYear=2026&countries=us&genres=electronic,hip-hop&styles=trip-hop`, with response mapping kept in the Home service layer.
+Authenticated cart and saved-release state are server-backed (`/cart/` and `/saved/`), with the saved-record ID retained for deletion. Authentication uses `/auth/login/`, `/auth/register/`, `/auth/me/`, `/auth/token/refresh/`, and `/auth/logout/`. Orders are created through `/orders/` and the account reads `/orders/`.
+
+`getArtistDetailsBySlug()` loads artist details from `GET /artists/{slug}/` and maps that response in the service layer.
+
+Catalog filter defaults and request mapping live in `src/features/home/home.filters.ts`. The filter panel keeps draft state while open; Apply causes the page to request the filtered backend catalog. Clear restores `defaultCatalogFilters`; closing with Escape, repeat toggle, or outside click discards unapplied draft changes.
 
 ## Catalog Filter Accessibility
 
@@ -68,12 +72,6 @@ Use descriptive, lowercase asset names under `src/assets/vinyl-vault`. Do not in
 
 Hero content is modeled as an array of `HeroPromotion`. The current asset set has one real visual, so automatic rotation and indicators are hidden. If a second genuine visual is added, the component can be extended to rotate every 5000ms, reset after manual indicator selection, and respect `prefers-reduced-motion`.
 
-## Updating Content
-
-Add or replace albums, artists, or hero promotions in `home.mock.ts`. Keep IDs and slugs stable, provide meaningful alt text, and import assets from `src/assets/vinyl-vault`.
-
 ## Current Limits
 
-Album, search results, cart, account, contact, and about pages are link targets only. Several recommended album covers are placeholders because the matching source images were not provided. The next integration step is replacing mock Home data with `GET /api/home` and then implementing the linked routes.
-
-Some recommended album covers were not supplied as separate assets, so those entries use the shared placeholder cover.
+The backend does not provide an endpoint for home-page hero promotions, featured artists, country filters, or recommendations. These sections use empty states rather than presenting mock business data as live catalog data.

@@ -10,9 +10,8 @@ import { Eye, EyeOff } from 'lucide-react';
 import authModalBackground from '../../../assets/vinyl-vault/auth-modal-background.png';
 import {
   closeAuthModal,
-  isDemoAccountEmail,
-  mockLogin,
-  mockRegister,
+  loginUser,
+  registerUser,
   setAuthModalMode,
   useAuthModalState,
 } from '../../../state/auth';
@@ -69,9 +68,9 @@ function AuthModalDialog() {
   const dialogRef = useRef<HTMLDivElement | null>(null);
   const previousFocusRef = useRef<HTMLElement | null>(null);
   const [values, setValues] = useState(initialValues);
-  const [errors, setErrors] = useState<Partial<Record<keyof AuthFormValues, string>>>(
-    {},
-  );
+  const [errors, setErrors] = useState<
+    Partial<Record<keyof AuthFormValues, string>>
+  >({});
   const [statusMessage, setStatusMessage] = useState('');
   const titleId = useId();
   const messageId = useId();
@@ -82,7 +81,9 @@ function AuthModalDialog() {
     }
 
     previousFocusRef.current =
-      document.activeElement instanceof HTMLElement ? document.activeElement : null;
+      document.activeElement instanceof HTMLElement
+        ? document.activeElement
+        : null;
     const originalOverflow = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
 
@@ -165,7 +166,7 @@ function AuthModalDialog() {
     return Object.keys(nextErrors).length === 0;
   }
 
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
     if (!validateForm()) {
@@ -173,33 +174,36 @@ function AuthModalDialog() {
     }
 
     if (isResetMode) {
-      if (!isDemoAccountEmail(values.email)) {
-        setErrors({
-          email: 'No account was found for this email. Please register.',
-        });
-        setStatusMessage('');
-        return;
-      }
-
-      setStatusMessage('Instructions have been sent to your email.');
+      setStatusMessage('Password reset is not available from the API yet.');
       return;
     }
 
-    if (isRegisterMode) {
-      mockRegister({ email: values.email, name: values.name });
-    } else {
-      const didLogin = mockLogin({
-        email: values.email,
-        password: values.password,
-      });
-
-      if (!didLogin) {
-        setStatusMessage('Email or password is incorrect.');
-        return;
-      }
+    try {
+      if (isRegisterMode)
+        await registerUser({
+          username: values.name,
+          email: values.email,
+          password: values.password,
+        });
+      else await loginUser({ email: values.email, password: values.password });
+      closeAuthModal();
+    } catch (error) {
+      const fields =
+        error instanceof Error && 'fields' in error
+          ? (error.fields as Partial<Record<keyof AuthFormValues, string[]>>)
+          : {};
+      const nextErrors = Object.fromEntries(
+        Object.entries(fields).map(([key, messages]) => [
+          key === 'username' ? 'name' : key,
+          messages?.join(' '),
+        ]),
+      ) as Partial<Record<keyof AuthFormValues, string>>;
+      if (Object.keys(nextErrors).length > 0) setErrors(nextErrors);
+      else
+        setStatusMessage(
+          error instanceof Error ? error.message : 'Unable to authenticate.',
+        );
     }
-
-    closeAuthModal();
   }
 
   function handleBack() {
