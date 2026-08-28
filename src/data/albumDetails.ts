@@ -14,6 +14,7 @@ export interface AlbumTrack {
   title: string;
   duration: string;
   audioSrc?: string;
+  previewUrl?: string;
   side?: string;
 }
 

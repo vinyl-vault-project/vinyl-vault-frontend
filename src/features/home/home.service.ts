@@ -60,7 +60,10 @@ export async function getAlbumDetail(
       side: track.side || 'Other',
       title: track.title,
       duration: formatDuration(track.duration_seconds),
-      audioSrc: track.audio_preview_url || undefined,
+      audioSrc: isDirectAudioUrl(track.audio_preview_url)
+        ? track.audio_preview_url || undefined
+        : undefined,
+      previewUrl: track.audio_preview_url || undefined,
     })),
     relatedAlbums: [],
     product: {
@@ -95,6 +98,14 @@ export async function getAlbumDetail(
 export function formatDuration(seconds: number | null) {
   const total = Math.max(0, seconds ?? 0);
   return `${String(Math.floor(total / 60)).padStart(2, '0')}:${String(total % 60).padStart(2, '0')}`;
+}
+function isDirectAudioUrl(url: string | null) {
+  if (!url) return false;
+  try {
+    return /\.(aac|m4a|mp3|ogg|opus|wav)$/i.test(new URL(url).pathname);
+  } catch {
+    return false;
+  }
 }
 export function mapRelease(release: ReleaseDto): AlbumSummary {
   const artist = release.artists[0];

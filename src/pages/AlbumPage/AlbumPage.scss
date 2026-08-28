@@ -589,6 +589,14 @@
       line-height: 14px;
       letter-spacing: 4px;
     }
+
+    a {
+      color: inherit;
+      font-size: inherit;
+      letter-spacing: inherit;
+      text-decoration: underline;
+      text-underline-offset: 3px;
+    }
   }
 
   &__volume {

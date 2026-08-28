@@ -776,7 +776,13 @@ function AudioPlayer({
 
         <div className="album-player__now-playing">
           <strong>{activeTrack?.title ?? 'No preview selected'}</strong>
-          <span>{album.artist}</span>
+          {activeTrack?.previewUrl && !hasAudio ? (
+            <a href={activeTrack.previewUrl} target="_blank" rel="noreferrer">
+              Open preview on Bandcamp
+            </a>
+          ) : (
+            <span>{album.artist}</span>
+          )}
         </div>
 
         <label className="album-player__volume">
