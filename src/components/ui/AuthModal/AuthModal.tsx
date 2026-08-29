@@ -72,6 +72,7 @@ function AuthModalDialog() {
     Partial<Record<keyof AuthFormValues, string>>
   >({});
   const [statusMessage, setStatusMessage] = useState('');
+  const [isExistingAccount, setIsExistingAccount] = useState(false);
   const titleId = useId();
   const messageId = useId();
 
@@ -141,6 +142,7 @@ function AuthModalDialog() {
     setValues((currentValues) => ({ ...currentValues, [field]: value }));
     setErrors((currentErrors) => ({ ...currentErrors, [field]: undefined }));
     setStatusMessage('');
+    setIsExistingAccount(false);
   }
 
   function validateForm() {
@@ -173,6 +175,8 @@ function AuthModalDialog() {
       return;
     }
 
+    setIsExistingAccount(false);
+
     if (isResetMode) {
       setStatusMessage('Password reset is not available from the API yet.');
       return;
@@ -198,7 +202,18 @@ function AuthModalDialog() {
           messages?.join(' '),
         ]),
       ) as Partial<Record<keyof AuthFormValues, string>>;
-      if (Object.keys(nextErrors).length > 0) setErrors(nextErrors);
+      const duplicateEmailMessages = fields.email ?? [];
+      const isDuplicateEmail =
+        isRegisterMode &&
+        duplicateEmailMessages.some((message) =>
+          /already|exist|taken|unique/i.test(message),
+        );
+
+      if (isDuplicateEmail) {
+        setErrors({ ...nextErrors, email: undefined });
+        setStatusMessage('');
+        setIsExistingAccount(true);
+      } else if (Object.keys(nextErrors).length > 0) setErrors(nextErrors);
       else
         setStatusMessage(
           error instanceof Error ? error.message : 'Unable to authenticate.',
@@ -303,6 +318,18 @@ function AuthModalDialog() {
             {actionLabel}
             <ArrowIcon />
           </button>
+
+          {isExistingAccount ? (
+            <div className="auth-modal__existing-account" role="alert">
+              <p>This account is already active.</p>
+              <button
+                type="button"
+                onClick={() => setAuthModalMode('reset-password')}
+              >
+                Recover password
+              </button>
+            </div>
+          ) : null}
 
           {statusMessage ? (
             <p className="auth-modal__status" aria-live="polite">
