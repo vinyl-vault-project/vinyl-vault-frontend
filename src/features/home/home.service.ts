@@ -1,5 +1,6 @@
 import albumPlaceholder from '../../assets/vinyl-vault/album-placeholder.svg';
 import {
+  getArtist,
   getRelease,
   getReleases,
   type ReleaseQuery,
@@ -25,7 +26,20 @@ export async function getHomePageData(
 export async function getArtistDetailsBySlug(
   slug: string,
 ): Promise<ArtistDetails | null> {
-  return artistDetailsMockData.find((artist) => artist.slug === slug) ?? null;
+  const artist = await getArtist(slug);
+  const presentationFallback = artistDetailsMockData.find(
+    (item) => item.slug === slug,
+  );
+
+  return {
+    id: String(artist.id),
+    slug: artist.slug,
+    name: artist.name,
+    imageSrc: artist.image_url || presentationFallback?.imageSrc || '',
+    imageAlt: `${artist.name} portrait`,
+    biography: artist.biography || presentationFallback?.biography || '',
+    albums: artist.releases.map(mapRelease),
+  };
 }
 
 export async function getSearchResultAlbums(query: ReleaseQuery = {}): Promise<{
