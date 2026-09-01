@@ -26,6 +26,7 @@ export const defaultCatalogFilters: CatalogFilters = {
 
 export function toReleaseQuery(filters: CatalogFilters) {
   return {
+    country: filters.countries,
     genre: filters.genres,
     style: filters.styles,
     year_from: filters.fromYear,
@@ -42,7 +43,7 @@ export function filtersFromSearchParams(
   const toYear = Number(toYearValue);
 
   return {
-    countries: [],
+    countries: searchParams.getAll('country'),
     fromYear:
       fromYearValue && Number.isFinite(fromYear)
         ? fromYear
@@ -64,6 +65,9 @@ export function filtersToSearchParams(filters: CatalogFilters) {
 
   filters.genres.forEach((genre) => searchParams.append('genre', genre));
   filters.styles.forEach((style) => searchParams.append('style', style));
+  filters.countries.forEach((country) =>
+    searchParams.append('country', country),
+  );
 
   return searchParams;
 }

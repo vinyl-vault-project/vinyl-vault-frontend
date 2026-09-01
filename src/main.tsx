@@ -11,13 +11,18 @@ const rootElement = document.getElementById('root');
 if (!rootElement) {
   throw new Error('Root element was not found.');
 }
+const root = createRoot(rootElement);
 
-createRoot(rootElement).render(
-  <StrictMode>
-    <BrowserRouter>
-      <App />
-    </BrowserRouter>
-  </StrictMode>,
-);
+async function bootstrap() {
+  await initializeAuth();
 
-void initializeAuth();
+  root.render(
+    <StrictMode>
+      <BrowserRouter>
+        <App />
+      </BrowserRouter>
+    </StrictMode>,
+  );
+}
+
+void bootstrap();

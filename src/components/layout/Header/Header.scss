@@ -312,6 +312,7 @@
       width: 48px;
       height: 48px;
       padding: 0;
+      color: var(--color-text-primary);
       justify-self: start;
       background: transparent;
       border: 0;
@@ -332,7 +333,6 @@
       justify-self: center;
       transform-origin: center;
     }
-
   }
 }
 

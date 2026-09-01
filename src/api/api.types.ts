@@ -22,6 +22,7 @@ export interface ArtistReferenceDto {
   id: number | string;
   name: string;
   slug: string;
+  origin_country?: string | null;
 }
 export interface ReleaseDto {
   id: number | string;

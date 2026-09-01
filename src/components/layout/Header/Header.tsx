@@ -85,7 +85,9 @@ export function Header({
     const trimmedQuery = query.trim();
 
     navigate(
-      trimmedQuery.length > 0 ? routes.searchByQuery(trimmedQuery) : routes.search,
+      trimmedQuery.length > 0
+        ? routes.searchByQuery(trimmedQuery)
+        : routes.search,
     );
   }
 
@@ -178,11 +180,7 @@ export function Header({
           >
             <FilterIcon />
           </button>
-          <Link
-            className="icon-button"
-            to={routes.home}
-            aria-label="Home"
-          >
+          <Link className="icon-button" to={routes.home} aria-label="Home">
             <img src={homeIcon} width="27" height="27" alt="" />
           </Link>
           {auth.isAuthenticated ? (
@@ -198,7 +196,9 @@ export function Header({
               className="icon-button"
               type="button"
               aria-label="Log in to account"
-              onClick={() => openAuthModal({ context: 'account', mode: 'login' })}
+              onClick={() =>
+                openAuthModal({ context: 'account', mode: 'login' })
+              }
             >
               <AccountIcon />
             </button>
