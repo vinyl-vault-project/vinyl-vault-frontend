@@ -19,6 +19,7 @@ import type { AlbumDetail, AlbumTrack } from '../../data/albumDetails';
 import {
   type CatalogFilters,
   defaultCatalogFilters,
+  filtersToSearchParams,
 } from '../../features/home/home.filters';
 import { getAlbumDetail } from '../../features/home/home.service';
 import { openAuthModal, useAuthState } from '../../state/auth';
@@ -129,7 +130,7 @@ export function AlbumPage() {
   const [activeTrackId, setActiveTrackId] = useState('');
   const [isCatalogFilterOpen, setIsCatalogFilterOpen] = useState(false);
   const [catalogFilterSession, setCatalogFilterSession] = useState(0);
-  const [appliedFilters, setAppliedFilters] = useState(defaultCatalogFilters);
+  const [appliedFilters] = useState(defaultCatalogFilters);
   const [isPlaying, setIsPlaying] = useState(false);
   const [progress, setProgress] = useState(0);
   const [volume, setVolume] = useState(72);
@@ -276,8 +277,8 @@ export function AlbumPage() {
   }
 
   function handleCatalogFilterApply(nextFilters: CatalogFilters) {
-    setAppliedFilters(nextFilters);
     setIsCatalogFilterOpen(false);
+    navigate(`${routes.search}?${filtersToSearchParams(nextFilters)}`);
   }
 
   function selectTrack(track: AlbumTrack) {
@@ -331,7 +332,6 @@ export function AlbumPage() {
             filterPanelId={catalogFilterId}
             isFilterOpen={isCatalogFilterOpen}
             onFilterToggle={handleCatalogFilterToggle}
-            showSearchOnMobile={false}
           />
           <CatalogFilter
             key={catalogFilterSession}
@@ -362,7 +362,6 @@ export function AlbumPage() {
             filterPanelId={catalogFilterId}
             isFilterOpen={isCatalogFilterOpen}
             onFilterToggle={handleCatalogFilterToggle}
-            showSearchOnMobile={false}
           />
           <CatalogFilter
             key={catalogFilterSession}
@@ -404,7 +403,6 @@ export function AlbumPage() {
           filterPanelId={catalogFilterId}
           isFilterOpen={isCatalogFilterOpen}
           onFilterToggle={handleCatalogFilterToggle}
-          showSearchOnMobile={false}
         />
         <CatalogFilter
           key={catalogFilterSession}

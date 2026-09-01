@@ -1,4 +1,5 @@
 const API_URL = import.meta.env.VITE_API_URL;
+const REQUEST_TIMEOUT_MS = 15_000;
 
 export class ApiError extends Error {
   status: number;
@@ -29,7 +30,17 @@ export function configureApiAuth(
 }
 function getBaseUrl() {
   if (!API_URL) throw new Error('VITE_API_URL is not configured');
-  return API_URL.replace(/\/$/, '');
+  if (API_URL.startsWith('/')) {
+    if (import.meta.env.PROD) {
+      throw new Error('VITE_API_URL must be an HTTPS URL in production');
+    }
+    return API_URL.replace(/\/$/, '');
+  }
+  const url = new URL(API_URL);
+  if (import.meta.env.PROD && url.protocol !== 'https:') {
+    throw new Error('VITE_API_URL must use HTTPS in production');
+  }
+  return url.toString().replace(/\/$/, '');
 }
 function toFields(value: unknown): Record<string, string[]> {
   if (!value || typeof value !== 'object') return {};
@@ -45,17 +56,44 @@ async function request<T>(
   init: RequestInit = {},
   retried = false,
 ): Promise<T> {
+  if (!path.startsWith('/')) {
+    throw new Error('API paths must start with a slash');
+  }
   const headers = new Headers(init.headers);
   headers.set('Accept', 'application/json');
   if (init.body) headers.set('Content-Type', 'application/json');
   const token = tokenReader();
   if (token) headers.set('Authorization', `Bearer ${token}`);
-  const response = await fetch(`${getBaseUrl()}${path}`, { ...init, headers });
+  const timeoutController = new AbortController();
+  const timeoutId = window.setTimeout(
+    () => timeoutController.abort(),
+    REQUEST_TIMEOUT_MS,
+  );
+  const signal = init.signal
+    ? AbortSignal.any([init.signal, timeoutController.signal])
+    : timeoutController.signal;
+  let response: Response;
+  try {
+    response = await fetch(`${getBaseUrl()}${path}`, {
+      ...init,
+      headers,
+      signal,
+    });
+  } catch (error) {
+    if (timeoutController.signal.aborted) {
+      throw new Error('The request timed out. Please try again.', {
+        cause: error,
+      });
+    }
+    throw error;
+  } finally {
+    window.clearTimeout(timeoutId);
+  }
   if (
     response.status === 401 &&
     !retried &&
     refreshHandler &&
-    !path.includes('/auth/token/refresh/')
+    shouldRefreshSession(path)
   ) {
     refreshPromise ??= refreshHandler().finally(() => {
       refreshPromise = null;
@@ -77,11 +115,20 @@ async function request<T>(
   }
   return payload as T;
 }
-export function apiGet<T>(path: string) {
-  return request<T>(path);
+function shouldRefreshSession(path: string) {
+  return ![
+    '/auth/login/',
+    '/auth/register/',
+    '/auth/logout/',
+    '/auth/token/refresh/',
+  ].includes(path);
 }
-export function apiPost<T>(path: string, body?: unknown) {
+export function apiGet<T>(path: string, init?: RequestInit) {
+  return request<T>(path, init);
+}
+export function apiPost<T>(path: string, body?: unknown, init?: RequestInit) {
   return request<T>(path, {
+    ...init,
     method: 'POST',
     body: body === undefined ? undefined : JSON.stringify(body),
   });

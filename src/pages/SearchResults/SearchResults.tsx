@@ -1,14 +1,16 @@
 import { type MouseEvent, useEffect, useRef, useState } from 'react';
-import { useSearchParams } from 'react-router';
+import { useNavigate, useSearchParams } from 'react-router';
 
 import { Footer } from '../../components/layout/Footer/Footer';
 import { Header } from '../../components/layout/Header/Header';
 import { AlbumCard } from '../../components/ui/AlbumCard/AlbumCard';
 import { CatalogFilter } from '../../components/ui/CatalogFilter/CatalogFilter';
+import { routes } from '../../app/routes';
 import { ArtistDetailsModal } from '../../features/home/components/ArtistDetailsModal/ArtistDetailsModal';
 import {
   type CatalogFilters,
-  defaultCatalogFilters,
+  filtersFromSearchParams,
+  filtersToSearchParams,
   toReleaseQuery,
 } from '../../features/home/home.filters';
 import {
@@ -30,6 +32,7 @@ const ALBUMS_PER_PAGE = 15;
 
 export function SearchResults() {
   const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
   const query = searchParams.get('q') ?? '';
   const artistSlug = searchParams.get('artist') ?? '';
   const [status, setStatus] = useState<SearchResultsStatus>({
@@ -37,7 +40,7 @@ export function SearchResults() {
   });
   const [isCatalogFilterOpen, setIsCatalogFilterOpen] = useState(false);
   const [catalogFilterSession, setCatalogFilterSession] = useState(0);
-  const [appliedFilters, setAppliedFilters] = useState(defaultCatalogFilters);
+  const appliedFilters = filtersFromSearchParams(searchParams);
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedArtistDetails, setSelectedArtistDetails] =
     useState<ArtistDetails | null>(null);
@@ -111,9 +114,13 @@ export function SearchResults() {
   }
 
   function handleCatalogFilterApply(nextFilters: CatalogFilters) {
-    setAppliedFilters(nextFilters);
     setCurrentPage(1);
     setIsCatalogFilterOpen(false);
+
+    const nextParams = filtersToSearchParams(nextFilters);
+    if (query) nextParams.set('q', query);
+    if (artistSlug) nextParams.set('artist', artistSlug);
+    navigate(`${routes.search}?${nextParams.toString()}`);
   }
 
   const albums = status.state === 'ready' ? status.albums : [];

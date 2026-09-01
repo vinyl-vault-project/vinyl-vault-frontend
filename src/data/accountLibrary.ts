@@ -56,9 +56,27 @@ export const accountOrders: AccountOrder[] = [
       country: 'Germany',
     },
     items: [
-      { albumId: 'drukqs', quantity: 1, unitPrice: 45, format: '2LP', label: 'Warp Records' },
-      { albumId: 'endtroducing', quantity: 2, unitPrice: 18, format: '2LP', label: "Mo' Wax" },
-      { albumId: 'incunabula', quantity: 1, unitPrice: 14, format: '2LP', label: 'Warp Records' },
+      {
+        albumId: 'drukqs',
+        quantity: 1,
+        unitPrice: 45,
+        format: '2LP',
+        label: 'Warp Records',
+      },
+      {
+        albumId: 'endtroducing',
+        quantity: 2,
+        unitPrice: 18,
+        format: '2LP',
+        label: "Mo' Wax",
+      },
+      {
+        albumId: 'incunabula',
+        quantity: 1,
+        unitPrice: 14,
+        format: '2LP',
+        label: 'Warp Records',
+      },
     ],
   },
   {
@@ -78,8 +96,20 @@ export const accountOrders: AccountOrder[] = [
       country: 'Germany',
     },
     items: [
-      { albumId: 'tomorrows-harvest', quantity: 2, unitPrice: 52, format: '2LP', label: 'Warp Records' },
-      { albumId: 'the-less-you-know-the-better', quantity: 3, unitPrice: 0, format: '2LP', label: 'Mo\' Wax' },
+      {
+        albumId: 'tomorrows-harvest',
+        quantity: 2,
+        unitPrice: 52,
+        format: '2LP',
+        label: 'Warp Records',
+      },
+      {
+        albumId: 'the-less-you-know-the-better',
+        quantity: 3,
+        unitPrice: 0,
+        format: '2LP',
+        label: "Mo' Wax",
+      },
     ],
   },
 ];
@@ -92,10 +122,10 @@ export function getAccountOrder(id: string): AccountOrderSummary | null {
   }
 
   const items = order.items
-      .map((item) => ({ ...item, album: getAlbumsByIds([item.albumId])[0] }))
-      .filter((item): item is AccountOrderSummary['items'][number] =>
-        Boolean(item.album),
-      );
+    .map((item) => ({ ...item, album: getAlbumsByIds([item.albumId])[0] }))
+    .filter((item): item is AccountOrderSummary['items'][number] =>
+      Boolean(item.album),
+    );
 
   return { ...order, items };
 }
@@ -113,7 +143,11 @@ export function getPurchasedAlbumSummaries() {
 
       return album ? { ...purchase, album } : null;
     })
-    .filter((purchase): purchase is PurchasedAlbum & {
-      album: ReturnType<typeof getAlbumsByIds>[number];
-    } => Boolean(purchase));
+    .filter(
+      (
+        purchase,
+      ): purchase is PurchasedAlbum & {
+        album: ReturnType<typeof getAlbumsByIds>[number];
+      } => Boolean(purchase),
+    );
 }

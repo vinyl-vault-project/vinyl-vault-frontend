@@ -1,5 +1,10 @@
 import albumPlaceholder from '../../assets/vinyl-vault/album-placeholder.svg';
+import brownTextureBackground from '../../assets/vinyl-vault/album-page-brown-texture-background.png';
+import glowingLightBackground from '../../assets/vinyl-vault/album-page-glowing-light-background.png';
+import pianoMechanismBackground from '../../assets/vinyl-vault/album-page-piano-mechanism-background.png';
+import drukqsCassetteInlays from '../../assets/vinyl-vault/aphex-twin-drukqs-cassette-inlays.png';
 import {
+  getArtist,
   getRelease,
   getReleases,
   type ReleaseQuery,
@@ -13,10 +18,15 @@ export async function getHomePageData(
   query: ReleaseQuery = {},
 ): Promise<HomePageData> {
   const response = await getReleases({ ...query, ordering: '-release_year' });
-  const albums = response.results.map(mapRelease);
+  const albums = response.results
+    .map(mapRelease)
+    .sort(
+      (first, second) =>
+        second.filterMetadata.releaseYear - first.filterMetadata.releaseYear,
+    );
   return {
     heroPromotions: homePageMockData.heroPromotions,
-    albumsOfTheWeek: albums.slice(0, 8),
+    albumsOfTheWeek: albums.slice(0, 6),
     featuredArtists: homePageMockData.featuredArtists,
     recommendedAlbums: albums.slice(8, 16),
   };
@@ -25,7 +35,20 @@ export async function getHomePageData(
 export async function getArtistDetailsBySlug(
   slug: string,
 ): Promise<ArtistDetails | null> {
-  return artistDetailsMockData.find((artist) => artist.slug === slug) ?? null;
+  const artist = await getArtist(slug);
+  const presentationFallback = artistDetailsMockData.find(
+    (item) => item.slug === slug,
+  );
+
+  return {
+    id: String(artist.id),
+    slug: artist.slug,
+    name: artist.name,
+    imageSrc: artist.image_url || presentationFallback?.imageSrc || '',
+    imageAlt: `${artist.name} portrait`,
+    biography: artist.biography || presentationFallback?.biography || '',
+    albums: artist.releases.map(mapRelease),
+  };
 }
 
 export async function getSearchResultAlbums(query: ReleaseQuery = {}): Promise<{
@@ -47,6 +70,19 @@ export async function getAlbumDetail(
   slug: string,
 ): Promise<AlbumDetail | null> {
   const release = await getRelease(slug);
+  const primaryArtist = release.artists[0];
+  const artistDetails = primaryArtist
+    ? await getArtist(primaryArtist.slug).catch(() => null)
+    : null;
+  const relatedReleases = artistDetails?.releases.length
+    ? artistDetails.releases
+    : primaryArtist
+      ? (
+          await getReleases({ artist: primaryArtist.slug }).catch(() => ({
+            results: [],
+          }))
+        ).results
+      : [];
   const activeProducts = release.products.filter(
     (product) => product.is_active,
   );
@@ -65,7 +101,9 @@ export async function getAlbumDetail(
         : undefined,
       previewUrl: track.audio_preview_url || undefined,
     })),
-    relatedAlbums: [],
+    relatedAlbums: relatedReleases
+      .filter((item) => String(item.id) !== String(release.id))
+      .map(mapRelease),
     product: {
       id: product?.id ?? '',
       pressingCountry: product?.pressing_country || '',
@@ -86,11 +124,11 @@ export async function getAlbumDetail(
     })),
     assets: {
       bookmarkIcon: '',
-      heroBackground: '',
-      descriptionBackground: '',
-      purchaseBackground: '',
-      detailsImage: release.cover_url || albumPlaceholder,
-      detailsImageAlt: release.title,
+      heroBackground: pianoMechanismBackground,
+      descriptionBackground: glowingLightBackground,
+      purchaseBackground: brownTextureBackground,
+      detailsImage: drukqsCassetteInlays,
+      detailsImageAlt: 'Cassette inlays and cassette shells',
     },
   };
 }

@@ -17,6 +17,7 @@ import { CatalogFilter } from '../../components/ui/CatalogFilter/CatalogFilter';
 import {
   type CatalogFilters,
   defaultCatalogFilters,
+  filtersToSearchParams,
 } from '../../features/home/home.filters';
 import { openAuthModal, useAuthState } from '../../state/auth';
 import {
@@ -83,13 +84,14 @@ function ChevronDownIcon() {
 }
 
 export function CartPage() {
+  const navigate = useNavigate();
   const cartItems = useCartItems();
   const auth = useAuthState();
   const [searchParams, setSearchParams] = useSearchParams();
   const cart = useCart();
   const [isCatalogFilterOpen, setIsCatalogFilterOpen] = useState(false);
   const [catalogFilterSession, setCatalogFilterSession] = useState(0);
-  const [appliedFilters, setAppliedFilters] = useState(defaultCatalogFilters);
+  const [appliedFilters] = useState(defaultCatalogFilters);
   const cartItemCount = getCartItemCount(cartItems);
   const total = Number(cart.total);
   const isCheckoutOpen = searchParams.get('checkout') === 'true';
@@ -132,8 +134,8 @@ export function CartPage() {
   }
 
   function handleCatalogFilterApply(nextFilters: CatalogFilters) {
-    setAppliedFilters(nextFilters);
     setIsCatalogFilterOpen(false);
+    navigate(`${routes.search}?${filtersToSearchParams(nextFilters)}`);
   }
 
   return (
@@ -147,8 +149,6 @@ export function CartPage() {
           filterPanelId={catalogFilterId}
           isFilterOpen={isCatalogFilterOpen}
           onFilterToggle={handleCatalogFilterToggle}
-          searchQuery="Electronic music"
-          showSearchOnMobile={false}
         />
         <CatalogFilter
           key={catalogFilterSession}
@@ -252,6 +252,7 @@ function CheckoutModal({ onClose }: CheckoutModalProps) {
     Partial<Record<keyof ShippingFormValues, string>>
   >({});
   const [statusMessage, setStatusMessage] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     const originalOverflow = document.body.style.overflow;
@@ -303,6 +304,7 @@ function CheckoutModal({ onClose }: CheckoutModalProps) {
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    if (isSubmitting) return;
     const nextErrors: Partial<Record<keyof ShippingFormValues, string>> = {};
 
     requiredShippingFields.forEach((field) => {
@@ -321,6 +323,7 @@ function CheckoutModal({ onClose }: CheckoutModalProps) {
     setErrors(nextErrors);
 
     if (Object.keys(nextErrors).length === 0) {
+      setIsSubmitting(true);
       try {
         const order = await createOrder({
           first_name: values.name,
@@ -341,6 +344,8 @@ function CheckoutModal({ onClose }: CheckoutModalProps) {
             ? error.message
             : 'Order could not be created.',
         );
+      } finally {
+        setIsSubmitting(false);
       }
     }
   }
@@ -489,7 +494,9 @@ function CheckoutModal({ onClose }: CheckoutModalProps) {
 
           <div className="checkout-modal__actions">
             <p aria-live="polite">{statusMessage}</p>
-            <button type="submit">Order</button>
+            <button type="submit" disabled={isSubmitting}>
+              {isSubmitting ? 'Creating order…' : 'Order'}
+            </button>
           </div>
         </form>
       </div>

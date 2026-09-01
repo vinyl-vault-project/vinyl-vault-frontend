@@ -18,6 +18,7 @@ import { CatalogFilter } from '../../components/ui/CatalogFilter/CatalogFilter';
 import {
   type CatalogFilters,
   defaultCatalogFilters,
+  filtersToSearchParams,
 } from '../../features/home/home.filters';
 import { logoutUser, openAuthModal, useAuthState } from '../../state/auth';
 import { refreshSavedAlbums, useSavedAlbums } from '../../state/library';
@@ -40,7 +41,7 @@ export function AccountPage() {
   const savedItems = useSavedAlbums();
   const [isCatalogFilterOpen, setIsCatalogFilterOpen] = useState(false);
   const [catalogFilterSession, setCatalogFilterSession] = useState(0);
-  const [appliedFilters, setAppliedFilters] = useState(defaultCatalogFilters);
+  const [appliedFilters] = useState(defaultCatalogFilters);
   const [orders, setOrders] = useState<OrderDto[]>([]);
   const savedAlbums = useMemo(
     () =>
@@ -114,8 +115,8 @@ export function AccountPage() {
   }
 
   function handleCatalogFilterApply(nextFilters: CatalogFilters) {
-    setAppliedFilters(nextFilters);
     setIsCatalogFilterOpen(false);
+    navigate(`${routes.search}?${filtersToSearchParams(nextFilters)}`);
   }
 
   async function handleLogout() {
@@ -137,8 +138,6 @@ export function AccountPage() {
           filterPanelId={catalogFilterId}
           isFilterOpen={isCatalogFilterOpen}
           onFilterToggle={handleCatalogFilterToggle}
-          searchQuery="Electronic music"
-          showSearchOnMobile={false}
         />
         <CatalogFilter
           key={catalogFilterSession}
