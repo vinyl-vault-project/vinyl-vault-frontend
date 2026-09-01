@@ -44,8 +44,8 @@
 
   &__inner {
     display: grid;
-    grid-template-columns: 176px minmax(230px, 314px) minmax(360px, 1fr);
-    gap: 42px;
+    grid-template-columns: 176px repeat(3, minmax(0, 1fr));
+    gap: 28px;
     align-items: start;
   }
 
@@ -102,6 +102,20 @@
     font-weight: 700;
   }
 
+  &__loading {
+    grid-column: 2 / -1;
+    padding: 0;
+    margin: -24px 0 0;
+    color: var(--color-text-secondary);
+    font-size: 12px;
+    line-height: 1.25;
+  }
+
+  &__options-error {
+    grid-column: 2 / -1;
+    margin-top: -24px;
+  }
+
   &__group-heading {
     width: 100%;
   }
@@ -149,7 +163,9 @@
   &__option-list {
     display: grid;
     gap: 14px;
-    max-height: 280px;
+    // Show six choices initially. Additional choices remain available by
+    // scrolling the group, and the heading can still collapse the group.
+    max-height: 160px;
     padding-right: 10px;
     overflow-y: auto;
     scrollbar-color: rgba(255, 255, 255, 0.46) transparent;
@@ -160,6 +176,12 @@
     }
   }
   &__style-column {
+    display: grid;
+    gap: 20px;
+    min-width: 0;
+  }
+
+  &__country-column {
     display: grid;
     gap: 20px;
     min-width: 0;
@@ -176,7 +198,7 @@
 @media (max-width: 1180px) {
   .catalog-filter {
     &__inner {
-      grid-template-columns: 160px minmax(200px, 1fr) minmax(300px, 1.2fr);
+      grid-template-columns: 150px repeat(3, minmax(0, 1fr));
       gap: 32px;
     }
   }
@@ -227,6 +249,16 @@
       gap: 20px;
       width: 100%;
       padding-inline: 18px;
+    }
+
+    &__options-error {
+      grid-column: auto;
+      margin-top: 0;
+    }
+
+    &__loading {
+      grid-column: auto;
+      margin-top: 0;
     }
 
     &__actions {

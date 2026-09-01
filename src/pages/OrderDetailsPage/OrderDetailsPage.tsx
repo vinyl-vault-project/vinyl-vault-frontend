@@ -78,7 +78,7 @@ export function OrderDetailsPage() {
           { '--order-details-bg': `url(${accountBackground})` } as CSSProperties
         }
       >
-        <Header showSearchOnMobile={false} />
+        <Header />
         <section className="app-container order-details-page__content">
           <Link className="order-details-page__back" to={routes.account}>
             <ChevronIcon />

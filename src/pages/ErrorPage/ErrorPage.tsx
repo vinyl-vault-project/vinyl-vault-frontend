@@ -11,7 +11,10 @@ export function ErrorPage() {
     <div className="error-page">
       <Header searchQuery="Electronic music" />
       <main className="error-page__main">
-        <section className="app-container error-page__content" aria-labelledby="error-title">
+        <section
+          className="app-container error-page__content"
+          aria-labelledby="error-title"
+        >
           <h1 className="error-page__title" id="error-title">
             Error 404
           </h1>

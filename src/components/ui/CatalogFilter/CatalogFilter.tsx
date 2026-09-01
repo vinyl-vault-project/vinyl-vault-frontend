@@ -8,7 +8,7 @@ import {
 } from 'react';
 
 import catalogFilterChevron from '../../../assets/vinyl-vault/catalog-filter-chevron.svg';
-import { getGenres, getStyles } from '../../../api/catalog.api';
+import { getCountries, getGenres, getStyles } from '../../../api/catalog.api';
 import { Button } from '../Button/Button';
 import { Checkbox } from '../Checkbox/Checkbox';
 import { Select } from '../Select/Select';
@@ -28,7 +28,7 @@ interface CatalogFilterProps {
   onClose: () => void;
 }
 
-type CollapsibleGroup = 'genres' | 'styles';
+type CollapsibleGroup = 'countries' | 'genres' | 'styles';
 
 export function CatalogFilter({
   appliedFilters,
@@ -44,11 +44,14 @@ export function CatalogFilter({
   >({
     genres: true,
     styles: true,
+    countries: true,
   });
   const [yearError, setYearError] = useState('');
   const [genreOptions, setGenreOptions] = useState<FilterOption[]>([]);
   const [styleOptions, setStyleOptions] = useState<FilterOption[]>([]);
+  const [countryOptions, setCountryOptions] = useState<FilterOption[]>([]);
   const [optionsError, setOptionsError] = useState('');
+  const [isOptionsLoading, setIsOptionsLoading] = useState(true);
   const panelRef = useRef<HTMLFormElement | null>(null);
   const errorId = useId();
   const yearSelectOptions = useMemo(
@@ -100,29 +103,62 @@ export function CatalogFilter({
   useEffect(() => {
     if (!isOpen) return;
     let isActive = true;
-    void Promise.all([getGenres(), getStyles()])
-      .then(([genres, styles]) => {
-        if (!isActive) return;
-        setGenreOptions(
-          genres.results.map((item) => ({
-            id: item.slug || String(item.id),
-            label: item.name,
-            count: undefined,
-          })),
-        );
-        setStyleOptions(
-          styles.results.map((item) => ({
-            id: item.slug || String(item.id),
-            label: item.name,
-            count: undefined,
-          })),
-        );
-        setOptionsError('');
+    let pendingLoads = 3;
+
+    function markLoadComplete() {
+      pendingLoads -= 1;
+      if (isActive && pendingLoads === 0) setIsOptionsLoading(false);
+    }
+
+    function markOptionsError() {
+      if (isActive) setOptionsError('Some filter options could not be loaded.');
+    }
+
+    void getGenres()
+      .then((response) => {
+        if (isActive) {
+          setGenreOptions(
+            response.results.map((item) => ({
+              id: item.slug || String(item.id),
+              label: item.name,
+              count: undefined,
+            })),
+          );
+        }
       })
-      .catch(() => {
-        if (isActive)
-          setOptionsError('Filters could not be loaded. Please try again.');
-      });
+      .catch(markOptionsError)
+      .finally(markLoadComplete);
+
+    void getStyles()
+      .then((response) => {
+        if (isActive) {
+          setStyleOptions(
+            response.results.map((item) => ({
+              id: item.slug || String(item.id),
+              label: item.name,
+              count: undefined,
+            })),
+          );
+        }
+      })
+      .catch(markOptionsError)
+      .finally(markLoadComplete);
+
+    void getCountries()
+      .then((response) => {
+        if (isActive) {
+          setCountryOptions(
+            response.results.map((item) => ({
+              id: item.slug || String(item.id),
+              label: item.name,
+              count: undefined,
+            })),
+          );
+        }
+      })
+      .catch(markOptionsError)
+      .finally(markLoadComplete);
+
     return () => {
       isActive = false;
     };
@@ -230,8 +266,16 @@ export function CatalogFilter({
             selectedValues={draftFilters.genres}
             onChange={updateOption}
           />
+          {isOptionsLoading ? (
+            <p className="catalog-filter__loading" role="status">
+              Loading filter options…
+            </p>
+          ) : null}
           {optionsError ? (
-            <p className="catalog-filter__error" role="alert">
+            <p
+              className="catalog-filter__error catalog-filter__options-error"
+              role="alert"
+            >
               {optionsError}
             </p>
           ) : null}
@@ -244,6 +288,18 @@ export function CatalogFilter({
               onToggle={() => toggleGroup('styles')}
               options={styleOptions}
               selectedValues={draftFilters.styles}
+              onChange={updateOption}
+            />
+          </div>
+
+          <div className="catalog-filter__country-column">
+            <FilterGroup
+              field="countries"
+              title="Country"
+              isExpanded={expandedGroups.countries}
+              onToggle={() => toggleGroup('countries')}
+              options={countryOptions}
+              selectedValues={draftFilters.countries}
               onChange={updateOption}
             />
 

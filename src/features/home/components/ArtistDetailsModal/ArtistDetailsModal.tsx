@@ -3,6 +3,7 @@ import { createPortal } from 'react-dom';
 import { Link } from 'react-router';
 
 import { routes } from '../../../../app/routes';
+import albumPlaceholder from '../../../../assets/vinyl-vault/album-placeholder.svg';
 import type { ArtistDetails } from '../../home.types';
 import './ArtistDetailsModal.scss';
 
@@ -117,10 +118,14 @@ export function ArtistDetailsModal({
 
         <img
           className="artist-modal__image"
-          src={artist.imageSrc}
+          src={artist.imageSrc || albumPlaceholder}
           alt={artist.imageAlt}
           width="1076"
           height="640"
+          onError={(event) => {
+            event.currentTarget.onerror = null;
+            event.currentTarget.src = albumPlaceholder;
+          }}
         />
 
         <div className="artist-modal__body">

@@ -7,9 +7,20 @@
   min-height: 100svh;
   color: var(--color-text-primary);
   background:
-    linear-gradient(180deg, #000 0%, rgba(0, 0, 0, 0.84) 6%, rgba(0, 0, 0, 0) 19%),
+    linear-gradient(
+      180deg,
+      #000 0%,
+      rgba(0, 0, 0, 0.84) 6%,
+      rgba(0, 0, 0, 0) 19%
+    ),
     linear-gradient(180deg, rgba(0, 0, 0, 0) 70%, #000 100%),
-    linear-gradient(90deg, #000 0%, rgba(0, 0, 0, 0.9) 20%, rgba(0, 0, 0, 0.52) 48%, rgba(0, 0, 0, 0.2) 100%),
+    linear-gradient(
+      90deg,
+      #000 0%,
+      rgba(0, 0, 0, 0.9) 20%,
+      rgba(0, 0, 0, 0.52) 48%,
+      rgba(0, 0, 0, 0.2) 100%
+    ),
     var(--cart-page-bg) left top / 100% auto no-repeat,
     #000;
 
