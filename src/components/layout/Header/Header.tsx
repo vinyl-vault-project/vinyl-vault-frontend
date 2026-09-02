@@ -91,6 +91,19 @@ export function Header({
     );
   }
 
+  function handleCartClick() {
+    if (auth.isAuthenticated) {
+      navigate(routes.cart);
+      return;
+    }
+
+    openAuthModal({
+      context: 'checkout',
+      message: 'To view your cart, please log in or create an account.',
+      mode: 'login',
+    });
+  }
+
   return (
     <header className="site-header">
       <div
@@ -203,24 +216,35 @@ export function Header({
               <AccountIcon />
             </button>
           )}
-          <Link
-            className={`icon-button${
-              resolvedCartItemCount ? ' icon-button--badged' : ''
-            }`}
-            to={routes.cart}
-            aria-label={
-              resolvedCartItemCount
-                ? `Cart with ${resolvedCartItemCount} item`
-                : 'Cart'
-            }
-          >
-            <img src={basketIcon} width="25" height="26" alt="" />
-            {resolvedCartItemCount ? (
-              <span className="icon-button__badge" aria-hidden="true">
-                {resolvedCartItemCount}
-              </span>
-            ) : null}
-          </Link>
+          {auth.isAuthenticated ? (
+            <Link
+              className={`icon-button${
+                resolvedCartItemCount ? ' icon-button--badged' : ''
+              }`}
+              to={routes.cart}
+              aria-label={
+                resolvedCartItemCount
+                  ? `Cart with ${resolvedCartItemCount} item`
+                  : 'Cart'
+              }
+            >
+              <img src={basketIcon} width="25" height="26" alt="" />
+              {resolvedCartItemCount ? (
+                <span className="icon-button__badge" aria-hidden="true">
+                  {resolvedCartItemCount}
+                </span>
+              ) : null}
+            </Link>
+          ) : (
+            <button
+              className="icon-button"
+              type="button"
+              aria-label="Log in to view cart"
+              onClick={handleCartClick}
+            >
+              <img src={basketIcon} width="25" height="26" alt="" />
+            </button>
+          )}
         </nav>
       </div>
     </header>

@@ -98,8 +98,22 @@ export function CartPage() {
   const catalogFilterId = 'cart-page-catalog-filter';
 
   useEffect(() => {
-    if (auth.isAuthenticated) void refreshCart();
-  }, [auth.isAuthenticated]);
+    if (!auth.isAuthenticated) {
+      openAuthModal({
+        context: 'checkout',
+        message: 'To view your cart, please log in or create an account.',
+        mode: 'login',
+      });
+      navigate(routes.home, { replace: true });
+      return;
+    }
+
+    void refreshCart();
+  }, [auth.isAuthenticated, navigate]);
+
+  if (!auth.isAuthenticated) {
+    return null;
+  }
 
   function openCheckout() {
     if (cartItems.length === 0) {

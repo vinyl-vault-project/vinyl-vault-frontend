@@ -194,14 +194,20 @@ function AuthModalDialog() {
     } catch (error) {
       const fields =
         error instanceof Error && 'fields' in error
-          ? (error.fields as Partial<Record<keyof AuthFormValues, string[]>>)
+          ? (error.fields as Record<string, string[]>)
           : {};
       const nextErrors = Object.fromEntries(
-        Object.entries(fields).map(([key, messages]) => [
-          key === 'username' ? 'name' : key,
-          messages?.join(' '),
-        ]),
+        Object.entries(fields)
+          .map(([key, messages]) => [
+            key === 'username' ? 'name' : key,
+            messages?.join(' '),
+          ])
+          .filter(
+            ([key]) => key === 'email' || key === 'name' || key === 'password',
+          ),
       ) as Partial<Record<keyof AuthFormValues, string>>;
+      const authenticationError =
+        fields.non_field_errors?.[0] ?? fields.detail?.[0];
       const duplicateEmailMessages = fields.email ?? [];
       const isDuplicateEmail =
         isRegisterMode &&
@@ -216,7 +222,10 @@ function AuthModalDialog() {
       } else if (Object.keys(nextErrors).length > 0) setErrors(nextErrors);
       else
         setStatusMessage(
-          error instanceof Error ? error.message : 'Unable to authenticate.',
+          authenticationError ??
+            (error instanceof Error
+              ? error.message
+              : 'Unable to authenticate.'),
         );
     }
   }
