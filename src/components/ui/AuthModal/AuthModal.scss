@@ -82,7 +82,7 @@
 
   &__form {
     display: grid;
-    width: min(100% - 176px, 620px);
+    width: min(calc(100% - 176px), 620px);
     padding-top: 150px;
     margin: 0 auto;
   }
@@ -308,7 +308,7 @@
     }
 
     &__form {
-      width: min(100% - 96px, 560px);
+      width: min(calc(100% - 96px), 560px);
       padding-top: 118px;
       padding-bottom: 46px;
     }
@@ -372,7 +372,7 @@
     }
 
     &__form {
-      width: min(100% - 116px, 360px);
+      width: min(calc(100% - 116px), 360px);
       padding-top: 118px;
       padding-bottom: 120px;
     }

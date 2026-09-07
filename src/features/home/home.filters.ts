@@ -43,13 +43,13 @@ export function filtersFromSearchParams(
   const toYear = Number(toYearValue);
 
   return {
-    countries: searchParams.getAll('country'),
+    countries: splitFilterParam(searchParams.getAll('country')),
     fromYear:
       fromYearValue && Number.isFinite(fromYear)
         ? fromYear
         : defaultCatalogFilters.fromYear,
-    genres: searchParams.getAll('genre'),
-    styles: searchParams.getAll('style'),
+    genres: splitFilterParam(searchParams.getAll('genre')),
+    styles: splitFilterParam(searchParams.getAll('style')),
     toYear:
       toYearValue && Number.isFinite(toYear)
         ? toYear
@@ -63,11 +63,24 @@ export function filtersToSearchParams(filters: CatalogFilters) {
     year_to: String(filters.toYear),
   });
 
-  filters.genres.forEach((genre) => searchParams.append('genre', genre));
-  filters.styles.forEach((style) => searchParams.append('style', style));
-  filters.countries.forEach((country) =>
-    searchParams.append('country', country),
-  );
+  if (filters.genres.length > 0) {
+    searchParams.set('genre', filters.genres.join(','));
+  }
+  if (filters.styles.length > 0) {
+    searchParams.set('style', filters.styles.join(','));
+  }
+  if (filters.countries.length > 0) {
+    searchParams.set('country', filters.countries.join(','));
+  }
 
   return searchParams;
+}
+
+function splitFilterParam(values: string[]) {
+  return values.flatMap((value) =>
+    value
+      .split(',')
+      .map((item) => item.trim())
+      .filter(Boolean),
+  );
 }

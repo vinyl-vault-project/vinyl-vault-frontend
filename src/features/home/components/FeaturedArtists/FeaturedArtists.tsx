@@ -1,6 +1,7 @@
-import type { MouseEvent } from 'react';
+import { type MouseEvent, type PointerEvent, useRef, useState } from 'react';
 
 import featuredArtistsNextArrow from '../../../../assets/vinyl-vault/featured-artists-next-arrow.svg';
+import artistPlaceholder from '../../../../assets/vinyl-vault/broken-vinyl-404.png';
 import type { FeaturedArtist } from '../../home.types';
 
 interface FeaturedArtistsProps {
@@ -15,6 +16,49 @@ export function FeaturedArtists({
   artists,
   onArtistSelect,
 }: FeaturedArtistsProps) {
+  const stripRef = useRef<HTMLDivElement | null>(null);
+  const dragStartX = useRef<number | null>(null);
+  const dragStartScrollLeft = useRef(0);
+  const [canScrollPrevious, setCanScrollPrevious] = useState(false);
+  const [canScrollNext, setCanScrollNext] = useState(true);
+
+  function updateScrollState() {
+    const strip = stripRef.current;
+    if (!strip) return;
+    setCanScrollPrevious(strip.scrollLeft > 2);
+    setCanScrollNext(
+      strip.scrollLeft + strip.clientWidth < strip.scrollWidth - 2,
+    );
+  }
+
+  function showPreviousArtists() {
+    stripRef.current?.scrollBy({ left: -stripRef.current.clientWidth * 0.8, behavior: 'smooth' });
+  }
+
+  function handlePointerDown(event: PointerEvent<HTMLDivElement>) {
+    const strip = stripRef.current;
+    if (!strip) return;
+    dragStartX.current = event.clientX;
+    dragStartScrollLeft.current = strip.scrollLeft;
+    strip.setPointerCapture(event.pointerId);
+  }
+
+  function handlePointerMove(event: PointerEvent<HTMLDivElement>) {
+    const strip = stripRef.current;
+    if (!strip || dragStartX.current === null) return;
+    strip.scrollLeft = dragStartScrollLeft.current - (event.clientX - dragStartX.current);
+  }
+
+  function handlePointerUp(event: PointerEvent<HTMLDivElement>) {
+    dragStartX.current = null;
+    stripRef.current?.releasePointerCapture(event.pointerId);
+  }
+
+  function showMoreArtists() {
+    const strip = stripRef.current;
+    strip?.scrollBy({ left: strip.clientWidth * 0.8, behavior: 'smooth' });
+  }
+
   return (
     <section
       className="featured-artists"
@@ -25,7 +69,17 @@ export function FeaturedArtists({
           Featured Artists
         </h2>
         {artists.length > 0 ? (
-          <div className="featured-artists__strip">
+          <div
+            className="featured-artists__strip"
+            ref={stripRef}
+            onScroll={updateScrollState}
+            onPointerDown={handlePointerDown}
+            onPointerMove={handlePointerMove}
+            onPointerUp={handlePointerUp}
+            onPointerCancel={handlePointerUp}
+            tabIndex={0}
+            aria-label="Featured artists carousel"
+          >
             {artists.map((artist, index) => (
               <button
                 className={[
@@ -55,14 +109,29 @@ export function FeaturedArtists({
                   className="featured-artists__image"
                   src={artist.imageSrc}
                   alt={artist.imageAlt}
+                  onError={(event) => {
+                    event.currentTarget.src = artistPlaceholder;
+                  }}
                 />
                 <span className="featured-artists__name">{artist.name}</span>
               </button>
             ))}
+            {canScrollPrevious ? (
+              <button
+                className="featured-artists__previous"
+                type="button"
+                aria-label="Show previous featured artists"
+                onClick={showPreviousArtists}
+              >
+                <img src={featuredArtistsNextArrow} alt="" aria-hidden="true" />
+              </button>
+            ) : null}
             <button
               className="featured-artists__next"
               type="button"
               aria-label="Show more featured artists"
+              disabled={!canScrollNext}
+              onClick={showMoreArtists}
             >
               <img src={featuredArtistsNextArrow} alt="" aria-hidden="true" />
             </button>

@@ -24,7 +24,11 @@ import {
 import { getAlbumDetail } from '../../features/home/home.service';
 import { openAuthModal, useAuthState } from '../../state/auth';
 import { addCartItem, getCartItemCount, useCartItems } from '../../state/cart';
-import { toggleSavedAlbum, useSavedAlbumIds } from '../../state/library';
+import {
+  refreshSavedAlbums,
+  toggleSavedAlbum,
+  useSavedAlbumIds,
+} from '../../state/library';
 import './AlbumPage.scss';
 
 const emptyTracks: AlbumTrack[] = [];
@@ -138,6 +142,12 @@ export function AlbumPage() {
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
   useEffect(() => {
+    if (auth.isAuthenticated) {
+      void refreshSavedAlbums().catch(() => undefined);
+    }
+  }, [auth.isAuthenticated]);
+
+  useEffect(() => {
     let isActive = true;
 
     async function loadAlbum() {
@@ -193,6 +203,11 @@ export function AlbumPage() {
     ? savedAlbumIds.includes(detail.album.id)
     : false;
   const cartItemCount = getCartItemCount(cartItems);
+  const isCurrentProductInCart = product
+    ? cartItems.some(
+        (item) => String(item.product.id) === String(product.id),
+      )
+    : false;
   const catalogFilterId = 'album-page-catalog-filter';
 
   useEffect(() => {
@@ -549,6 +564,7 @@ export function AlbumPage() {
 
       <PurchaseBar
         isAvailable={isAvailable}
+        isInCart={isCurrentProductInCart}
         priceLabel={priceLabel}
         products={status.detail.products ?? []}
         selectedProductId={selectedProductId}
@@ -584,6 +600,7 @@ interface PurchaseBarProps {
   selectedProductId: string;
   onProductChange: (productId: string) => void;
   isAvailable: boolean;
+  isInCart: boolean;
   onAddToCart: () => void;
   priceLabel: string;
 }
@@ -591,6 +608,7 @@ interface PurchaseBarProps {
 function PurchaseBar({
   availability,
   isAvailable,
+  isInCart,
   onAddToCart,
   priceLabel,
   products,
@@ -634,7 +652,7 @@ function PurchaseBar({
           disabled={!isAvailable}
           onClick={onAddToCart}
         >
-          ADD TO CART
+          {isInCart ? 'IN CART — ADD ANOTHER' : 'ADD TO CART'}
         </button>
       </div>
     </aside>

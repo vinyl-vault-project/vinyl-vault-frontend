@@ -5,6 +5,7 @@ import pianoMechanismBackground from '../../assets/vinyl-vault/album-page-piano-
 import drukqsCassetteInlays from '../../assets/vinyl-vault/aphex-twin-drukqs-cassette-inlays.png';
 import {
   getArtist,
+  getArtists,
   getRelease,
   getReleases,
   type ReleaseQuery,
@@ -17,7 +18,10 @@ import type { AlbumSummary, ArtistDetails, HomePageData } from './home.types';
 export async function getHomePageData(
   query: ReleaseQuery = {},
 ): Promise<HomePageData> {
-  const response = await getReleases({ ...query, ordering: '-release_year' });
+  const [response, artistsResponse] = await Promise.all([
+    getReleases({ ...query, ordering: '-release_year' }),
+    getArtists(),
+  ]);
   const albums = response.results
     .map(mapRelease)
     .sort(
@@ -27,7 +31,15 @@ export async function getHomePageData(
   return {
     heroPromotions: homePageMockData.heroPromotions,
     albumsOfTheWeek: albums.slice(0, 6),
-    featuredArtists: homePageMockData.featuredArtists,
+    featuredArtists: artistsResponse.results.slice(0, 8).map((artist, index) => ({
+      id: String(artist.id),
+      slug: artist.slug,
+      name: artist.name,
+      imageSrc: artist.image_url || '',
+      imageAlt: `${artist.name} artist photo`,
+      width: index % 4 === 1 ? 'wide' : index % 4 === 2 ? 'narrow' : 'medium',
+      hasDetails: true,
+    })),
     recommendedAlbums: albums.slice(8, 16),
   };
 }
