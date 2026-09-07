@@ -256,15 +256,6 @@ export function CatalogFilter({
               ) : null}
             </fieldset>
 
-            <div className="catalog-filter__apply">
-              <Button type="submit" variant="compact">
-                Apply Filters
-              </Button>
-
-              <Button type="button" variant="text" onClick={handleClear}>
-                Clear filters
-              </Button>
-            </div>
           </div>
 
           <FilterGroup
@@ -313,7 +304,27 @@ export function CatalogFilter({
               onChange={updateOption}
             />
 
+            <div className="catalog-filter__apply catalog-filter__apply--desktop">
+              <Button type="submit" variant="compact">
+                Apply Filters
+              </Button>
+
+              <Button type="button" variant="text" onClick={handleClear}>
+                Clear filters
+              </Button>
+            </div>
+
           </div>
+        </div>
+
+        <div className="catalog-filter__apply catalog-filter__apply--mobile">
+          <Button type="submit" variant="compact">
+            Apply Filters
+          </Button>
+
+          <Button type="button" variant="text" onClick={handleClear}>
+            Clear filters
+          </Button>
         </div>
       </form>
     </div>
