@@ -1,4 +1,4 @@
-import type { MouseEvent } from 'react';
+import { type MouseEvent, useRef, useState } from 'react';
 
 import featuredArtistsNextArrow from '../../../../assets/vinyl-vault/featured-artists-next-arrow.svg';
 import type { FeaturedArtist } from '../../home.types';
@@ -15,6 +15,22 @@ export function FeaturedArtists({
   artists,
   onArtistSelect,
 }: FeaturedArtistsProps) {
+  const stripRef = useRef<HTMLDivElement | null>(null);
+  const [canScrollNext, setCanScrollNext] = useState(true);
+
+  function updateScrollState() {
+    const strip = stripRef.current;
+    if (!strip) return;
+    setCanScrollNext(
+      strip.scrollLeft + strip.clientWidth < strip.scrollWidth - 2,
+    );
+  }
+
+  function showMoreArtists() {
+    const strip = stripRef.current;
+    strip?.scrollBy({ left: strip.clientWidth * 0.8, behavior: 'smooth' });
+  }
+
   return (
     <section
       className="featured-artists"
@@ -25,7 +41,13 @@ export function FeaturedArtists({
           Featured Artists
         </h2>
         {artists.length > 0 ? (
-          <div className="featured-artists__strip">
+          <div
+            className="featured-artists__strip"
+            ref={stripRef}
+            onScroll={updateScrollState}
+            tabIndex={0}
+            aria-label="Featured artists carousel"
+          >
             {artists.map((artist, index) => (
               <button
                 className={[
@@ -63,6 +85,8 @@ export function FeaturedArtists({
               className="featured-artists__next"
               type="button"
               aria-label="Show more featured artists"
+              disabled={!canScrollNext}
+              onClick={showMoreArtists}
             >
               <img src={featuredArtistsNextArrow} alt="" aria-hidden="true" />
             </button>

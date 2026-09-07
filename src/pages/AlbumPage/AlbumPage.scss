@@ -727,7 +727,9 @@
 @media (max-width: 560px) {
   .album-page {
     &__hero {
-      padding-top: 88px;
+      // The mobile header includes a second row for search. Keep the album
+      // cover below that row instead of letting the absolute header overlap it.
+      padding-top: 145px;
       padding-bottom: 44px;
       background:
         linear-gradient(180deg, rgba(70, 22, 0, 0.58) 0%, #000 74%),

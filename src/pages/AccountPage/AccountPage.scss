@@ -4,6 +4,7 @@
 
 .account-page {
   min-height: 1550px;
+  overflow-x: clip;
   color: var(--color-text-primary);
   background:
     linear-gradient(
@@ -134,12 +135,19 @@
     gap: 16px;
     align-items: start;
 
+    > div {
+      min-width: 0;
+    }
+
     h3,
     p {
       margin: 0;
     }
 
     h3 {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
       font-size: 32px;
       line-height: 1;
       font-weight: 500;

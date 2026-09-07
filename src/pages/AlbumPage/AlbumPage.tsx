@@ -24,7 +24,11 @@ import {
 import { getAlbumDetail } from '../../features/home/home.service';
 import { openAuthModal, useAuthState } from '../../state/auth';
 import { addCartItem, getCartItemCount, useCartItems } from '../../state/cart';
-import { toggleSavedAlbum, useSavedAlbumIds } from '../../state/library';
+import {
+  refreshSavedAlbums,
+  toggleSavedAlbum,
+  useSavedAlbumIds,
+} from '../../state/library';
 import './AlbumPage.scss';
 
 const emptyTracks: AlbumTrack[] = [];
@@ -136,6 +140,12 @@ export function AlbumPage() {
   const [volume, setVolume] = useState(72);
   const [selectedProductId, setSelectedProductId] = useState<string>('');
   const audioRef = useRef<HTMLAudioElement | null>(null);
+
+  useEffect(() => {
+    if (auth.isAuthenticated) {
+      void refreshSavedAlbums().catch(() => undefined);
+    }
+  }, [auth.isAuthenticated]);
 
   useEffect(() => {
     let isActive = true;

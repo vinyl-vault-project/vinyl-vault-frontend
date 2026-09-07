@@ -74,6 +74,7 @@ export async function refreshSession() {
     const tokens = await refreshToken(refresh);
     localStorage.setItem(accessKey, tokens.access);
     setState({ isAuthenticated: true, user: toUser(await getCurrentUser()) });
+    refreshAuthenticatedCart();
     return true;
   } catch {
     clearTokens();
@@ -90,6 +91,7 @@ export async function initializeAuth() {
   }
   try {
     setState({ isAuthenticated: true, user: toUser(await getCurrentUser()) });
+    refreshAuthenticatedCart();
   } catch {
     await refreshSession();
   }
@@ -99,6 +101,7 @@ export async function loginUser(values: { email: string; password: string }) {
   localStorage.setItem(accessKey, tokens.access);
   localStorage.setItem(refreshKey, tokens.refresh);
   setState({ isAuthenticated: true, user: toUser(await getCurrentUser()) });
+  refreshAuthenticatedCart();
 }
 export async function registerUser(values: {
   username: string;
@@ -113,6 +116,11 @@ export async function registerUser(values: {
   localStorage.setItem(accessKey, response.access);
   localStorage.setItem(refreshKey, response.refresh);
   setState({ isAuthenticated: true, user: toUser(response.user) });
+  refreshAuthenticatedCart();
+}
+
+function refreshAuthenticatedCart() {
+  void import('./cart').then(({ refreshCart }) => refreshCart());
 }
 export async function logoutUser() {
   const refresh =

@@ -25,7 +25,9 @@ export function OrderCard({ order }: OrderCardProps) {
     <article className="account-page__order-card">
       <div className="account-page__order-heading">
         <div>
-          <h3>Order {order.order_number}</h3>
+          <h3 title={`Order ${order.order_number}`}>
+            Order {order.order_number}
+          </h3>
           <p>{new Date(order.created_at).toLocaleDateString()}</p>
         </div>
         <span

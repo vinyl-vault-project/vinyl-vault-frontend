@@ -28,7 +28,8 @@ type SearchResultsStatus =
   | { state: 'ready'; albums: AlbumSummary[]; count: number }
   | { state: 'error'; message: string };
 
-const ALBUMS_PER_PAGE = 15;
+// Keep this in sync with the API page size to avoid a phantom final page.
+const ALBUMS_PER_PAGE = 20;
 
 export function SearchResults() {
   const [searchParams] = useSearchParams();
