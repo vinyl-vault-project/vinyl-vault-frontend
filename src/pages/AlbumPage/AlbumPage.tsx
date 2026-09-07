@@ -203,6 +203,11 @@ export function AlbumPage() {
     ? savedAlbumIds.includes(detail.album.id)
     : false;
   const cartItemCount = getCartItemCount(cartItems);
+  const isCurrentProductInCart = product
+    ? cartItems.some(
+        (item) => String(item.product.id) === String(product.id),
+      )
+    : false;
   const catalogFilterId = 'album-page-catalog-filter';
 
   useEffect(() => {
@@ -559,6 +564,7 @@ export function AlbumPage() {
 
       <PurchaseBar
         isAvailable={isAvailable}
+        isInCart={isCurrentProductInCart}
         priceLabel={priceLabel}
         products={status.detail.products ?? []}
         selectedProductId={selectedProductId}
@@ -594,6 +600,7 @@ interface PurchaseBarProps {
   selectedProductId: string;
   onProductChange: (productId: string) => void;
   isAvailable: boolean;
+  isInCart: boolean;
   onAddToCart: () => void;
   priceLabel: string;
 }
@@ -601,6 +608,7 @@ interface PurchaseBarProps {
 function PurchaseBar({
   availability,
   isAvailable,
+  isInCart,
   onAddToCart,
   priceLabel,
   products,
@@ -644,7 +652,7 @@ function PurchaseBar({
           disabled={!isAvailable}
           onClick={onAddToCart}
         >
-          ADD TO CART
+          {isInCart ? 'IN CART — ADD ANOTHER' : 'ADD TO CART'}
         </button>
       </div>
     </aside>
