@@ -255,8 +255,10 @@
 
     &__panel {
       width: min(calc(100% - 48px), 296px);
+      height: fit-content;
       max-height: min(640px, calc(100svh - 136px));
       min-height: 0;
+      align-self: start;
       margin: 0 auto 32px;
       padding: 18px 0 22px;
       overflow-y: auto;
