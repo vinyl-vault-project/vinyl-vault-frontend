@@ -145,12 +145,40 @@
     }
 
     h3 {
+      min-width: 0;
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
-      font-size: 32px;
+      font-size: 28px;
       line-height: 1;
       font-weight: 500;
+    }
+
+    > div:first-child {
+      min-width: 0;
+    }
+
+    .account-page__copy-order {
+      display: inline-flex;
+      margin-top: 8px;
+      padding: 0;
+      color: var(--color-text-secondary);
+      font-size: 14px;
+      background: transparent;
+      border: 0;
+      text-decoration: underline;
+      text-underline-offset: 3px;
+      cursor: pointer;
+
+      &:hover,
+      &:focus-visible {
+        color: var(--color-text-primary);
+      }
+
+      &:focus-visible {
+        outline: 2px solid var(--color-focus);
+        outline-offset: 3px;
+      }
     }
 
     p {
@@ -342,7 +370,7 @@
 
     &__content {
       width: min(100% - 42px, 334px);
-      padding-top: 112px;
+      padding-top: 150px;
       padding-bottom: 48px;
     }
 
@@ -388,7 +416,12 @@
     }
 
     &__order-heading h3 {
-      font-size: 25px;
+      font-size: 21px;
+    }
+
+    &__copy-order {
+      margin-top: 6px;
+      font-size: 13px;
     }
 
     &__order-heading p {

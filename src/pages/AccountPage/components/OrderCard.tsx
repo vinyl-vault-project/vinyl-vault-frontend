@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Link } from 'react-router';
 
 import { routes } from '../../../app/routes';
@@ -16,10 +17,21 @@ function ChevronIcon() {
 }
 
 export function OrderCard({ order }: OrderCardProps) {
+  const [isCopied, setIsCopied] = useState(false);
   const itemCount = (order.items || []).reduce(
     (total, item) => total + item.quantity,
     0,
   );
+
+  async function handleCopyOrderNumber() {
+    try {
+      await navigator.clipboard.writeText(order.order_number);
+      setIsCopied(true);
+      window.setTimeout(() => setIsCopied(false), 1800);
+    } catch {
+      setIsCopied(false);
+    }
+  }
 
   return (
     <article className="account-page__order-card">
@@ -28,6 +40,14 @@ export function OrderCard({ order }: OrderCardProps) {
           <h3 title={`Order ${order.order_number}`}>
             Order {order.order_number}
           </h3>
+          <button
+            className="account-page__copy-order"
+            type="button"
+            onClick={() => void handleCopyOrderNumber()}
+            aria-label={`Copy order number ${order.order_number}`}
+          >
+            {isCopied ? 'Copied' : 'Copy'}
+          </button>
           <p>{new Date(order.created_at).toLocaleDateString()}</p>
         </div>
         <span
