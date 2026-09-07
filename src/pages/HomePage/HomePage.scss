@@ -423,7 +423,8 @@
     line-height: 1.15;
   }
 
-  &__next {
+  &__next,
+  &__previous {
     position: absolute;
     top: 50%;
     right: 32px;
@@ -463,6 +464,15 @@
       width: 32px;
       height: 64px;
       filter: drop-shadow(0 0 16px rgba(0, 0, 0, 0.45));
+    }
+  }
+
+  &__previous {
+    right: auto;
+    left: 32px;
+
+    img {
+      transform: rotate(180deg);
     }
   }
 }
