@@ -738,7 +738,7 @@
 
     &__hero-inner {
       gap: 28px;
-      width: min(100% - 36px, 340px);
+      width: min(calc(100% - 36px), 340px);
     }
 
     &__summary {
@@ -821,7 +821,7 @@
     }
 
     &__description-inner {
-      width: min(100% - 36px, 340px);
+      width: min(calc(100% - 36px), 340px);
       gap: 42px;
     }
 

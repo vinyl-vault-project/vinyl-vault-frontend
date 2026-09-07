@@ -571,7 +571,7 @@
 
     &__inner {
       gap: 0;
-      width: min(100% - 32px, 306px);
+      width: min(calc(100% - 32px), 306px);
       margin-inline: auto;
     }
 

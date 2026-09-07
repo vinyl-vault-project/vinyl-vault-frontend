@@ -246,7 +246,7 @@
   .catalog-filter {
     position: fixed;
     inset: 0;
-    min-height: 100svh;
+    min-height: 0;
     padding-top: 136px;
     overflow: hidden;
     background: rgba(0, 0, 0, 0.38);
@@ -254,8 +254,8 @@
     touch-action: none;
 
     &__panel {
-      width: min(100% - 48px, 296px);
-      max-height: calc(100svh - 136px);
+      width: min(calc(100% - 48px), 296px);
+      max-height: min(640px, calc(100svh - 136px));
       min-height: 0;
       margin: 0 auto 32px;
       padding: 18px 0 22px;
@@ -289,23 +289,16 @@
 
     &__actions {
       gap: 14px;
-      order: 5;
-
-      > .catalog-filter__years {
-        order: 1;
-      }
-
-      > .ui-button--compact {
-        order: 2;
-      }
-
-      > .ui-button--text {
-        order: 3;
-      }
+      order: 1;
     }
 
     &__years {
       margin-top: 0;
+    }
+
+    &__apply {
+      width: 100%;
+      margin: 0;
     }
 
     &__legend,

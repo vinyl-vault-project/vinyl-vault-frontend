@@ -401,7 +401,7 @@
     background: #000;
 
     &__content {
-      width: min(100% - 42px, 334px);
+      width: min(calc(100% - 42px), 334px);
       padding-top: 150px;
       padding-bottom: 48px;
     }

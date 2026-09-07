@@ -277,7 +277,7 @@
 @media (max-width: 560px) {
   .order-details-page {
     &__content {
-      width: min(100% - 36px, 414px);
+      width: min(calc(100% - 36px), 414px);
       margin-top: 150px;
       padding-top: 16px;
       padding-bottom: 56px;
