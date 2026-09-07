@@ -356,11 +356,42 @@
     &__content {
       padding-top: 190px;
       padding-bottom: 92px;
+      width: min(calc(100% - 64px), 640px);
     }
 
     &__logout {
       flex-shrink: 0;
       margin-left: auto;
+    }
+
+    &__orders {
+      max-width: 640px;
+    }
+
+    &__order-heading {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 14px;
+      width: 100%;
+    }
+
+    &__order-card {
+      min-width: 0;
+    }
+
+    &__order-heading h3 {
+      min-width: 0;
+      font-size: 24px;
+    }
+
+    &__order-summary {
+      min-width: 0;
+
+      strong {
+        min-width: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
     }
   }
 }
