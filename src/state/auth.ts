@@ -64,10 +64,26 @@ function clearTokens() {
 function getAccess() {
   return typeof window === 'undefined' ? null : localStorage.getItem(accessKey);
 }
+
+function isExpiredJwt(token: string) {
+  try {
+    const payload = token.split('.')[1];
+    if (!payload) return false;
+
+    const normalizedPayload = payload.replace(/-/g, '+').replace(/_/g, '/');
+    const { exp } = JSON.parse(atob(normalizedPayload)) as { exp?: unknown };
+
+    return typeof exp === 'number' && exp * 1000 <= Date.now();
+  } catch {
+    return false;
+  }
+}
+
 export async function refreshSession() {
   const refresh =
     typeof window === 'undefined' ? null : localStorage.getItem(refreshKey);
-  if (!refresh) {
+  if (!refresh || isExpiredJwt(refresh)) {
+    clearTokens();
     setState(guest);
     return false;
   }
@@ -86,8 +102,13 @@ export async function refreshSession() {
 configureApiAuth(getAccess, refreshSession);
 export async function initializeAuth() {
   if (initialized) return;
-  if (!getAccess()) {
+  const access = getAccess();
+  if (!access) {
     setState(guest);
+    return;
+  }
+  if (isExpiredJwt(access)) {
+    await refreshSession();
     return;
   }
   try {

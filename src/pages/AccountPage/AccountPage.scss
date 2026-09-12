@@ -111,8 +111,15 @@
     display: grid;
     gap: 32px;
     max-width: 922px;
+  }
 
-    > h2 {
+  &__orders-header {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    align-items: center;
+
+    h2 {
       margin: 0;
       color: var(--color-text-primary);
       font-size: 20px;
@@ -120,6 +127,35 @@
       font-weight: 800;
       text-transform: capitalize;
     }
+  }
+
+  &__orders-toggle {
+    min-height: 36px;
+    padding: 7px 12px;
+    color: var(--color-text-primary);
+    font: inherit;
+    font-size: 14px;
+    line-height: 1;
+    font-weight: 700;
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.55);
+    border-radius: var(--radius-small);
+
+    &:hover,
+    &:focus-visible {
+      color: var(--color-page);
+      background: var(--color-text-primary);
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--color-focus);
+      outline-offset: 3px;
+    }
+  }
+
+  &__orders-list {
+    display: grid;
+    gap: 32px;
   }
 
   &__order-card {
@@ -441,6 +477,10 @@
     &__orders {
       gap: 24px;
       max-width: none;
+    }
+
+    &__orders-list {
+      gap: 24px;
     }
 
     &__order-card {

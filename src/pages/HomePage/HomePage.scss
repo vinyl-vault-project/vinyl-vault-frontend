@@ -325,13 +325,15 @@
 
   &__strip {
     display: flex;
+    gap: 16px;
     width: 100%;
     height: 360px;
     overflow-x: auto;
     overflow-y: hidden;
+    overscroll-behavior-x: contain;
     scrollbar-width: none;
-    scroll-behavior: smooth;
-    scroll-snap-type: x proximity;
+    scroll-behavior: auto;
+    scroll-snap-type: x mandatory;
     touch-action: pan-x;
 
     &::-webkit-scrollbar {
@@ -341,7 +343,8 @@
 
   &__card {
     position: relative;
-    flex: 0 0 auto;
+    flex: 0 0 calc((100% - 32px) / 3);
+    min-width: 0;
     height: 360px;
     overflow: hidden;
     color: var(--color-text-secondary);
@@ -391,23 +394,6 @@
       height: 35%;
       content: '';
       background: linear-gradient(180deg, transparent, rgba(0, 0, 0, 0.72));
-    }
-
-    &--wide {
-      width: 448px;
-    }
-
-    &--medium {
-      width: 360px;
-    }
-
-    &--narrow {
-      width: 241px;
-    }
-
-    &--edge {
-      flex: 1 1 241px;
-      min-width: 241px;
     }
   }
 
@@ -689,8 +675,8 @@
     &__card--medium,
     &__card--narrow,
     &__card--edge {
-      width: 190px;
-      min-width: 190px;
+      flex: 0 0 min(82%, 280px);
+      min-width: 0;
       height: 190px;
     }
 

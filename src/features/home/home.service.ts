@@ -5,6 +5,7 @@ import pianoMechanismBackground from '../../assets/vinyl-vault/album-page-piano-
 import drukqsCassetteInlays from '../../assets/vinyl-vault/aphex-twin-drukqs-cassette-inlays.png';
 import {
   getArtist,
+  getAllArtists,
   getRelease,
   getReleases,
   type ReleaseQuery,
@@ -22,7 +23,10 @@ import type {
 export async function getHomePageData(
   query: ReleaseQuery = {},
 ): Promise<HomePageData> {
-  const response = await getReleases({ ...query, ordering: '-release_year' });
+  const [response, artistsResponse] = await Promise.all([
+    getReleases({ ...query, ordering: '-release_year' }),
+    getAllArtists(),
+  ]);
   const albums = response.results
     .map(mapRelease)
     .sort(
@@ -32,27 +36,41 @@ export async function getHomePageData(
   return {
     heroPromotions: homePageMockData.heroPromotions,
     albumsOfTheWeek: albums.slice(0, 6),
-    featuredArtists: await getFeaturedArtists(),
+    featuredArtists: getFeaturedArtists(artistsResponse.results),
     recommendedAlbums: albums.slice(8, 14),
   };
 }
 
-async function getFeaturedArtists(): Promise<FeaturedArtist[]> {
-  return Promise.all(
-    homePageMockData.featuredArtists.map(async (featuredArtist) => {
-      try {
-        const artist = await getArtist(featuredArtist.slug);
-        return {
-          ...featuredArtist,
-          imageSrc: resolveImageUrl(artist.image_url, featuredArtist.imageSrc),
-          imageAlt: `${artist.name} portrait`,
-          name: artist.name,
-        };
-      } catch {
-        return featuredArtist;
-      }
-    }),
-  );
+function getFeaturedArtists(
+  artists: Array<{
+    id: number | string;
+    image_url?: string | null;
+    name: string;
+    slug: string;
+  }>,
+): FeaturedArtist[] {
+  const featuredArtists = artists
+    .filter((artist) => hasUsableArtistImage(artist.image_url))
+    .slice(0, 10)
+    .map((artist, index): FeaturedArtist => ({
+      id: String(artist.id),
+      slug: artist.slug,
+      name: artist.name,
+      imageSrc: resolveImageUrl(artist.image_url ?? null, ''),
+      imageAlt: `${artist.name} portrait`,
+      width: index % 4 === 1 ? 'wide' : index % 4 === 2 ? 'narrow' : 'medium',
+      hasDetails: true,
+    }));
+
+  return featuredArtists.length > 0
+    ? featuredArtists
+    : homePageMockData.featuredArtists;
+}
+
+function hasUsableArtistImage(imageUrl: string | null | undefined) {
+  if (!imageUrl) return false;
+
+  return !/(broken-vinyl|default|no[-_ ]?image|placeholder)/i.test(imageUrl);
 }
 
 export async function getArtistDetailsBySlug(
@@ -102,6 +120,26 @@ export async function getSearchResultAlbums(query: ReleaseQuery = {}): Promise<{
   next: string | null;
   previous: string | null;
 }> {
+  const { country: countries = [], page = 1, ...releaseQuery } = query;
+
+  if (countries.length > 0) {
+    const { pageSize, releases } =
+      await getAllSearchResultReleases(releaseQuery);
+    const matchingReleases = releases.filter((release) =>
+      releaseMatchesCountries(release, countries),
+    );
+    const start = (page - 1) * pageSize;
+    const end = start + pageSize;
+
+    return {
+      albums: matchingReleases.slice(start, end).map(mapRelease),
+      count: matchingReleases.length,
+      next:
+        end < matchingReleases.length ? createPaginationUrl(page + 1) : null,
+      previous: page > 1 ? createPaginationUrl(page - 1) : null,
+    };
+  }
+
   const response = await getReleases(query);
   return {
     albums: response.results.map(mapRelease),
@@ -109,6 +147,47 @@ export async function getSearchResultAlbums(query: ReleaseQuery = {}): Promise<{
     next: response.next,
     previous: response.previous,
   };
+}
+
+async function getAllSearchResultReleases(query: ReleaseQuery) {
+  const firstPage = await getReleases({ ...query, page: 1 });
+  const pageSize = Math.max(firstPage.results.length, 1);
+
+  if (!firstPage.next) {
+    return { pageSize, releases: firstPage.results };
+  }
+
+  const pageCount = Math.ceil(firstPage.count / pageSize);
+  const remainingPages = await Promise.all(
+    Array.from({ length: pageCount - 1 }, (_, index) =>
+      getReleases({ ...query, page: index + 2 }),
+    ),
+  );
+
+  return {
+    pageSize,
+    releases: [firstPage, ...remainingPages].flatMap((page) => page.results),
+  };
+}
+
+function releaseMatchesCountries(release: ReleaseDto, countries: string[]) {
+  const selectedCountries = new Set(countries.map(normalizeCountry));
+  const releaseCountries = [
+    release.country,
+    ...release.artists.map((artist) => artist.origin_country),
+  ];
+
+  return releaseCountries.some(
+    (country) => country && selectedCountries.has(normalizeCountry(country)),
+  );
+}
+
+function normalizeCountry(country: string) {
+  return country.trim().toLocaleLowerCase();
+}
+
+function createPaginationUrl(page: number) {
+  return `https://catalog.local/releases/?page=${page}`;
 }
 
 export async function getAlbumDetail(
