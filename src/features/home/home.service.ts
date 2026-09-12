@@ -5,6 +5,7 @@ import pianoMechanismBackground from '../../assets/vinyl-vault/album-page-piano-
 import drukqsCassetteInlays from '../../assets/vinyl-vault/aphex-twin-drukqs-cassette-inlays.png';
 import {
   getArtist,
+  getArtists,
   getRelease,
   getReleases,
   type ReleaseQuery,
@@ -22,7 +23,10 @@ import type {
 export async function getHomePageData(
   query: ReleaseQuery = {},
 ): Promise<HomePageData> {
-  const response = await getReleases({ ...query, ordering: '-release_year' });
+  const [response, artistsResponse] = await Promise.all([
+    getReleases({ ...query, ordering: '-release_year' }),
+    getArtists(),
+  ]);
   const albums = response.results
     .map(mapRelease)
     .sort(
@@ -32,27 +36,34 @@ export async function getHomePageData(
   return {
     heroPromotions: homePageMockData.heroPromotions,
     albumsOfTheWeek: albums.slice(0, 6),
-    featuredArtists: await getFeaturedArtists(),
+    featuredArtists: getFeaturedArtists(artistsResponse.results),
     recommendedAlbums: albums.slice(8, 14),
   };
 }
 
-async function getFeaturedArtists(): Promise<FeaturedArtist[]> {
-  return Promise.all(
-    homePageMockData.featuredArtists.map(async (featuredArtist) => {
-      try {
-        const artist = await getArtist(featuredArtist.slug);
-        return {
-          ...featuredArtist,
-          imageSrc: resolveImageUrl(artist.image_url, featuredArtist.imageSrc),
-          imageAlt: `${artist.name} portrait`,
-          name: artist.name,
-        };
-      } catch {
-        return featuredArtist;
-      }
-    }),
-  );
+function getFeaturedArtists(
+  artists: Array<{
+    id: number | string;
+    image_url?: string | null;
+    name: string;
+    slug: string;
+  }>,
+): FeaturedArtist[] {
+  const featuredArtists = artists
+    .slice(0, 10)
+    .map((artist, index): FeaturedArtist => ({
+      id: String(artist.id),
+      slug: artist.slug,
+      name: artist.name,
+      imageSrc: resolveImageUrl(artist.image_url ?? null, ''),
+      imageAlt: `${artist.name} portrait`,
+      width: index % 4 === 1 ? 'wide' : index % 4 === 2 ? 'narrow' : 'medium',
+      hasDetails: true,
+    }));
+
+  return featuredArtists.length > 0
+    ? featuredArtists
+    : homePageMockData.featuredArtists;
 }
 
 export async function getArtistDetailsBySlug(

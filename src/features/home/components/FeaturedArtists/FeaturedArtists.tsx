@@ -1,4 +1,4 @@
-import { type MouseEvent, type PointerEvent, useRef } from 'react';
+import { type MouseEvent, type PointerEvent, useEffect, useRef } from 'react';
 
 import featuredArtistsNextArrow from '../../../../assets/vinyl-vault/featured-artists-next-arrow.svg';
 import artistPlaceholder from '../../../../assets/vinyl-vault/broken-vinyl-404.png';
@@ -33,6 +33,27 @@ export function FeaturedArtists({
       behavior: 'smooth',
     });
   }
+
+  useEffect(() => {
+    const strip = stripRef.current;
+    if (!strip || artists.length < 2) return undefined;
+
+    const intervalId = window.setInterval(() => {
+      const isAtEnd =
+        strip.scrollLeft + strip.clientWidth >= strip.scrollWidth - 2;
+      if (isAtEnd) {
+        strip.scrollTo({ left: 0, behavior: 'smooth' });
+        return;
+      }
+
+      strip.scrollBy({
+        left: Math.max(strip.clientWidth * 0.8, 240),
+        behavior: 'smooth',
+      });
+    }, 4_000);
+
+    return () => window.clearInterval(intervalId);
+  }, [artists.length]);
 
   function handlePointerDown(event: PointerEvent<HTMLDivElement>) {
     const strip = event.currentTarget;
