@@ -5,7 +5,7 @@ import pianoMechanismBackground from '../../assets/vinyl-vault/album-page-piano-
 import drukqsCassetteInlays from '../../assets/vinyl-vault/aphex-twin-drukqs-cassette-inlays.png';
 import {
   getArtist,
-  getArtists,
+  getAllArtists,
   getRelease,
   getReleases,
   type ReleaseQuery,
@@ -25,7 +25,7 @@ export async function getHomePageData(
 ): Promise<HomePageData> {
   const [response, artistsResponse] = await Promise.all([
     getReleases({ ...query, ordering: '-release_year' }),
-    getArtists(),
+    getAllArtists(),
   ]);
   const albums = response.results
     .map(mapRelease)
@@ -50,6 +50,7 @@ function getFeaturedArtists(
   }>,
 ): FeaturedArtist[] {
   const featuredArtists = artists
+    .filter((artist) => hasUsableArtistImage(artist.image_url))
     .slice(0, 10)
     .map((artist, index): FeaturedArtist => ({
       id: String(artist.id),
@@ -64,6 +65,12 @@ function getFeaturedArtists(
   return featuredArtists.length > 0
     ? featuredArtists
     : homePageMockData.featuredArtists;
+}
+
+function hasUsableArtistImage(imageUrl: string | null | undefined) {
+  if (!imageUrl) return false;
+
+  return !/(broken-vinyl|default|no[-_ ]?image|placeholder)/i.test(imageUrl);
 }
 
 export async function getArtistDetailsBySlug(
@@ -113,6 +120,26 @@ export async function getSearchResultAlbums(query: ReleaseQuery = {}): Promise<{
   next: string | null;
   previous: string | null;
 }> {
+  const { country: countries = [], page = 1, ...releaseQuery } = query;
+
+  if (countries.length > 0) {
+    const { pageSize, releases } =
+      await getAllSearchResultReleases(releaseQuery);
+    const matchingReleases = releases.filter((release) =>
+      releaseMatchesCountries(release, countries),
+    );
+    const start = (page - 1) * pageSize;
+    const end = start + pageSize;
+
+    return {
+      albums: matchingReleases.slice(start, end).map(mapRelease),
+      count: matchingReleases.length,
+      next:
+        end < matchingReleases.length ? createPaginationUrl(page + 1) : null,
+      previous: page > 1 ? createPaginationUrl(page - 1) : null,
+    };
+  }
+
   const response = await getReleases(query);
   return {
     albums: response.results.map(mapRelease),
@@ -120,6 +147,47 @@ export async function getSearchResultAlbums(query: ReleaseQuery = {}): Promise<{
     next: response.next,
     previous: response.previous,
   };
+}
+
+async function getAllSearchResultReleases(query: ReleaseQuery) {
+  const firstPage = await getReleases({ ...query, page: 1 });
+  const pageSize = Math.max(firstPage.results.length, 1);
+
+  if (!firstPage.next) {
+    return { pageSize, releases: firstPage.results };
+  }
+
+  const pageCount = Math.ceil(firstPage.count / pageSize);
+  const remainingPages = await Promise.all(
+    Array.from({ length: pageCount - 1 }, (_, index) =>
+      getReleases({ ...query, page: index + 2 }),
+    ),
+  );
+
+  return {
+    pageSize,
+    releases: [firstPage, ...remainingPages].flatMap((page) => page.results),
+  };
+}
+
+function releaseMatchesCountries(release: ReleaseDto, countries: string[]) {
+  const selectedCountries = new Set(countries.map(normalizeCountry));
+  const releaseCountries = [
+    release.country,
+    ...release.artists.map((artist) => artist.origin_country),
+  ];
+
+  return releaseCountries.some(
+    (country) => country && selectedCountries.has(normalizeCountry(country)),
+  );
+}
+
+function normalizeCountry(country: string) {
+  return country.trim().toLocaleLowerCase();
+}
+
+function createPaginationUrl(page: number) {
+  return `https://catalog.local/releases/?page=${page}`;
 }
 
 export async function getAlbumDetail(

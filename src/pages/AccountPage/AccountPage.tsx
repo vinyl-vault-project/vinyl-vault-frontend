@@ -43,6 +43,7 @@ export function AccountPage() {
   const [catalogFilterSession, setCatalogFilterSession] = useState(0);
   const [appliedFilters] = useState(defaultCatalogFilters);
   const [orders, setOrders] = useState<OrderDto[]>([]);
+  const [isOrderHistoryExpanded, setIsOrderHistoryExpanded] = useState(true);
   const savedAlbums = useMemo(
     () =>
       savedItems.map((item) => ({
@@ -171,10 +172,30 @@ export function AccountPage() {
             className="account-page__orders"
             aria-labelledby="order-history-title"
           >
-            <h2 id="order-history-title">Order history</h2>
-            {orders.map((order) => (
-              <OrderCard key={order.id} order={order} />
-            ))}
+            <div className="account-page__orders-header">
+              <h2 id="order-history-title">Order history</h2>
+              <button
+                className="account-page__orders-toggle"
+                type="button"
+                aria-controls="order-history-list"
+                aria-expanded={isOrderHistoryExpanded}
+                onClick={() =>
+                  setIsOrderHistoryExpanded((isExpanded) => !isExpanded)
+                }
+              >
+                {isOrderHistoryExpanded ? 'Hide orders' : 'Show orders'}
+              </button>
+            </div>
+            {isOrderHistoryExpanded ? (
+              <div
+                id="order-history-list"
+                className="account-page__orders-list"
+              >
+                {orders.map((order) => (
+                  <OrderCard key={order.id} order={order} />
+                ))}
+              </div>
+            ) : null}
           </section>
 
           <section

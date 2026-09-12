@@ -2,7 +2,6 @@ import { apiGet } from './client';
 import type {
   ArtistDto,
   ArtistReferenceDto,
-  CatalogFiltersDto,
   NamedDto,
   PaginatedDto,
   ReleaseDetailDto,
@@ -33,24 +32,32 @@ export function getReleases(query: ReleaseQuery = {}) {
 }
 export const getRelease = (slug: string) =>
   apiGet<ReleaseDetailDto>(`/releases/${encodeURIComponent(slug)}/`);
-export const getArtists = () =>
-  apiGet<PaginatedDto<ArtistReferenceDto>>('/artists/');
-export const getCatalogFilters = () =>
-  apiGet<CatalogFiltersDto>('/catalog/filters/');
+export const getArtists = (page?: number) =>
+  apiGet<PaginatedDto<ArtistReferenceDto>>(
+    `/artists/${page ? `?page=${page}` : ''}`,
+  );
 
+export async function getAllArtists(): Promise<
+  PaginatedDto<ArtistReferenceDto>
+> {
+  const firstPage = await getArtists();
+  const results = [...firstPage.results];
+  let next = firstPage.next;
+
+  while (next) {
+    const nextUrl = new URL(next);
+    const nextPath = `${nextUrl.pathname.replace('/api/v1', '')}${nextUrl.search}`;
+    const page = await apiGet<PaginatedDto<ArtistReferenceDto>>(nextPath);
+    results.push(...page.results);
+    next = page.next;
+  }
+
+  return { ...firstPage, next: null, previous: null, results };
+}
 export async function getReleaseYearRange(): Promise<{
   min: number;
   max: number;
 }> {
-  try {
-    const { year_range: yearRange } = await getCatalogFilters();
-    if (Number.isFinite(yearRange.min) && Number.isFinite(yearRange.max)) {
-      return yearRange;
-    }
-  } catch {
-    // Fall back to catalog data for deployments that predate this endpoint.
-  }
-
   const years = (await getAllReleases())
     .map((release) => release.release_year)
     .filter((year): year is number => Number.isFinite(year));
@@ -95,15 +102,6 @@ export function getCountries(): Promise<PaginatedDto<NamedDto>> {
 }
 
 async function loadCountriesFromReleases(): Promise<PaginatedDto<NamedDto>> {
-  try {
-    const filters = await getCatalogFilters();
-    return namedOptionsFromValues(filters.countries);
-  } catch {
-    // The currently deployed API has no catalog-filters endpoint. Keep its
-    // existing country query usable until the backend exposes pressing
-    // countries as required by the MVP.
-  }
-
   const releases = await getAllReleases();
   return namedOptionsFromValues(
     releases.flatMap((release) => [
