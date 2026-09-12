@@ -1,4 +1,4 @@
-import { type MouseEvent, useEffect, useRef, useState } from 'react';
+import { type MouseEvent, useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router';
 
 import { Footer } from '../../components/layout/Footer/Footer';
@@ -25,14 +25,30 @@ import './SearchResults.scss';
 
 type SearchResultsStatus =
   | { state: 'loading' }
-  | { state: 'ready'; albums: AlbumSummary[]; count: number }
+  | {
+      state: 'ready';
+      albums: AlbumSummary[];
+      count: number;
+      next: string | null;
+      previous: string | null;
+    }
   | { state: 'error'; message: string };
 
-const ALBUMS_PER_PAGE = 15;
+function pageFromApiUrl(url: string | null, fallback: number) {
+  if (!url) return null;
+
+  try {
+    const page = Number(new URL(url).searchParams.get('page'));
+    return Number.isInteger(page) && page > 0 ? page : fallback;
+  } catch {
+    return fallback;
+  }
+}
 
 export function SearchResults() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
+  const searchParamsKey = searchParams.toString();
   const query = searchParams.get('q') ?? '';
   const artistSlug = searchParams.get('artist') ?? '';
   const [status, setStatus] = useState<SearchResultsStatus>({
@@ -40,8 +56,13 @@ export function SearchResults() {
   });
   const [isCatalogFilterOpen, setIsCatalogFilterOpen] = useState(false);
   const [catalogFilterSession, setCatalogFilterSession] = useState(0);
-  const appliedFilters = filtersFromSearchParams(searchParams);
-  const [currentPage, setCurrentPage] = useState(1);
+  const appliedFilters = useMemo(
+    () => filtersFromSearchParams(new URLSearchParams(searchParamsKey)),
+    [searchParamsKey],
+  );
+  const requestedPage = Number(searchParams.get('page'));
+  const currentPage =
+    Number.isInteger(requestedPage) && requestedPage > 0 ? requestedPage : 1;
   const [selectedArtistDetails, setSelectedArtistDetails] =
     useState<ArtistDetails | null>(null);
   const artistTriggerRef = useRef<HTMLElement | null>(null);
@@ -64,6 +85,8 @@ export function SearchResults() {
             state: 'ready',
             albums: response.albums,
             count: response.count,
+            next: response.next,
+            previous: response.previous,
           });
         }
       } catch {
@@ -114,7 +137,6 @@ export function SearchResults() {
   }
 
   function handleCatalogFilterApply(nextFilters: CatalogFilters) {
-    setCurrentPage(1);
     setIsCatalogFilterOpen(false);
 
     const nextParams = filtersToSearchParams(nextFilters);
@@ -124,13 +146,26 @@ export function SearchResults() {
   }
 
   const albums = status.state === 'ready' ? status.albums : [];
+  const nextPage =
+    status.state === 'ready'
+      ? pageFromApiUrl(status.next, currentPage + 1)
+      : null;
+  const previousPage =
+    status.state === 'ready'
+      ? pageFromApiUrl(status.previous, Math.max(currentPage - 1, 1))
+      : null;
   const totalPages =
-    status.state === 'ready' ? Math.ceil(status.count / ALBUMS_PER_PAGE) : 0;
-
-  const validCurrentPage = Math.min(currentPage, Math.max(totalPages, 1));
+    status.state !== 'ready'
+      ? 0
+      : status.next
+        ? Math.ceil(status.count / Math.max(status.albums.length, 1))
+        : currentPage;
 
   function handlePageChange(page: number) {
-    setCurrentPage(page);
+    const nextParams = new URLSearchParams(searchParams);
+    if (page === 1) nextParams.delete('page');
+    else nextParams.set('page', String(page));
+    navigate(`${routes.search}?${nextParams.toString()}`);
 
     window.requestAnimationFrame(() => {
       document.getElementById('search-results-title')?.scrollIntoView({
@@ -213,8 +248,8 @@ export function SearchResults() {
           <button
             className="search-results-page__pagination-button"
             type="button"
-            disabled={validCurrentPage === 1}
-            onClick={() => handlePageChange(validCurrentPage - 1)}
+            disabled={previousPage === null}
+            onClick={() => previousPage && handlePageChange(previousPage)}
           >
             <span aria-hidden="true">←</span>
             Previous
@@ -231,7 +266,7 @@ export function SearchResults() {
                     : ''
                 }`}
                 type="button"
-                aria-current={page === validCurrentPage ? 'page' : undefined}
+                aria-current={page === currentPage ? 'page' : undefined}
                 key={page}
                 onClick={() => handlePageChange(page)}
               >
@@ -243,8 +278,8 @@ export function SearchResults() {
           <button
             className="search-results-page__pagination-button"
             type="button"
-            disabled={validCurrentPage === totalPages}
-            onClick={() => handlePageChange(validCurrentPage + 1)}
+            disabled={nextPage === null}
+            onClick={() => nextPage && handlePageChange(nextPage)}
           >
             Next
             <span aria-hidden="true">→</span>

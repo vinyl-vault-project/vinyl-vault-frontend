@@ -8,20 +8,16 @@ export interface FilterOption {
 
 export interface CatalogFilters {
   countries: FilterOptionId[];
-  fromYear: number;
+  fromYear?: number;
   genres: FilterOptionId[];
   styles: FilterOptionId[];
-  toYear: number;
+  toYear?: number;
 }
-
-export const yearOptions = [1989, 1993, 1998, 2001, 2005, 2011, 2013, 2026];
 
 export const defaultCatalogFilters: CatalogFilters = {
   countries: [],
-  fromYear: 1989,
   genres: [],
   styles: [],
-  toYear: 2026,
 };
 
 export function toReleaseQuery(filters: CatalogFilters) {
@@ -44,24 +40,23 @@ export function filtersFromSearchParams(
 
   return {
     countries: searchParams.getAll('country'),
-    fromYear:
-      fromYearValue && Number.isFinite(fromYear)
-        ? fromYear
-        : defaultCatalogFilters.fromYear,
+    fromYear: fromYearValue && Number.isFinite(fromYear) ? fromYear : undefined,
     genres: searchParams.getAll('genre'),
     styles: searchParams.getAll('style'),
-    toYear:
-      toYearValue && Number.isFinite(toYear)
-        ? toYear
-        : defaultCatalogFilters.toYear,
+    toYear: toYearValue && Number.isFinite(toYear) ? toYear : undefined,
   };
 }
 
 export function filtersToSearchParams(filters: CatalogFilters) {
-  const searchParams = new URLSearchParams({
-    year_from: String(filters.fromYear),
-    year_to: String(filters.toYear),
-  });
+  const searchParams = new URLSearchParams();
+
+  if (filters.fromYear !== undefined) {
+    searchParams.set('year_from', String(filters.fromYear));
+  }
+
+  if (filters.toYear !== undefined) {
+    searchParams.set('year_to', String(filters.toYear));
+  }
 
   filters.genres.forEach((genre) => searchParams.append('genre', genre));
   filters.styles.forEach((style) => searchParams.append('style', style));
