@@ -84,6 +84,10 @@
     align-items: start;
     max-width: 1200px;
 
+    > div {
+      min-width: 0;
+    }
+
     h1,
     p {
       margin: 0;
@@ -93,6 +97,7 @@
       font-size: 40px;
       line-height: 54px;
       font-weight: 556;
+      overflow-wrap: anywhere;
     }
 
     p {
@@ -287,6 +292,12 @@
     &__heading h1 {
       font-size: 28px;
       line-height: 34px;
+    }
+
+    &__title-row {
+      flex-wrap: wrap;
+      gap: 12px;
+      align-items: start;
     }
 
     &__heading p {

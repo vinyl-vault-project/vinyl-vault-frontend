@@ -20,6 +20,7 @@ function App() {
         <Route path="/cart" element={<CartPage />} />
         <Route path="/account" element={<AccountPage />} />
         <Route path="/account/library" element={<AccountPage />} />
+        <Route path="/orders/:orderId" element={<OrderDetailsPage />} />
         <Route path="/account/orders/:orderId" element={<OrderDetailsPage />} />
         <Route path="*" element={<ErrorPage />} />
       </Routes>

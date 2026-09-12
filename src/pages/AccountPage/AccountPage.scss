@@ -153,6 +153,7 @@
       font-size: 28px;
       line-height: 1;
       font-weight: 500;
+      overflow-wrap: anywhere;
     }
 
     > div:first-child {
@@ -462,6 +463,10 @@
     &__copy-order {
       margin-top: 6px;
       font-size: 13px;
+    }
+
+    &__order-heading {
+      flex-wrap: wrap;
     }
 
     &__order-heading p {

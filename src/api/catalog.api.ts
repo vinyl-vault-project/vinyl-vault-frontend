@@ -37,6 +37,30 @@ export const getArtists = () =>
   apiGet<PaginatedDto<ArtistReferenceDto>>('/artists/');
 export const getCatalogFilters = () =>
   apiGet<CatalogFiltersDto>('/catalog/filters/');
+
+export async function getReleaseYearRange(): Promise<{
+  min: number;
+  max: number;
+}> {
+  try {
+    const { year_range: yearRange } = await getCatalogFilters();
+    if (Number.isFinite(yearRange.min) && Number.isFinite(yearRange.max)) {
+      return yearRange;
+    }
+  } catch {
+    // Fall back to catalog data for deployments that predate this endpoint.
+  }
+
+  const years = (await getAllReleases())
+    .map((release) => release.release_year)
+    .filter((year): year is number => Number.isFinite(year));
+
+  if (years.length === 0) {
+    throw new Error('Release years could not be loaded.');
+  }
+
+  return { min: Math.min(...years), max: Math.max(...years) };
+}
 export async function getGenres(): Promise<PaginatedDto<NamedDto>> {
   try {
     return await getAllNamedOptions('/genres/');
