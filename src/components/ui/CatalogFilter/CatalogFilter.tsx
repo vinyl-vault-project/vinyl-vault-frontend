@@ -8,7 +8,12 @@ import {
 } from 'react';
 
 import catalogFilterChevron from '../../../assets/vinyl-vault/catalog-filter-chevron.svg';
-import { getCountries, getGenres, getStyles } from '../../../api/catalog.api';
+import {
+  getCountries,
+  getGenres,
+  getReleaseYearRange,
+  getStyles,
+} from '../../../api/catalog.api';
 import { Button } from '../Button/Button';
 import { Checkbox } from '../Checkbox/Checkbox';
 import { Select } from '../Select/Select';
@@ -16,7 +21,6 @@ import {
   type CatalogFilters,
   type FilterOption,
   defaultCatalogFilters,
-  yearOptions,
 } from '../../../features/home/home.filters';
 import './CatalogFilter.scss';
 
@@ -50,17 +54,20 @@ export function CatalogFilter({
   const [genreOptions, setGenreOptions] = useState<FilterOption[]>([]);
   const [styleOptions, setStyleOptions] = useState<FilterOption[]>([]);
   const [countryOptions, setCountryOptions] = useState<FilterOption[]>([]);
+  const [yearOptions, setYearOptions] = useState<number[]>([]);
   const [optionsError, setOptionsError] = useState('');
   const [isOptionsLoading, setIsOptionsLoading] = useState(true);
   const panelRef = useRef<HTMLFormElement | null>(null);
   const errorId = useId();
   const yearSelectOptions = useMemo(
-    () =>
-      yearOptions.map((year) => ({
+    () => [
+      { label: 'Any year', value: '' },
+      ...yearOptions.map((year) => ({
         label: String(year),
         value: String(year),
       })),
-    [],
+    ],
+    [yearOptions],
   );
 
   useEffect(() => {
@@ -101,9 +108,8 @@ export function CatalogFilter({
   }, [isOpen, onClose]);
 
   useEffect(() => {
-    if (!isOpen) return;
     let isActive = true;
-    let pendingLoads = 3;
+    let pendingLoads = 4;
 
     function markLoadComplete() {
       pendingLoads -= 1;
@@ -159,15 +165,30 @@ export function CatalogFilter({
       .catch(markOptionsError)
       .finally(markLoadComplete);
 
+    void getReleaseYearRange()
+      .then(({ min, max }) => {
+        if (isActive) {
+          setYearOptions(
+            Array.from({ length: max - min + 1 }, (_, index) => min + index),
+          );
+        }
+      })
+      .catch(markOptionsError)
+      .finally(markLoadComplete);
+
     return () => {
       isActive = false;
     };
-  }, [isOpen]);
+  }, []);
 
   function handleSubmit(event: SyntheticEvent<HTMLFormElement>) {
     event.preventDefault();
 
-    if (draftFilters.fromYear > draftFilters.toYear) {
+    if (
+      draftFilters.fromYear !== undefined &&
+      draftFilters.toYear !== undefined &&
+      draftFilters.fromYear > draftFilters.toYear
+    ) {
       setYearError(
         'Choose a release year range where the first year is earlier.',
       );
@@ -186,7 +207,7 @@ export function CatalogFilter({
   function updateYear(field: 'fromYear' | 'toYear', value: string) {
     setDraftFilters((currentFilters) => ({
       ...currentFilters,
-      [field]: Number(value),
+      [field]: value ? Number(value) : undefined,
     }));
   }
 
@@ -234,7 +255,11 @@ export function CatalogFilter({
               <Select
                 id="catalog-filter-from-year"
                 label="Release year from"
-                value={String(draftFilters.fromYear)}
+                value={
+                  draftFilters.fromYear === undefined
+                    ? ''
+                    : String(draftFilters.fromYear)
+                }
                 options={yearSelectOptions}
                 onChange={(value) => updateYear('fromYear', value)}
               />
@@ -245,7 +270,11 @@ export function CatalogFilter({
               <Select
                 id="catalog-filter-to-year"
                 label="Release year to"
-                value={String(draftFilters.toYear)}
+                value={
+                  draftFilters.toYear === undefined
+                    ? ''
+                    : String(draftFilters.toYear)
+                }
                 options={yearSelectOptions}
                 onChange={(value) => updateYear('toYear', value)}
               />
@@ -373,7 +402,9 @@ function FilterGroup({
       </legend>
 
       <div
-        className={`catalog-filter__option-list catalog-filter__option-list--${field}`}
+        className={`catalog-filter__option-list catalog-filter__option-list--${field}${
+          shouldRenderOptions ? '' : ' catalog-filter__option-list--collapsed'
+        }`}
         id={groupId}
       >
         {shouldRenderOptions
