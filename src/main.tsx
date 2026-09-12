@@ -1,6 +1,6 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
-import { BrowserRouter } from 'react-router';
+import { HashRouter } from 'react-router';
 
 import App from './App.tsx';
 import { initializeAuth } from './state/auth.ts';
@@ -18,9 +18,9 @@ async function bootstrap() {
 
   root.render(
     <StrictMode>
-      <BrowserRouter>
+      <HashRouter>
         <App />
-      </BrowserRouter>
+      </HashRouter>
     </StrictMode>,
   );
 }

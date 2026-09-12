@@ -1,6 +1,7 @@
 import { type MouseEvent, type PointerEvent, useRef } from 'react';
 
 import featuredArtistsNextArrow from '../../../../assets/vinyl-vault/featured-artists-next-arrow.svg';
+import artistPlaceholder from '../../../../assets/vinyl-vault/broken-vinyl-404.png';
 import type { FeaturedArtist } from '../../home.types';
 
 interface FeaturedArtistsProps {
@@ -120,6 +121,9 @@ export function FeaturedArtists({
                     className="featured-artists__image"
                     src={artist.imageSrc}
                     alt={artist.imageAlt}
+                    onError={(event) => {
+                      event.currentTarget.src = artistPlaceholder;
+                    }}
                   />
                   <span className="featured-artists__name">{artist.name}</span>
                 </button>

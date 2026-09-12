@@ -727,6 +727,7 @@
 @media (max-width: 560px) {
   .album-page {
     &__hero {
+      // The mobile Header includes a separate search row.
       padding-top: 150px;
       padding-bottom: 44px;
       background:

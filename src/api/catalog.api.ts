@@ -1,6 +1,7 @@
 import { apiGet } from './client';
 import type {
   ArtistDto,
+  ArtistReferenceDto,
   CatalogFiltersDto,
   NamedDto,
   PaginatedDto,
@@ -21,8 +22,8 @@ export interface ReleaseQuery {
 export function getReleases(query: ReleaseQuery = {}) {
   const params = new URLSearchParams();
   Object.entries(query).forEach(([key, value]) => {
-    if (Array.isArray(value))
-      value.forEach((entry) => params.append(key, entry));
+    if (Array.isArray(value) && value.length > 0)
+      params.set(key, value.join(','));
     else if (value !== undefined && value !== '')
       params.set(key, String(value));
   });
@@ -32,6 +33,8 @@ export function getReleases(query: ReleaseQuery = {}) {
 }
 export const getRelease = (slug: string) =>
   apiGet<ReleaseDetailDto>(`/releases/${encodeURIComponent(slug)}/`);
+export const getArtists = () =>
+  apiGet<PaginatedDto<ArtistReferenceDto>>('/artists/');
 export const getCatalogFilters = () =>
   apiGet<CatalogFiltersDto>('/catalog/filters/');
 
@@ -60,7 +63,7 @@ export async function getReleaseYearRange(): Promise<{
 }
 export async function getGenres(): Promise<PaginatedDto<NamedDto>> {
   try {
-    return await apiGet<PaginatedDto<NamedDto>>('/genres/');
+    return await getAllNamedOptions('/genres/');
   } catch {
     const releases = await getAllReleases();
     return namedOptionsFromValues(
@@ -71,7 +74,7 @@ export async function getGenres(): Promise<PaginatedDto<NamedDto>> {
 
 export async function getStyles(): Promise<PaginatedDto<NamedDto>> {
   try {
-    return await apiGet<PaginatedDto<NamedDto>>('/styles/');
+    return await getAllNamedOptions('/styles/');
   } catch {
     const releases = await getAllReleases();
     return namedOptionsFromValues(
@@ -130,6 +133,31 @@ function namedOptionsFromValues(
       name,
       slug: name,
     })),
+  };
+}
+
+async function getAllNamedOptions(path: string) {
+  const firstPage = await apiGet<PaginatedDto<NamedDto>>(path);
+  const results = [...firstPage.results];
+  let next = firstPage.next;
+
+  while (next) {
+    const nextUrl = new URL(next);
+    const nextPath = `${nextUrl.pathname.replace('/api/v1', '')}${nextUrl.search}`;
+    const page = await apiGet<PaginatedDto<NamedDto>>(nextPath);
+    results.push(...page.results);
+    next = page.next;
+  }
+
+  const filteredResults = results.filter(
+    (item) => Boolean(item.name.trim()) && Boolean(item.slug?.trim()),
+  );
+
+  return {
+    count: filteredResults.length,
+    next: null,
+    previous: null,
+    results: filteredResults,
   };
 }
 

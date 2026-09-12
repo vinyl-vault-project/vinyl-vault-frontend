@@ -496,8 +496,8 @@
       #000;
 
     &__content {
-      width: min(100% - 48px, 326px);
-      padding-top: 112px;
+      width: min(calc(100% - 48px), 326px);
+      padding-top: 150px;
       padding-bottom: 0;
     }
 

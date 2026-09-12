@@ -39,10 +39,10 @@ export function filtersFromSearchParams(
   const toYear = Number(toYearValue);
 
   return {
-    countries: searchParams.getAll('country'),
+    countries: splitFilterParam(searchParams.getAll('country')),
     fromYear: fromYearValue && Number.isFinite(fromYear) ? fromYear : undefined,
-    genres: searchParams.getAll('genre'),
-    styles: searchParams.getAll('style'),
+    genres: splitFilterParam(searchParams.getAll('genre')),
+    styles: splitFilterParam(searchParams.getAll('style')),
     toYear: toYearValue && Number.isFinite(toYear) ? toYear : undefined,
   };
 }
@@ -65,4 +65,13 @@ export function filtersToSearchParams(filters: CatalogFilters) {
   );
 
   return searchParams;
+}
+
+function splitFilterParam(values: string[]) {
+  return values.flatMap((value) =>
+    value
+      .split(',')
+      .map((item) => item.trim())
+      .filter(Boolean),
+  );
 }
